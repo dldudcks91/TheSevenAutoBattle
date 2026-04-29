@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:/Users/user/Desktop/python_text/git/TheSevenAutoBattle/.claude/skills/balance-check\")",
+      "Bash(mkdir -p \"C:/Users/user/Desktop/python_text/git/TheSevenAutoBattle/.claude/skills/design-review\")",
+      "Bash(mkdir -p \"C:/Users/user/Desktop/python_text/git/TheSevenAutoBattle/.claude/skills/prototype\")",
+      "Bash(mkdir -p \"C:/Users/user/Desktop/python_text/git/TheSevenAutoBattle/.claude/skills/brainstorm\")",
+      "Bash(mkdir -p \"C:/Users/user/Desktop/python_text/git/TheSevenAutoBattle/.claude/skills/bug-triage\")"
+    ]
+  }
+}
