@@ -1,0 +1,25 @@
+wave,chapter,tactic_key,e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12
+# Chapter 1 - 오크 (W1-5): 기초 학습 (방어력 도입 → 숫자 압박 → 미니보스)
+1,1,crane_wing,orc,orc,orc,orc,,,,,,,,
+2,1,lure_ambush,armored_orc,armored_orc,orc,orc,orc,,,,,,,
+3,1,ambush_sides,armored_orc,armored_orc,armored_orc,orc,orc,orc,,,,,,
+4,1,vanguard_push,armored_orc,armored_orc,armored_orc,armored_orc,orc,orc,orc,orc,,,,
+5,1,MINIBOSS,elite_orc,elite_orc,armored_orc,armored_orc,orc,orc,orc,orc,,,,
+# Chapter 2 - 언데드 (W6-10): 원거리·부활·디버프·기동 → 미니보스
+6,2,defensive_box,skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,skeleton_archer,,,,,,,
+7,2,chain_link,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,,,,
+8,2,raid_split,greatsword_skeleton,greatsword_skeleton,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,,,
+9,2,diminishing,orc_rider,orc_rider,greatsword_skeleton,greatsword_skeleton,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,
+10,2,MINIBOSS,armored_skeleton,armored_skeleton,armored_skeleton,greatsword_skeleton,greatsword_skeleton,orc_rider,orc_rider,skeleton_archer,skeleton_archer,skeleton_archer,,
+# Chapter 3 - 야수+혼합 (W11-15): 처치 타이밍·스노우볼·종합 압박 → 미니보스
+11,3,pincer,werewolf,werewolf,slime,slime,slime,slime,slime,slime,slime,slime,,
+12,3,shock_front,werewolf,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,skeleton_archer,skeleton_archer,,
+13,3,split_pressure,werebear,werewolf,werewolf,slime,slime,slime,slime,armored_orc,armored_orc,armored_skeleton,armored_skeleton,
+14,3,gauntlet,werebear,werebear,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,greatsword_skeleton,skeleton_archer,skeleton_archer
+15,3,MINIBOSS,werebear,werebear,werebear,werewolf,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,skeleton_archer
+# Chapter 4 - 엔드게임 (W16-20): 혼합 고강도 → 최종보스
+16,4,siege_wave,elite_orc,elite_orc,werebear,werebear,armored_skeleton,armored_skeleton,greatsword_skeleton,greatsword_skeleton,orc_rider,orc_rider,skeleton_archer,skeleton_archer
+17,4,death_march,werebear,werebear,werebear,orc_rider,orc_rider,orc_rider,armored_orc,armored_orc,armored_skeleton,armored_skeleton,skeleton_archer,skeleton_archer
+18,4,chaos_tide,elite_orc,elite_orc,werebear,werebear,werewolf,werewolf,werewolf,armored_orc,armored_orc,armored_skeleton,greatsword_skeleton,skeleton_archer
+19,4,final_push,werebear,werebear,werebear,werebear,elite_orc,elite_orc,werewolf,werewolf,orc_rider,orc_rider,skeleton_archer,skeleton_archer
+20,4,FINALBOSS,werebear,elite_orc,elite_orc,werewolf,werewolf,werewolf,orc_rider,orc_rider,armored_skeleton,armored_skeleton,greatsword_skeleton,skeleton_archer

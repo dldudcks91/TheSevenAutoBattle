@@ -1,0 +1,454 @@
+[gd_scene format=3 uid="uid://ccvrnromi562s"]
+
+[ext_resource type="Script" path="res://src/ui/arena_scene.gd" id="1_arena"]
+[ext_resource type="Script" uid="uid://cqbyiqrwj5w0s" path="res://src/ui/placement_zone.gd" id="2_pzone"]
+[ext_resource type="Script" uid="uid://cquqkr0r3ab0b" path="res://src/battle/grid_overlay.gd" id="3_grid"]
+[ext_resource type="PackedScene" uid="uid://3g3donq82lyd" path="res://src/ui/unit_info_hud.tscn" id="4_hud"]
+[ext_resource type="Theme" path="res://assets/themes/seven_rpg.tres" id="5_theme"]
+
+[node name="ArenaScene" type="Control" unique_id=1005326429]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+script = ExtResource("1_arena")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=760350215]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0470588, 0.0509804, 0.0784314, 1)
+
+[node name="TopBar" type="HBoxContainer" parent="." unique_id=1794204682]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 1896.0
+offset_bottom = 72.0
+theme_override_constants/separation = 48
+
+[node name="RoundLabel" type="Label" parent="TopBar" unique_id=282019307]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Round 1 / 10"
+
+[node name="GoldLabel" type="Label" parent="TopBar" unique_id=126074594]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 30
+text = "Gold: 0"
+
+[node name="PhaseHint" type="Label" parent="TopBar" unique_id=1737827298]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.72, 0.78, 1)
+theme_override_font_sizes/font_size = 20
+
+[node name="PhaseTitle" type="Label" parent="." unique_id=614233921]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 78.0
+offset_right = 360.0
+offset_bottom = 114.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.78, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="FieldBackground" type="ColorRect" parent="." unique_id=1496275602]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 120.0
+offset_right = 1896.0
+offset_bottom = 750.0
+mouse_filter = 2
+color = Color(0.105882, 0.117647, 0.180392, 1)
+
+[node name="FieldBorder" type="ReferenceRect" parent="." unique_id=1435192296]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 120.0
+offset_right = 1896.0
+offset_bottom = 750.0
+mouse_filter = 2
+border_color = Color(0.4, 0.42, 0.55, 0.7)
+editor_only = false
+
+[node name="GridOverlay" type="Node2D" parent="." unique_id=600672623]
+visible = false
+position = Vector2(24, 120)
+script = ExtResource("3_grid")
+width = 1872
+height = 630
+
+[node name="BattleLayer" type="Node2D" parent="." unique_id=1889001587]
+
+[node name="PrepDecor" type="Control" parent="." unique_id=914142782]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Divider" type="ColorRect" parent="PrepDecor" unique_id=1860038778]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 132.0
+offset_right = 963.0
+offset_bottom = 738.0
+mouse_filter = 2
+color = Color(0.35, 0.36, 0.45, 0.5)
+
+[node name="PlayerLabel" type="Label" parent="PrepDecor" unique_id=919112403]
+layout_mode = 0
+offset_left = 42.0
+offset_top = 129.0
+offset_right = 480.0
+offset_bottom = 162.0
+theme_override_colors/font_color = Color(0.4, 0.95, 0.5, 1)
+theme_override_font_sizes/font_size = 21
+text = "내 배치 (드래그로 배치)"
+
+[node name="EnemyLabel" type="Label" parent="PrepDecor" unique_id=664880606]
+layout_mode = 0
+offset_left = 1434.0
+offset_top = 129.0
+offset_right = 1884.0
+offset_bottom = 162.0
+theme_override_colors/font_color = Color(0.95, 0.4, 0.45, 1)
+theme_override_font_sizes/font_size = 21
+text = "이번 라운드 적군"
+horizontal_alignment = 2
+
+[node name="PlayerZone" type="Control" parent="." unique_id=2022185918]
+anchors_preset = 0
+offset_left = 36.0
+offset_top = 168.0
+offset_right = 954.0
+offset_bottom = 738.0
+script = ExtResource("2_pzone")
+
+[node name="EnemyZone" type="Control" parent="." unique_id=2143739532]
+anchors_preset = 0
+offset_left = 966.0
+offset_top = 168.0
+offset_right = 1884.0
+offset_bottom = 738.0
+mouse_filter = 2
+
+[node name="HandPanel" type="PanelContainer" parent="." unique_id=1207005643]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 768.0
+offset_right = 1896.0
+offset_bottom = 984.0
+
+[node name="HandScroll" type="ScrollContainer" parent="HandPanel" unique_id=882153202]
+layout_mode = 2
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="Hand" type="HBoxContainer" parent="HandPanel/HandScroll" unique_id=910782535]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PrepBottomBar" type="HBoxContainer" parent="." unique_id=96174005]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -540.0
+offset_top = -84.0
+offset_right = 540.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 24
+
+[node name="BackToShopButton" type="Button" parent="PrepBottomBar" unique_id=2139341835]
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 2
+text = "준비로 돌아가기"
+
+[node name="SummaryLabel" type="Label" parent="PrepBottomBar" unique_id=470483459]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.5, 1)
+theme_override_font_sizes/font_size = 24
+text = "출전: 0명 / 비용 0 g"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartBattleButton" type="Button" parent="PrepBottomBar" unique_id=182890193]
+custom_minimum_size = Vector2(330, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "전투 시작"
+
+[node name="ShopRoot" type="Control" parent="." unique_id=2138783525]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ShopBackground" type="ColorRect" parent="ShopRoot" unique_id=1369266190]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 120.0
+offset_right = 1896.0
+offset_bottom = 984.0
+mouse_filter = 2
+color = Color(0.09, 0.1, 0.16, 1)
+
+[node name="Body" type="VBoxContainer" parent="ShopRoot" unique_id=260176219]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 144.0
+offset_right = 1896.0
+offset_bottom = 936.0
+theme_override_constants/separation = 12
+
+[node name="RosterPanel" type="PanelContainer" parent="ShopRoot/Body" unique_id=1466035482]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.4
+
+[node name="RosterVBox" type="VBoxContainer" parent="ShopRoot/Body/RosterPanel" unique_id=114703918]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="RosterTitle" type="Label" parent="ShopRoot/Body/RosterPanel/RosterVBox" unique_id=739430610]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 0.5, 1)
+theme_override_font_sizes/font_size = 27
+text = "  내 로스터 (장비 부착 대상)"
+
+[node name="RosterScroll" type="ScrollContainer" parent="ShopRoot/Body/RosterPanel/RosterVBox" unique_id=759938818]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="RosterGrid" type="HFlowContainer" parent="ShopRoot/Body/RosterPanel/RosterVBox/RosterScroll" unique_id=835047611]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+
+[node name="InventoryPanel" type="PanelContainer" parent="ShopRoot/Body" unique_id=1072989067]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InventoryVBox" type="VBoxContainer" parent="ShopRoot/Body/InventoryPanel" unique_id=1518116994]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="InventoryTitle" type="Label" parent="ShopRoot/Body/InventoryPanel/InventoryVBox" unique_id=308206348]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 27
+text = "  인벤토리"
+
+[node name="InventoryScroll" type="ScrollContainer" parent="ShopRoot/Body/InventoryPanel/InventoryVBox" unique_id=427343811]
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="InventoryRow" type="HBoxContainer" parent="ShopRoot/Body/InventoryPanel/InventoryVBox/InventoryScroll" unique_id=665228056]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="ShopBottomBar" type="HBoxContainer" parent="ShopRoot" unique_id=468554088]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -510.0
+offset_top = -108.0
+offset_right = 510.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 24
+
+[node name="MenuButton" type="Button" parent="ShopRoot/ShopBottomBar" unique_id=1961750396]
+custom_minimum_size = Vector2(210, 72)
+layout_mode = 2
+text = "메인 메뉴"
+
+[node name="ShopButton" type="Button" parent="ShopRoot/ShopBottomBar" unique_id=2052653945]
+custom_minimum_size = Vector2(270, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "상점"
+
+[node name="ToPrepButton" type="Button" parent="ShopRoot/ShopBottomBar" unique_id=546968424]
+custom_minimum_size = Vector2(330, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 33
+text = "전투 준비"
+
+[node name="ShopOverlay" type="Control" parent="." unique_id=1444056874]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="ShopOverlay" unique_id=521444580]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Modal" type="PanelContainer" parent="ShopOverlay" unique_id=594956543]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -660.0
+offset_top = -330.0
+offset_right = 660.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModalVBox" type="VBoxContainer" parent="ShopOverlay/Modal" unique_id=1602397641]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="ShopTitle" type="Label" parent="ShopOverlay/Modal/ModalVBox" unique_id=245956624]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 33
+text = "  상점 — 아이템"
+
+[node name="ShopHint" type="Label" parent="ShopOverlay/Modal/ModalVBox" unique_id=1567789012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 20
+text = "  아이템을 사서 인벤토리에 담는다. 장비 부착은 로스터 카드에서."
+
+[node name="ShopRow" type="HBoxContainer" parent="ShopOverlay/Modal/ModalVBox" unique_id=127781333]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="ShopButtonsRow" type="HBoxContainer" parent="ShopOverlay/Modal/ModalVBox" unique_id=1701174139]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 2
+
+[node name="RerollButton" type="Button" parent="ShopOverlay/Modal/ModalVBox/ShopButtonsRow" unique_id=1333055333]
+custom_minimum_size = Vector2(270, 60)
+layout_mode = 2
+text = "Reroll"
+
+[node name="CloseButton" type="Button" parent="ShopOverlay/Modal/ModalVBox/ShopButtonsRow" unique_id=1490859570]
+custom_minimum_size = Vector2(180, 60)
+layout_mode = 2
+text = "닫기"
+
+[node name="ResultOverlay" type="Control" parent="." unique_id=1015774046]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="ResultOverlay" unique_id=1441290697]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Modal" type="PanelContainer" parent="ResultOverlay" unique_id=1368486918]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -240.0
+offset_right = 300.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="ResultOverlay/Modal" unique_id=2081256802]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Headline" type="Label" parent="ResultOverlay/Modal/VBox" unique_id=1876361763]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "VICTORY"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="ResultOverlay/Modal/VBox" unique_id=422100760]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "처치 0  ·  손실 0"
+horizontal_alignment = 1
+
+[node name="GoldLabel" type="Label" parent="ResultOverlay/Modal/VBox" unique_id=1485034051]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 24
+text = "현재 0 g"
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="ResultOverlay/Modal/VBox" unique_id=1983377049]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="ResultOverlay/Modal/VBox/ButtonRow" unique_id=2103411908]
+custom_minimum_size = Vector2(180, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "메인 메뉴"
+
+[node name="NextButton" type="Button" parent="ResultOverlay/Modal/VBox/ButtonRow" unique_id=1811026159]
+custom_minimum_size = Vector2(280, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "다음 라운드"
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=1229839567]
+layer = 10
+
+[node name="UnitInfoHud" parent="UILayer" unique_id=1259977567 instance=ExtResource("4_hud")]
+visible = false

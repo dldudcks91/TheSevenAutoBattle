@@ -20,7 +20,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Bash
 
 ## Phase 2: 프로젝트 컨텍스트 로드
 
-`CLAUDE.md`와 `docs/GAME_DESIGN.md`를 읽어 현재 기술 스택과 게임 방향을 파악한다.
+`CLAUDE.md`와 `docs/game_design/GAME_DESIGN.md`를 읽어 현재 기술 스택과 게임 방향을 파악한다.
 
 ---
 

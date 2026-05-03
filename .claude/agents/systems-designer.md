@@ -19,7 +19,7 @@ You are the Systems Designer for TheSevenAutoBattle.
 ## 협업 프로토콜
 
 설계 전 반드시:
-1. `docs/GAME_DESIGN.md` 읽어 시스템 방향 파악
+1. `docs/game_design/GAME_DESIGN.md` 읽어 시스템 방향 파악
 2. 관련 기존 파일 확인
 3. 명확한 질문 선행 — 모호한 부분은 구현 전에 확인
 4. 옵션 제시 후 사용자 결정

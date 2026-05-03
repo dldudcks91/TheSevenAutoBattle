@@ -1,0 +1,21 @@
+id,name_key,is_player,max_hp,attack,attack_range,attack_interval,move_speed,armor,cost,is_ranged,body_radius,hit_frame_ratio,job,sprite_dir,sprite_scale,default_skill_id
+soldier,UNIT_SOLDIER,true,100,10,1,1.0,105,1,2,false,24,0.45,SOLDIER,Soldier,3.0,soldier_suppress
+armored_axeman,UNIT_ARMORED_AXEMAN,true,200,5,1,2.0,74,5,3,false,24,0.5,AXEMAN,Armored Axeman,3.0,axeman_battle_cry
+swordsman,UNIT_SWORDSMAN,true,80,18,1,0.85,116,0,3,false,24,0.45,SWORDSMAN,Swordsman,3.0,swordsman_slaughter_growth
+knight,UNIT_KNIGHT,true,300,7,1,1.4,74,8,4,false,24,0.5,KNIGHT,Knight,3.0,knight_undying_will
+knight_templar,UNIT_KNIGHT_TEMPLAR,true,180,8,1,1.25,84,4,4,false,24,0.5,TEMPLAR,Knight Templar,3.0,templar_combat_aura
+lancer,UNIT_LANCER,true,90,12,1,1.0,210,1,4,false,24,0.45,LANCER,Lancer,3.0,lancer_charge
+archer,UNIT_ARCHER,true,70,14,4,0.85,95,0,3,true,24,0.6,ARCHER,Archer,3.0,archer_critical
+priest,UNIT_PRIEST,true,90,4,3,1.25,95,0,3,true,24,0.6,PRIEST,Priest,3.0,priest_healing_prayer
+wizard,UNIT_WIZARD,true,70,10,4,1.0,95,0,4,true,24,0.6,WIZARD,Wizard,3.0,wizard_fireball
+orc,UNIT_ORC,false,80,11,1,0.9,116,0,0,false,24,0.5,SOLDIER,Orc,3.0,
+skeleton,UNIT_SKELETON,false,70,9,1,1.0,105,0,0,false,24,0.4,SOLDIER,Skeleton,3.0,
+armored_orc,UNIT_ARMORED_ORC,false,130,8,1,1.4,84,6,0,false,24,0.5,SOLDIER,Armored Orc,3.0,
+elite_orc,UNIT_ELITE_ORC,false,120,11,1,1.0,105,2,0,false,24,0.5,SOLDIER,Elite Orc,3.0,
+orc_rider,UNIT_ORC_RIDER,false,110,13,1,0.9,189,1,0,false,24,0.45,LANCER,Orc rider,3.0,
+armored_skeleton,UNIT_ARMORED_SKELETON,false,110,9,1,1.25,95,5,0,false,24,0.45,SOLDIER,Armored Skeleton,3.0,
+greatsword_skeleton,UNIT_GREATSWORD_SKELETON,false,100,13,1,1.1,95,1,0,false,24,0.5,SWORDSMAN,Greatsword Skeleton,3.0,
+skeleton_archer,UNIT_SKELETON_ARCHER,false,65,11,4,0.85,105,0,0,true,24,0.6,ARCHER,Skeleton Archer,3.0,
+slime,UNIT_SLIME,false,60,7,1,1.25,84,0,0,false,24,0.4,SOLDIER,Slime,3.0,
+werebear,UNIT_WEREBEAR,false,160,13,1,1.0,116,2,0,false,24,0.5,SOLDIER,Werebear,3.0,
+werewolf,UNIT_WEREWOLF,false,90,15,1,0.7,168,1,0,false,24,0.4,SOLDIER,Werewolf,3.0,

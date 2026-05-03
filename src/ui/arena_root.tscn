@@ -1,0 +1,236 @@
+[gd_scene format=3 uid="uid://k6udhtqcqmq6"]
+
+[ext_resource type="Script" path="res://src/ui/arena_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://src/ui/placement_zone.gd" id="2_pzone"]
+[ext_resource type="PackedScene" path="res://src/ui/unit_info_hud.tscn" id="3_hud"]
+[ext_resource type="Script" path="res://src/battle/grid_overlay.gd" id="4_grid"]
+[ext_resource type="Theme" path="res://assets/themes/seven_rpg.tres" id="5_theme"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_speed"]
+
+[node name="ArenaRoot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("5_theme")
+script = ExtResource("1_root")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.039, 0.039, 0.071, 1)
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 1896.0
+offset_bottom = 72.0
+theme_override_constants/separation = 48
+
+[node name="RoundLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Round 1 / 10"
+theme_override_font_sizes/font_size = 15
+
+[node name="GoldLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelGold"
+text = "Gold: 0"
+theme_override_font_sizes/font_size = 15
+
+[node name="PhaseHintLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelMuted"
+text = ""
+theme_override_font_sizes/font_size = 20
+
+[node name="SpeedControls" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 72.0
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="Speed1xButton" type="Button" parent="SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 40)
+toggle_mode = true
+button_group = SubResource("ButtonGroup_speed")
+text = "1x"
+theme_override_font_sizes/font_size = 18
+
+[node name="Speed15xButton" type="Button" parent="SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 40)
+toggle_mode = true
+button_group = SubResource("ButtonGroup_speed")
+text = "1.5x"
+theme_override_font_sizes/font_size = 18
+
+[node name="Speed2xButton" type="Button" parent="SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 40)
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_speed")
+text = "2x"
+theme_override_font_sizes/font_size = 18
+
+[node name="ArenaCanvas" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="FieldBackground" type="ColorRect" parent="ArenaCanvas"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 120.0
+offset_right = 1860.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.071, 0.071, 0.118, 1)
+
+[node name="FieldBorder" type="ReferenceRect" parent="ArenaCanvas"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 120.0
+offset_right = 1860.0
+offset_bottom = 720.0
+mouse_filter = 2
+border_color = Color(0.282, 0.282, 0.408, 1)
+border_width = 2.0
+editor_only = false
+
+[node name="Divider" type="ColorRect" parent="ArenaCanvas"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 132.0
+offset_right = 963.0
+offset_bottom = 708.0
+mouse_filter = 2
+color = Color(0.188, 0.188, 0.282, 1)
+
+[node name="PlayerLabel" type="Label" parent="ArenaCanvas"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 192.0
+offset_right = 660.0
+offset_bottom = 225.0
+theme_type_variation = &"LabelPlayer"
+text = "내 진영"
+theme_override_font_sizes/font_size = 21
+mouse_filter = 2
+
+[node name="EnemyLabel" type="Label" parent="ArenaCanvas"]
+layout_mode = 0
+offset_left = 1200.0
+offset_top = 192.0
+offset_right = 1560.0
+offset_bottom = 225.0
+theme_type_variation = &"LabelEnemy"
+text = "적 진영"
+theme_override_font_sizes/font_size = 21
+horizontal_alignment = 2
+mouse_filter = 2
+
+[node name="PlayerZone" type="Control" parent="ArenaCanvas"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 300.0
+offset_top = 240.0
+offset_right = 660.0
+offset_bottom = 600.0
+mouse_filter = 0
+script = ExtResource("2_pzone")
+
+[node name="EnemyZone" type="Control" parent="ArenaCanvas"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1200.0
+offset_top = 240.0
+offset_right = 1560.0
+offset_bottom = 600.0
+mouse_filter = 2
+
+[node name="GridOverlay" type="Node2D" parent="ArenaCanvas"]
+position = Vector2(60, 120)
+script = ExtResource("4_grid")
+cell_size = 12
+major_every = 5
+width = 1800
+height = 600
+
+[node name="BattleLayer" type="Node2D" parent="ArenaCanvas"]
+unique_name_in_owner = true
+
+[node name="HandSlot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 24.0
+offset_top = 720.0
+offset_right = 1280.0
+offset_bottom = 960.0
+mouse_filter = 2
+
+[node name="ItemSlot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1296.0
+offset_top = 720.0
+offset_right = 1896.0
+offset_bottom = 960.0
+mouse_filter = 2
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -540.0
+offset_top = -100.0
+offset_right = 540.0
+offset_bottom = -20.0
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="PhaseContainer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="ModalLayer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+layer = 8
+
+[node name="HudLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="UnitInfoHud" parent="HudLayer" instance=ExtResource("3_hud")]
+unique_name_in_owner = true
+visible = false

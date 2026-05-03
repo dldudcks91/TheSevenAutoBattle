@@ -1,0 +1,5 @@
+id,name_key,stat_key,value,price,scope,condition_unit_id
+boots_basic,ITEM_BOOTS_BASIC,MOVE_SPEED,15,6,ALL_ALLIES,
+gauntlet_basic,ITEM_GAUNTLET_BASIC,ATTACK,4,8,ALL_ALLIES,
+amulet_basic,ITEM_AMULET_BASIC,HP,25,7,ALL_ALLIES,
+plate_basic,ITEM_PLATE_BASIC,ARMOR,3,8,ALL_ALLIES,

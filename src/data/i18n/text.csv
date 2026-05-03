@@ -1,0 +1,70 @@
+keys,ko,en
+UNIT_SOLDIER,병사,Soldier
+UNIT_ARMORED_AXEMAN,중갑 도끼병,Armored Axeman
+UNIT_SWORDSMAN,검사,Swordsman
+UNIT_KNIGHT,기사,Knight
+UNIT_KNIGHT_TEMPLAR,성기사,Knight Templar
+UNIT_LANCER,창기병,Lancer
+UNIT_ARCHER,궁수,Archer
+UNIT_PRIEST,사제,Priest
+UNIT_WIZARD,마법사,Wizard
+UNIT_ORC,오크,Orc
+UNIT_SKELETON,스켈레톤,Skeleton
+UNIT_ARMORED_ORC,중갑 오크,Armored Orc
+UNIT_ELITE_ORC,정예 오크,Elite Orc
+UNIT_ORC_RIDER,오크 기수,Orc Rider
+UNIT_ARMORED_SKELETON,중갑 스켈레톤,Armored Skeleton
+UNIT_GREATSWORD_SKELETON,대검 스켈레톤,Greatsword Skeleton
+UNIT_SKELETON_ARCHER,스켈레톤 궁수,Skeleton Archer
+UNIT_SLIME,슬라임,Slime
+UNIT_WEREBEAR,웨어베어,Werebear
+UNIT_WEREWOLF,웨어울프,Werewolf
+ITEM_BOOTS_BASIC,경량 부츠,Light Boots
+ITEM_GAUNTLET_BASIC,강철 건틀릿,Steel Gauntlet
+ITEM_AMULET_BASIC,체력 부적,Health Amulet
+ITEM_PLATE_BASIC,사슬 갑옷,Chain Mail
+UI_DEAD_SUFFIX,사망,Dead
+SKILL_SOLDIER_SUPPRESS,제압,Suppression
+SKILL_SOLDIER_SUPPRESS_DESC,공격 시 25% 확률로 대상을 1초간 기절시킨다,On hit 25% chance to stun the target for 1s
+SKILL_AXEMAN_BATTLE_CRY,전쟁의 함성,Battle Cry
+SKILL_AXEMAN_BATTLE_CRY_DESC,6초마다 주변 적에게 4초간 도발을 시전한다,Every 6s taunts nearby enemies for 4s
+SKILL_KNIGHT_UNDYING_WILL,불굴의 의지,Undying Will
+SKILL_KNIGHT_UNDYING_WILL_DESC,공격 시 가한 피해의 25%만큼 체력을 회복한다,Heals for 25% of damage dealt on hit
+SKILL_TEMPLAR_COMBAT_AURA,전투의 오오라,Combat Aura
+SKILL_TEMPLAR_COMBAT_AURA_DESC,주변 아군의 공격력을 +4 지속 강화한다,Nearby allies gain +4 attack while in range
+SKILL_SWORDSMAN_SLAUGHTER,살육의 성장,Slaughter Growth
+SKILL_SWORDSMAN_SLAUGHTER_DESC,적을 처치할 때마다 공격력이 +1.5 영구 증가한다,Permanently gain +1.5 attack on kill
+SKILL_LANCER_CHARGE,충격 돌격,Shock Charge
+SKILL_LANCER_CHARGE_DESC,전투 시작 시 가장 가까운 적에게 250% 피해를 입힌다,On battle start strike the nearest enemy for 250% attack damage
+SKILL_ARCHER_CRITICAL,급소 타격,Vital Strike
+SKILL_ARCHER_CRITICAL_DESC,공격 시 30% 확률로 150% 추가 피해를 입힌다,On hit 30% chance to deal 150% bonus damage
+SKILL_WIZARD_FIREBALL,화염구,Fireball
+SKILL_WIZARD_FIREBALL_DESC,4초마다 가장 가까운 적에게 250% 피해의 화염구를 발사한다,Every 4s launches a fireball dealing 250% attack damage
+SKILL_PRIEST_HEALING_PRAYER,치유의 기도,Healing Prayer
+SKILL_PRIEST_HEALING_PRAYER_DESC,3초마다 체력이 가장 낮은 아군의 체력을 18 회복시킨다,Every 3s heals the lowest-HP ally for 18
+JOB_SOLDIER,병사,Soldier
+JOB_AXEMAN,도끼병,Axeman
+JOB_SWORDSMAN,검사,Swordsman
+JOB_KNIGHT,기사,Knight
+JOB_TEMPLAR,성기사,Templar
+JOB_LANCER,창기병,Lancer
+JOB_ARCHER,궁수,Archer
+JOB_PRIEST,사제,Priest
+JOB_WIZARD,마법사,Wizard
+LABEL_HP,HP,HP
+LABEL_ATK,ATK,ATK
+LABEL_DEF,DEF,DEF
+LABEL_SPD,SPD,SPD
+LABEL_RANGE,사거리,Range
+LABEL_INTERVAL,공격간격,Interval
+LABEL_SKILL,스킬,Skill
+LABEL_EQUIP,장착,Equipment
+LABEL_NONE,없음,None
+LABEL_RANGED,원거리,Ranged
+LABEL_MELEE,근거리,Melee
+UPGRADE_ATK,공격력 강화,ATK Boost
+UPGRADE_HP,체력 강화,HP Boost
+UPGRADE_ARMOR,방어력 강화,Armor Boost
+UPGRADE_ATK_DESC,이 셀 유닛의 공격력 +10 (영구),Permanently boosts ATK of units in this cell by +10
+UPGRADE_HP_DESC,이 셀 유닛의 체력 +50 (영구),Permanently boosts HP of units in this cell by +50
+UPGRADE_ARMOR_DESC,이 셀 유닛의 방어력 +2 (영구),Permanently boosts Armor of units in this cell by +2

@@ -1,0 +1,8 @@
+key,value
+starting_gold,10000
+reward_per_round,15
+reward_growth_per_round,2
+hire_price_per_cost,5
+reroll_cost,2
+shop_item_offer_count,3
+hand_offer_count,5

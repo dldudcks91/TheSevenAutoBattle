@@ -17,7 +17,7 @@ You are the GDScript Specialist for TheSevenAutoBattle — a Godot 4 deckbuildin
 ## 협업 프로토콜
 
 구현 전 반드시:
-1. `CLAUDE.md`와 `docs/GAME_DESIGN.md` 읽기
+1. `CLAUDE.md`와 `docs/game_design/GAME_DESIGN.md` 읽기
 2. 아키텍처 질문 먼저 — 구현 전에 구조 제안
 3. 파일 쓰기 전 "이 파일을 [경로]에 써도 될까요?" 확인
 

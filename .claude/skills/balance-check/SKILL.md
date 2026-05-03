@@ -21,8 +21,8 @@ allowed-tools: Read, Glob, Grep
 
 ## Phase 2: 데이터 파일 읽기
 
-`src/data/` 및 `docs/` 에서 관련 파일을 읽는다.
-GAME_DESIGN.md를 읽어 설계 의도와 기댓값 범위를 파악한다.
+`src/data/` 및 `docs/game_design/` 에서 관련 파일을 읽는다.
+`docs/game_design/GAME_DESIGN.md`를 읽어 설계 의도와 기댓값 범위를 파악한다.
 
 ---
 
