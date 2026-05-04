@@ -23,7 +23,7 @@ enum Effect {
 	HEAL,         # 대상 체력 회복
 	LIFESTEAL,    # 자신을 가한 피해의 value 비율만큼 회복
 	BUFF_ATK,     # 대상 공격력 증가 (duration=0 → 영구)
-	BUFF_ARMOR,   # 대상 방어력 증가 (duration=0 → 영구)
+	BUFF_DEFENSE, # 대상 방어력 증가 (duration=0 → 영구)
 	TAUNT,        # 대상이 시전자를 우선 타겟으로 삼게 함
 	STUN,         # 대상 행동 불가
 	FREEZE,       # 대상 이동 속도 감소 (50%)

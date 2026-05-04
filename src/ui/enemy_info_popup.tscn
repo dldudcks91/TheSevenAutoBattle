@@ -1,0 +1,127 @@
+[gd_scene format=3 uid="uid://c2y3t6kqjpepu"]
+
+[ext_resource type="Script" path="res://src/ui/hero_info_popup.gd" id="1_popup"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.55, 0.12, 0.14, 0.95)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[node name="EnemyInfoPopup" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_popup")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 968.0
+offset_top = 220.0
+offset_right = 1248.0
+offset_bottom = 700.0
+grow_horizontal = 1
+grow_vertical = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_enemy")
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NameLbl" type="Label" parent="Panel/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+
+[node name="JobLbl" type="Label" parent="Panel/Margin/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 2
+
+[node name="HSep1" type="HSeparator" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="StatGrid" type="GridContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="HSep2" type="HSeparator" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="SkillBox" type="VBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+theme_override_constants/separation = 4
+
+[node name="SkillName" type="Label" parent="Panel/Margin/VBox/SkillBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="SkillDesc" type="Label" parent="Panel/Margin/VBox/SkillBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+
+[node name="HSep3" type="HSeparator" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="SkillBox2" type="VBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+theme_override_constants/separation = 4
+
+[node name="SkillName2" type="Label" parent="Panel/Margin/VBox/SkillBox2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="SkillDesc2" type="Label" parent="Panel/Margin/VBox/SkillBox2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+
+[node name="HSep4" type="HSeparator" parent="Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="SkillBox3" type="VBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+theme_override_constants/separation = 4
+
+[node name="SkillName3" type="Label" parent="Panel/Margin/VBox/SkillBox3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="SkillDesc3" type="Label" parent="Panel/Margin/VBox/SkillBox3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2

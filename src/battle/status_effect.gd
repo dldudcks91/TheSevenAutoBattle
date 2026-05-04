@@ -8,7 +8,7 @@ enum Kind {
 	STUN,
 	FREEZE,
 	BUFF_ATK,
-	BUFF_ARMOR,
+	BUFF_DEFENSE,
 	POISON,
 	BURN,
 	TAUNT_TO,   # 이 유닛이 source 유닛을 우선 타겟으로 삼도록 강제한다.

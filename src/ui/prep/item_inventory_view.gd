@@ -89,7 +89,7 @@ static func _make_card(item: ItemData) -> Control:
 	match item.stat_key:
 		ItemData.StatKey.ATTACK:     stat_name = "공격"
 		ItemData.StatKey.HP:         stat_name = "HP"
-		ItemData.StatKey.ARMOR:      stat_name = "방어"
+		ItemData.StatKey.DEFENSE:    stat_name = "방어"
 		ItemData.StatKey.MOVE_SPEED: stat_name = "이동속도"
 	var stat_lbl := Label.new()
 	stat_lbl.text = "+%s %s" % [str(item.value), stat_name]

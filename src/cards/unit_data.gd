@@ -7,9 +7,9 @@ var is_player: bool = false
 var max_hp: float = 100.0
 var attack: float = 10.0
 var attack_range: int = 1
-var attack_interval: float = 1.0
+var attack_speed: float = 1.0
 var move_speed: float = 60.0
-var armor: float = 0.0
+var defense: float = 0.0
 var cost: int = 1
 var is_ranged: bool = false
 var body_radius: float = 22.0
@@ -32,9 +32,9 @@ static func from_row(row: Dictionary) -> UnitData:
 	d.max_hp = float(row["max_hp"])
 	d.attack = float(row["attack"])
 	d.attack_range = int(row["attack_range"])
-	d.attack_interval = float(row["attack_interval"])
+	d.attack_speed = float(row["attack_speed"])
 	d.move_speed = float(row["move_speed"])
-	d.armor = float(row["armor"])
+	d.defense = float(row["defense"])
 	d.cost = int(row["cost"])
 	d.is_ranged = String(row["is_ranged"]).strip_edges().to_lower() == "true"
 	d.body_radius = float(row["body_radius"])

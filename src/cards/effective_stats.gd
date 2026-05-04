@@ -8,21 +8,21 @@ extends RefCounted
 # 업그레이드 카드 1회 적용 시 더해지는 스탯 양.
 const UPGRADE_ATK_VALUE: float = 10.0
 const UPGRADE_HP_VALUE: float = 50.0
-const UPGRADE_ARMOR_VALUE: float = 2.0
+const UPGRADE_DEFENSE_VALUE: float = 2.0
 
 var max_hp: float
 var attack: float
 var attack_range: float
-var attack_interval: float
+var attack_speed: float
 var move_speed: float
-var armor: float
+var defense: float
 
 # 셀 업그레이드 보정(boosts)을 아이템 보정 위에 누적 적용한다.
 static func from_slot_with_boosts(slot: RosterSlot, boosts: Dictionary, global_items: Array = []) -> EffectiveStats:
 	var s := from_slot(slot, global_items)
 	s.attack += float(boosts.get("atk", 0)) * UPGRADE_ATK_VALUE
 	s.max_hp += float(boosts.get("hp", 0)) * UPGRADE_HP_VALUE
-	s.armor += float(boosts.get("armor", 0)) * UPGRADE_ARMOR_VALUE
+	s.defense += float(boosts.get("defense", 0)) * UPGRADE_DEFENSE_VALUE
 	return s
 
 static func from_slot(slot: RosterSlot, global_items: Array = []) -> EffectiveStats:
@@ -31,9 +31,9 @@ static func from_slot(slot: RosterSlot, global_items: Array = []) -> EffectiveSt
 	s.max_hp = d.max_hp
 	s.attack = d.attack
 	s.attack_range = d.attack_range * float(GameEnums.CELL_SIZE)
-	s.attack_interval = d.attack_interval
+	s.attack_speed = d.attack_speed
 	s.move_speed = d.move_speed
-	s.armor = d.armor
+	s.defense = d.defense
 	for it in slot.items:
 		_apply_item(s, it)
 	for raw_it in global_items:
@@ -53,7 +53,7 @@ static func _apply_item(s: EffectiveStats, it: ItemData) -> void:
 		ItemData.StatKey.MOVE_SPEED: s.move_speed += it.value
 		ItemData.StatKey.ATTACK:     s.attack     += it.value
 		ItemData.StatKey.HP:         s.max_hp     += it.value
-		ItemData.StatKey.ARMOR:      s.armor      += it.value
+		ItemData.StatKey.DEFENSE:    s.defense    += it.value
 
 # Enemies carry no items; wraps UnitData in the same interface.
 static func from_unit_data(d: UnitData) -> EffectiveStats:
@@ -61,7 +61,7 @@ static func from_unit_data(d: UnitData) -> EffectiveStats:
 	s.max_hp = d.max_hp
 	s.attack = d.attack
 	s.attack_range = d.attack_range * float(GameEnums.CELL_SIZE)
-	s.attack_interval = d.attack_interval
+	s.attack_speed = d.attack_speed
 	s.move_speed = d.move_speed
-	s.armor = d.armor
+	s.defense = d.defense
 	return s

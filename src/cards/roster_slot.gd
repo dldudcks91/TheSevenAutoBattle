@@ -20,7 +20,7 @@ var dummy_name: String = ""
 var dummy_desc: String = ""
 # ITEM 카드일 때만 유효 — CSV에서 로드한 실제 아이템 데이터.
 var item_data: ItemData = null
-# UPGRADE 카드일 때만 유효 — 강화할 스탯 키 ("atk" / "hp" / "armor").
+# UPGRADE 카드일 때만 유효 — 강화할 스탯 키 ("atk" / "hp" / "defense").
 var upgrade_stat: String = ""
 
 func can_equip() -> bool:

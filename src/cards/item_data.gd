@@ -1,7 +1,7 @@
 class_name ItemData
 extends RefCounted
 
-enum StatKey { MOVE_SPEED, ATTACK, HP, ARMOR }
+enum StatKey { MOVE_SPEED, ATTACK, HP, DEFENSE }
 # ALL_ALLIES: 인벤토리에 있는 동안 아군 전체에 적용.
 # UNIT: condition_unit_id와 id가 일치하는 유닛에만 적용.
 enum Scope { ALL_ALLIES, UNIT }

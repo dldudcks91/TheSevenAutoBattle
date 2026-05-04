@@ -28,6 +28,7 @@ enum PhaseId { PREP, BATTLE, RESULT }
 @onready var _phase_container: Control = %PhaseContainer
 @onready var _modal_layer: CanvasLayer = %ModalLayer
 @onready var _info_hud: UnitInfoHud = %UnitInfoHud
+@onready var _detail_card: UnitDetailCard = %UnitDetailCard
 
 @onready var _speed_controls: HBoxContainer = %SpeedControls
 @onready var _speed_btn_1x: Button = %Speed1xButton
@@ -57,6 +58,7 @@ func _set_phase(next: int, payload: Variant = null) -> void:
 	_gold_preview = -1
 	_info_hud.visible = false
 	_info_hud.clear()
+	_detail_card.clear()
 
 	var scene: PackedScene = _scene_for_phase(next)
 	if scene == null:
@@ -78,7 +80,9 @@ func _set_phase(next: int, payload: Variant = null) -> void:
 	_refresh_speed_controls()
 	# PlayerZone는 PREP에서만 드래그 입력을 받아야 한다. BATTLE/RESULT에서는
 	# 같은 위치에 있는 유닛 Area2D 클릭을 흡수하지 않도록 IGNORE로 풀어준다.
+	# EnemyZone도 같은 이유로 PREP에서만 클릭 받는다(적 정보 팝업).
 	_player_zone.mouse_filter = Control.MOUSE_FILTER_STOP if next == PhaseId.PREP else Control.MOUSE_FILTER_IGNORE
+	_enemy_zone.mouse_filter = Control.MOUSE_FILTER_STOP if next == PhaseId.PREP else Control.MOUSE_FILTER_IGNORE
 
 func _scene_for_phase(p: int) -> PackedScene:
 	match p:
@@ -97,6 +101,7 @@ func _shell_dict() -> Dictionary:
 		"bottom_bar": _bottom_bar,
 		"modal_layer": _modal_layer,
 		"info_hud": _info_hud,
+		"detail_card": _detail_card,
 		"top_bar": self,  # phase가 set_gold_preview / refresh_gold 호출 가능
 	}
 

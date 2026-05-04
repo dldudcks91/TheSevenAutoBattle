@@ -24,10 +24,13 @@ var _phase: String = "idle"  # idle | fighting | finished
 
 var _projectile_layer: Node2D
 var _selected: Unit = null
+var _detail_card: UnitDetailCard = null
 
 var _kills: int = 0
 var _losses: int = 0
 var _round_index: int = 0  # start(plan)에서 캡처. 보상 가산은 battle_phase가 책임.
+# 유닛 클릭이 처리된 프레임 — 같은 프레임의 _unhandled_input이 deselect로 덮어쓰는 것을 막는 가드.
+var _last_select_frame: int = -1
 
 func _ready() -> void:
 	_projectile_layer = Node2D.new()
@@ -141,21 +144,39 @@ func _on_unit_died(u: Unit, team: GameEnums.Team) -> void:
 	if _selected == u:
 		u.set_selected(false)
 
+func bind_detail_card(card: UnitDetailCard) -> void:
+	_detail_card = card
+
 func _on_unit_clicked(u: Unit) -> void:
+	print("[Battle] _on_unit_clicked team=%s detail_card=%s" % [str(u.team), str(_detail_card)])
+	_last_select_frame = Engine.get_process_frames()
 	_select(u)
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var mp: Vector2 = get_viewport().get_mouse_position()
+		print("[Battle] _input LMB at %s players=%d enemies=%d" % [str(mp), _players.size(), _enemies.size()])
+
 func _select(u: Unit) -> void:
-	# 셀렉션 링만 토글한다 — HUD는 양 진영 라이브 로스터로 대체되어 클릭으로 갱신되지 않는다.
-	if _selected == u:
+	# 셀렉션 링은 항상 토글. 좌상단 상세 카드는 양 팀 모두에 표시 — 클릭한 유닛 정보를 띄운다.
+	if _selected != u:
+		if is_instance_valid(_selected):
+			_selected.set_selected(false)
+		_selected = u
+		if u != null:
+			u.set_selected(true)
+	if _detail_card == null:
 		return
-	if is_instance_valid(_selected):
-		_selected.set_selected(false)
-	_selected = u
 	if u != null:
-		u.set_selected(true)
+		_detail_card.bind_unit(u)
+	else:
+		_detail_card.clear()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# 같은 프레임에 유닛 클릭이 이미 처리됐다면 deselect 무시 — 카드가 깜빡이며 사라지는 것을 방지.
+		if Engine.get_process_frames() == _last_select_frame:
+			return
 		_select(null)
 
 func _on_projectile_requested(from: Vector2, target: Unit, damage: float, source: Unit) -> void:

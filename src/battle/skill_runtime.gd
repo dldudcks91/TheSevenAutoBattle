@@ -165,8 +165,8 @@ func _apply_effect(skill: SkillData, target_unit: Object, damage_dealt: float) -
 				target_unit.heal(heal_amt)
 		SkillData.Effect.BUFF_ATK:
 			target_unit.add_status(StatusEffect.make(StatusEffect.Kind.BUFF_ATK, skill.value, skill.duration, unit))
-		SkillData.Effect.BUFF_ARMOR:
-			target_unit.add_status(StatusEffect.make(StatusEffect.Kind.BUFF_ARMOR, skill.value, skill.duration, unit))
+		SkillData.Effect.BUFF_DEFENSE:
+			target_unit.add_status(StatusEffect.make(StatusEffect.Kind.BUFF_DEFENSE, skill.value, skill.duration, unit))
 		SkillData.Effect.TAUNT:
 			target_unit.add_status(StatusEffect.make(StatusEffect.Kind.TAUNT_TO, 0.0, skill.duration, unit))
 		SkillData.Effect.STUN:

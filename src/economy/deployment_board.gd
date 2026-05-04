@@ -8,7 +8,7 @@ const GRID_CELLS_TOTAL: int = 9
 const MAX_UPGRADE_LEVEL: int = 3
 
 var grid_cells: Array = []
-# 셀별 스탯 보정 카운트. {"atk": int, "hp": int, "armor": int} 형태.
+# 셀별 스탯 보정 카운트. {"atk": int, "hp": int, "defense": int} 형태.
 # 각 값은 해당 스탯에 적용된 업그레이드 횟수. 합계가 MAX_UPGRADE_LEVEL 이하여야 한다.
 var grid_cell_boosts: Array = []
 

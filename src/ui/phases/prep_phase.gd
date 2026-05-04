@@ -6,7 +6,10 @@
 
 const ARENA_ROOT := preload("res://src/ui/arena_root.gd")
 const HERO_INFO_POPUP_SCENE := preload("res://src/ui/hero_info_popup.tscn")
+const ENEMY_INFO_POPUP_SCENE := preload("res://src/ui/enemy_info_popup.tscn")
 const CardInfoPopupScript := preload("res://src/ui/card_info_popup.gd")
+# 적 토큰 클릭 판정 반경(EnemyZone 로컬 px). 토큰 사이 간격을 감안해 넉넉히.
+const _ENEMY_CLICK_RADIUS_PX: float = 60.0
 
 const GRID_COLS := 3
 const GRID_ROWS := 3
@@ -41,10 +44,13 @@ var shell: Dictionary = {}
 var _card_to_cell: Array[int] = []
 var _selected_cell: int = -1
 var _selected_hand_idx: int = -1  # 주황 테두리를 표시할 핸드 카드 인덱스 (-1 = 없음)
+var _selected_enemy_idx: int = -1  # 적 진영에서 클릭 선택된 적 인덱스 (-1 = 없음)
+var _enemy_sel_box: ReferenceRect = null
 var _hand_cards: Array[Control] = []
 var _summary_lbl: Label = null
 var _start_battle_btn: Button = null
 var _hero_info_popup: HeroInfoPopup = null
+var _enemy_info_popup: HeroInfoPopup = null  # 같은 스크립트, 다른 위치/색상.
 var _card_info_popup: CardInfoPopup = null
 var _coord_mapper: PrepCoordMapper = null
 var _item_drop_zone: ItemDropZone = null
@@ -76,11 +82,16 @@ func _ready() -> void:
 	pz.can_drop_hand_card = Callable(self, "_can_drop_hand_card_to_cell")
 
 	_spawn_hero_info_popup()
+	_spawn_enemy_info_popup()
 	_spawn_card_info_popup()
 	_build_bottom_bar()
 	_build_hand()
 	_build_item_slot()
 	_render_enemies_preview()
+	# EnemyZone 클릭 → 적 유닛 정보 팝업. PREP에서만 mouse_filter가 STOP으로 풀려 입력이 들어온다.
+	var ez: Control = shell.enemy_zone
+	if ez != null and not ez.gui_input.is_connected(_on_enemy_zone_gui_input):
+		ez.gui_input.connect(_on_enemy_zone_gui_input)
 	_render_placed()
 	_refresh_hand_state()
 	_update_summary_and_button()
@@ -102,14 +113,24 @@ func _exit_tree() -> void:
 		pz.get_cell_has_unit = Callable()
 		pz.build_drag_preview = Callable()
 		pz.can_drop_hand_card = Callable()
+	var ez: Control = shell.get("enemy_zone")
+	if ez != null and is_instance_valid(ez):
+		if ez.gui_input.is_connected(_on_enemy_zone_gui_input):
+			ez.gui_input.disconnect(_on_enemy_zone_gui_input)
 	# ModalLayer 자식은 phase가 명시적으로 정리 (셸은 _clear_shell_slots에서 일괄 비우지만,
 	# 우리가 띄운 노드의 수명은 우리가 책임진다.)
 	if _hero_info_popup != null and is_instance_valid(_hero_info_popup):
 		_hero_info_popup.queue_free()
 		_hero_info_popup = null
+	if _enemy_info_popup != null and is_instance_valid(_enemy_info_popup):
+		_enemy_info_popup.queue_free()
+		_enemy_info_popup = null
 	if _card_info_popup != null and is_instance_valid(_card_info_popup):
 		_card_info_popup.queue_free()
 		_card_info_popup = null
+	if _enemy_sel_box != null and is_instance_valid(_enemy_sel_box):
+		_enemy_sel_box.queue_free()
+	_enemy_sel_box = null
 
 # ─── BottomBar ────────────────────────────────────────────────────────────
 func _build_bottom_bar() -> void:
@@ -313,7 +334,7 @@ func _make_hero_card(slot_idx: int, slot: RosterSlot) -> Control:
 	card.custom_minimum_size = Vector2(200, 200)
 	card.focus_mode = Control.FOCUS_NONE
 	card.tooltip_text = "%s\n가격 %d g\nHP %d  ATK %d  DEF %d" % [
-		ud_name, price, int(ud.max_hp), int(ud.attack), int(ud.armor)
+		ud_name, price, int(ud.max_hp), int(ud.attack), int(ud.defense)
 	]
 	_apply_card_styles(card, accent)
 
@@ -377,9 +398,14 @@ func _on_hero_card_clicked(slot_idx: int) -> void:
 	var slot: RosterSlot = RunState.hand[slot_idx]
 	if _card_info_popup != null and _card_info_popup.visible:
 		_card_info_popup.hide()
+	if _enemy_info_popup != null and _enemy_info_popup.visible:
+		_enemy_info_popup.hide()
 	_selected_hand_idx = slot_idx
 	_selected_cell = -1
+	_selected_enemy_idx = -1
+	_refresh_enemy_selection_ring()
 	_refresh_hand_state()
+	_render_placed()
 	if _hero_info_popup != null:
 		_hero_info_popup.show_for(slot, {}, RunState.inventory)
 
@@ -465,8 +491,13 @@ func _on_dummy_card_clicked(slot_idx: int, kind_label: String, accent: Color) ->
 	if _hero_info_popup != null and _hero_info_popup.visible:
 		_hero_info_popup.hide()
 		_selected_cell = -1
+	if _enemy_info_popup != null and _enemy_info_popup.visible:
+		_enemy_info_popup.hide()
+	_selected_enemy_idx = -1
+	_refresh_enemy_selection_ring()
 	_selected_hand_idx = slot_idx
 	_refresh_hand_state()
+	_render_placed()
 	if _card_info_popup != null:
 		_card_info_popup.show_for(slot, kind_label, accent)
 
@@ -579,6 +610,16 @@ func _render_placed() -> void:
 			star_lbl.position = _coord_mapper.cell_origin(i) + Vector2(4, 4)
 			star_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			zone.add_child(star_lbl)
+
+		if i == _selected_cell:
+			var sel_box := ReferenceRect.new()
+			sel_box.size = cs
+			sel_box.position = _coord_mapper.cell_origin(i)
+			sel_box.border_color = _SELECTED_BORDER
+			sel_box.border_width = 3.0
+			sel_box.editor_only = false
+			sel_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			zone.add_child(sel_box)
 
 static func _make_field_token(unit_data: UnitData, local_pos: Vector2, is_enemy: bool, scale_mult: float = TOKEN_SCALE_SOLO) -> Node:
 	var holder := Node2D.new()
@@ -752,6 +793,107 @@ func _spawn_hero_info_popup() -> void:
 	ml.add_child(_hero_info_popup)
 	_hero_info_popup.close_requested.connect(_on_hero_info_popup_close)
 
+func _spawn_enemy_info_popup() -> void:
+	var ml: CanvasLayer = shell.modal_layer
+	_enemy_info_popup = ENEMY_INFO_POPUP_SCENE.instantiate() as HeroInfoPopup
+	ml.add_child(_enemy_info_popup)
+	_enemy_info_popup.close_requested.connect(_on_enemy_info_popup_close)
+
+func _on_enemy_info_popup_close() -> void:
+	_selected_enemy_idx = -1
+	_refresh_enemy_selection_ring()
+	if _enemy_info_popup != null:
+		_enemy_info_popup.hide()
+
+func _refresh_enemy_selection_ring() -> void:
+	var ez: Control = shell.get("enemy_zone")
+	if ez == null or not is_instance_valid(ez):
+		return
+	if _enemy_sel_box != null and is_instance_valid(_enemy_sel_box):
+		if _enemy_sel_box.get_parent() != null:
+			_enemy_sel_box.get_parent().remove_child(_enemy_sel_box)
+		_enemy_sel_box.queue_free()
+	_enemy_sel_box = null
+	if _selected_enemy_idx < 0:
+		return
+	var lineup: Array = RunState.current_enemy_lineup()
+	if _selected_enemy_idx >= lineup.size():
+		return
+	var ud: UnitData = lineup[_selected_enemy_idx] as UnitData
+	if ud == null:
+		return
+	var zone_w: float = ez.size.x if ez.size.x > 0.0 else 360.0
+	var zone_h: float = ez.size.y if ez.size.y > 0.0 else 360.0
+	var tactic_key: StringName = RunState.current_tactic_key()
+	var field_h: float = zone_h - _TACTIC_LABEL_H
+	var positions: Array = FormationLibrary.positions_for(tactic_key, lineup.size(), zone_w, field_h)
+	var pos: Vector2 = (positions[_selected_enemy_idx] as Vector2) + Vector2(0.0, _TACTIC_LABEL_H)
+	var box_size: Vector2 = Vector2(64.0, 64.0)
+	var box := ReferenceRect.new()
+	box.size = box_size
+	box.position = pos - box_size * 0.5
+	box.border_color = _SELECTED_BORDER
+	box.border_width = 3.0
+	box.editor_only = false
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ez.add_child(box)
+	_enemy_sel_box = box
+
+func _on_enemy_zone_gui_input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton):
+		return
+	var mb: InputEventMouseButton = event
+	if mb.button_index != MOUSE_BUTTON_LEFT or not mb.pressed:
+		return
+	var idx: int = _enemy_index_at_local_pos(mb.position)
+	if idx < 0:
+		if _enemy_info_popup != null:
+			_enemy_info_popup.hide()
+		_selected_enemy_idx = -1
+		_refresh_enemy_selection_ring()
+		return
+	var lineup: Array = RunState.current_enemy_lineup()
+	var ud: UnitData = lineup[idx] as UnitData
+	if ud == null:
+		return
+	# 다른 팝업은 닫는다 — 한 번에 한 패널만.
+	if _hero_info_popup != null:
+		_hero_info_popup.hide()
+	if _card_info_popup != null:
+		_card_info_popup.hide()
+	_selected_cell = -1
+	_selected_hand_idx = -1
+	_refresh_hand_state()
+	_render_placed()
+	_selected_enemy_idx = idx
+	_refresh_enemy_selection_ring()
+	_enemy_info_popup.show_for_unit_data(ud)
+	# enemy popup의 _unhandled_input(좌클릭으로 닫힘)이 같은 클릭으로 즉시 닫지 않도록 흡수.
+	(shell.enemy_zone as Control).accept_event()
+
+func _enemy_index_at_local_pos(local_pos: Vector2) -> int:
+	var ez: Control = shell.enemy_zone
+	if ez == null:
+		return -1
+	var lineup: Array = RunState.current_enemy_lineup()
+	var n: int = lineup.size()
+	if n == 0:
+		return -1
+	var zone_w: float = ez.size.x if ez.size.x > 0.0 else 360.0
+	var zone_h: float = ez.size.y if ez.size.y > 0.0 else 360.0
+	var tactic_key: StringName = RunState.current_tactic_key()
+	var field_h: float = zone_h - _TACTIC_LABEL_H
+	var positions: Array = FormationLibrary.positions_for(tactic_key, n, zone_w, field_h)
+	var best_idx: int = -1
+	var best_dist: float = _ENEMY_CLICK_RADIUS_PX
+	for i in n:
+		var p: Vector2 = (positions[i] as Vector2) + Vector2(0.0, _TACTIC_LABEL_H)
+		var d: float = local_pos.distance_to(p)
+		if d < best_dist:
+			best_dist = d
+			best_idx = i
+	return best_idx
+
 func _spawn_card_info_popup() -> void:
 	var ml: CanvasLayer = shell.modal_layer
 	_card_info_popup = CardInfoPopupScript.new() as CardInfoPopup
@@ -766,12 +908,17 @@ func _on_cell_clicked(cell_idx: int) -> void:
 		_selected_cell = -1
 		_selected_hand_idx = -1
 		_refresh_hand_state()
+		_render_placed()
 		if _hero_info_popup != null:
 			_hero_info_popup.hide()
 		return
-	# 카드 팝업이 열려 있으면 닫는다.
+	# 카드 팝업/적 팝업이 열려 있으면 닫는다.
 	if _card_info_popup != null:
 		_card_info_popup.hide()
+	if _enemy_info_popup != null:
+		_enemy_info_popup.hide()
+	_selected_enemy_idx = -1
+	_refresh_enemy_selection_ring()
 	_selected_cell = cell_idx
 	# 해당 셀의 unpaid entry 중 유효한 hand_idx를 찾아 카드에 주황 테두리를 준다.
 	_selected_hand_idx = -1
@@ -785,6 +932,7 @@ func _on_cell_clicked(cell_idx: int) -> void:
 			_selected_hand_idx = hidx
 			break
 	_refresh_hand_state()
+	_render_placed()
 	var slot: RosterSlot = (entries[0] as Dictionary)["slot"] as RosterSlot
 	if _hero_info_popup != null:
 		_hero_info_popup.show_for(slot, RunState.grid_get_boosts(cell_idx), RunState.inventory)
@@ -793,6 +941,7 @@ func _on_hero_info_popup_close() -> void:
 	_selected_cell = -1
 	_selected_hand_idx = -1
 	_refresh_hand_state()
+	_render_placed()
 	if _hero_info_popup != null:
 		_hero_info_popup.hide()
 

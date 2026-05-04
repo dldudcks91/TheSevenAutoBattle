@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://src/ui/unit_info_hud.tscn" id="3_hud"]
 [ext_resource type="Script" path="res://src/battle/grid_overlay.gd" id="4_grid"]
 [ext_resource type="Theme" path="res://assets/themes/seven_rpg.tres" id="5_theme"]
+[ext_resource type="PackedScene" path="res://src/ui/unit_detail_card.tscn" id="6_card"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_speed"]
 
@@ -143,9 +144,9 @@ mouse_filter = 2
 
 [node name="EnemyLabel" type="Label" parent="ArenaCanvas"]
 layout_mode = 0
-offset_left = 1200.0
+offset_left = 1260.0
 offset_top = 192.0
-offset_right = 1560.0
+offset_right = 1620.0
 offset_bottom = 225.0
 theme_type_variation = &"LabelEnemy"
 text = "적 진영"
@@ -166,9 +167,9 @@ script = ExtResource("2_pzone")
 [node name="EnemyZone" type="Control" parent="ArenaCanvas"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 1200.0
+offset_left = 1260.0
 offset_top = 240.0
-offset_right = 1560.0
+offset_right = 1620.0
 offset_bottom = 600.0
 mouse_filter = 2
 
@@ -233,4 +234,12 @@ layer = 10
 
 [node name="UnitInfoHud" parent="HudLayer" instance=ExtResource("3_hud")]
 unique_name_in_owner = true
+visible = false
+
+[node name="UnitDetailCard" parent="HudLayer" instance=ExtResource("6_card")]
+unique_name_in_owner = true
+offset_left = 72.0
+offset_top = 132.0
+offset_right = 472.0
+offset_bottom = 252.0
 visible = false

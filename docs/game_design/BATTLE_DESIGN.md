@@ -77,7 +77,7 @@ HURT ──→ DEAD
     ↓
 애니메이션 일정 지점 도달 → 피해 적용  ← hit_frame_ratio
     ↓
-애니메이션 종료 → 쿨타임(attack_interval) 시작
+애니메이션 종료 → 쿨타임(attack_speed) 시작
     ↓
 쿨타임 만료 → 다시 공격 가능
 ```

@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://df5bestgsjaei"]
+
+[ext_resource type="Script" path="res://src/ui/unit_detail_card.gd" id="1_card"]
+
+[node name="UnitDetailCard" type="PanelContainer"]
+mouse_filter = 2
+script = ExtResource("1_card")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBox" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="TextureRect" parent="Margin/HBox"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="VBoxContainer" parent="Margin/HBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NameLabel" type="Label" parent="Margin/HBox/Info"]
+layout_mode = 2
+text = "—"
+theme_override_font_sizes/font_size = 18
+
+[node name="HpBarBg" type="ColorRect" parent="Margin/HBox/Info"]
+custom_minimum_size = Vector2(200, 10)
+layout_mode = 2
+color = Color(0.12, 0.13, 0.18, 1)
+
+[node name="HpBarFg" type="ColorRect" parent="Margin/HBox/Info/HpBarBg"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 10.0
+color = Color(0.3, 0.85, 0.4, 1)
+
+[node name="HpLabel" type="Label" parent="Margin/HBox/Info"]
+layout_mode = 2
+text = "HP: 0 / 0"
+theme_override_font_sizes/font_size = 14
+
+[node name="AtkLabel" type="Label" parent="Margin/HBox/Info"]
+layout_mode = 2
+text = "ATK: 0"
+theme_override_font_sizes/font_size = 14
+
+[node name="DefenseLabel" type="Label" parent="Margin/HBox/Info"]
+layout_mode = 2
+text = "DEF: 0"
+theme_override_font_sizes/font_size = 14
+
+[node name="SpdLabel" type="Label" parent="Margin/HBox/Info"]
+layout_mode = 2
+text = "AS: 0.00s"
+theme_override_font_sizes/font_size = 14

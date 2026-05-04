@@ -33,10 +33,15 @@ func _ready() -> void:
 	hud.visible = true
 	hud.clear()
 
+	# 좌상단 상세 카드는 아군 클릭 전까지는 숨겨둔다.
+	var card: UnitDetailCard = shell.detail_card
+	card.clear()
+
 	# BattleSimulator 인스턴스 생성 → shell.battle_layer 의 자식으로
 	_sim = BattleSimulator.new()
 	shell.battle_layer.add_child(_sim)
 	hud.bind_battle(_sim)
+	_sim.bind_detail_card(card)
 	_sim.battle_ended.connect(_on_battle_ended)
 	# add_child 직후 spawn 시작. _ready의 _projectile_layer 초기화는 이미 끝난 시점.
 	_sim.start(_plan)

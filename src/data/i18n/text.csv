@@ -56,7 +56,7 @@ LABEL_ATK,ATK,ATK
 LABEL_DEF,DEF,DEF
 LABEL_SPD,SPD,SPD
 LABEL_RANGE,사거리,Range
-LABEL_INTERVAL,공격간격,Interval
+LABEL_AS,공격속도,AS
 LABEL_SKILL,스킬,Skill
 LABEL_EQUIP,장착,Equipment
 LABEL_NONE,없음,None
@@ -64,7 +64,11 @@ LABEL_RANGED,원거리,Ranged
 LABEL_MELEE,근거리,Melee
 UPGRADE_ATK,공격력 강화,ATK Boost
 UPGRADE_HP,체력 강화,HP Boost
-UPGRADE_ARMOR,방어력 강화,Armor Boost
+UPGRADE_DEFENSE,방어력 강화,Defense Boost
 UPGRADE_ATK_DESC,이 셀 유닛의 공격력 +10 (영구),Permanently boosts ATK of units in this cell by +10
 UPGRADE_HP_DESC,이 셀 유닛의 체력 +50 (영구),Permanently boosts HP of units in this cell by +50
-UPGRADE_ARMOR_DESC,이 셀 유닛의 방어력 +2 (영구),Permanently boosts Armor of units in this cell by +2
+UPGRADE_DEFENSE_DESC,이 셀 유닛의 방어력 +2 (영구),Permanently boosts Defense of units in this cell by +2
+STAT_HP,체력,HP
+STAT_ATK,공격력,ATK
+STAT_DEFENSE,방어력,Defense
+STAT_ATTACK_SPEED,공격속도,Atk Speed

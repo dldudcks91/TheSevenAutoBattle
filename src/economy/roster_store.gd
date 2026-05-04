@@ -35,7 +35,7 @@ func _roll_hand_offer(pool: Array[UnitData], grid_units: Array[UnitData]) -> Ros
 	elif roll < 0.74:
 		if has_grid:
 			slot.kind = GameEnums.CardKind.UPGRADE
-			var stats := ["atk", "hp", "armor"]
+			var stats := ["atk", "hp", "defense"]
 			slot.upgrade_stat = stats[rng.randi_range(0, stats.size() - 1)]
 			slot.dummy_name = _upgrade_name(slot.upgrade_stat)
 			slot.dummy_desc = _upgrade_desc(slot.upgrade_stat)
@@ -89,14 +89,14 @@ func _upgrade_name(stat: String) -> String:
 	match stat:
 		"atk":   return TranslationServer.translate(&"UPGRADE_ATK")
 		"hp":    return TranslationServer.translate(&"UPGRADE_HP")
-		"armor": return TranslationServer.translate(&"UPGRADE_ARMOR")
+		"defense": return TranslationServer.translate(&"UPGRADE_DEFENSE")
 	return TranslationServer.translate(&"UPGRADE_ATK")
 
 func _upgrade_desc(stat: String) -> String:
 	match stat:
 		"atk":   return TranslationServer.translate(&"UPGRADE_ATK_DESC")
 		"hp":    return TranslationServer.translate(&"UPGRADE_HP_DESC")
-		"armor": return TranslationServer.translate(&"UPGRADE_ARMOR_DESC")
+		"defense": return TranslationServer.translate(&"UPGRADE_DEFENSE_DESC")
 	return ""
 
 func _skill_name(ud: UnitData) -> String:

@@ -91,8 +91,9 @@ func _ready() -> void:
 	add_child(hit)
 
 	_selection_ring = SelectionRing.new()
-	_selection_ring.radius = data.body_radius + 6.0
-	_selection_ring.position = Vector2(0, 6)
+	# 작게 — body_radius의 60% 정도. 발 밑(아래쪽) 위치.
+	_selection_ring.radius = max(8.0, data.body_radius * 0.6)
+	_selection_ring.position = Vector2(0, data.body_radius * 0.5 + 4.0)
 	_selection_ring.visible = false
 	add_child(_selection_ring)
 
@@ -107,6 +108,26 @@ func _ready() -> void:
 			push_warning("Unit: skill id not found: %s" % data.default_skill_id)
 	skill_runtime.setup(self, attached)
 
+	_setup_aura_ring(attached)
+
+func _setup_aura_ring(attached_skills: Array) -> void:
+	# AURA 트리거 스킬이 있으면 가장 큰 radius로 발 밑에 표시 링을 깐다.
+	var max_radius_cells: float = 0.0
+	for raw in attached_skills:
+		var s: SkillData = raw
+		if s.trigger == SkillData.Trigger.AURA and s.radius_cells > max_radius_cells:
+			max_radius_cells = s.radius_cells
+	if max_radius_cells <= 0.0:
+		return
+	var ring := AuraRing.new()
+	ring.position = Vector2(0, 6)
+	# 적군은 붉은 톤으로 구분.
+	if team == GameEnums.Team.ENEMY:
+		ring.fill_color = Color(1.0, 0.35, 0.35, 0.15)
+		ring.edge_color = Color(1.0, 0.35, 0.35, 0.6)
+	ring.set_radius(max_radius_cells * float(GameEnums.CELL_SIZE))
+	add_child(ring)
+
 func set_selected(on: bool) -> void:
 	if _selection_ring:
 		_selection_ring.visible = on
@@ -115,6 +136,7 @@ func _on_hit_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if state == State.DEAD:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		print("[Unit] _on_hit_input fired team=%s id=%s pos=%s" % [str(team), str(data.id), str(global_position)])
 		clicked.emit(self)
 		get_viewport().set_input_as_handled()
 
@@ -193,7 +215,7 @@ func _advance_attack(delta: float) -> void:
 		_attack_dealt = true
 		_deal_attack()
 	if _attack_timer >= _attack_duration:
-		attack_cooldown = stats.attack_interval
+		attack_cooldown = stats.attack_speed
 		_set_state(State.IDLE)
 
 func _deal_attack() -> void:
@@ -205,7 +227,7 @@ func _deal_attack() -> void:
 		projectile_requested.emit(muzzle, target, atk, self)
 		# 발사체가 도달하기 전이라도 ON_ATTACK은 공격 시점에 1회 발동 — 추정 피해로 호출.
 		if skill_runtime != null:
-			var est: float = max(1.0, atk - target.current_armor())
+			var est: float = max(1.0, atk - target.current_defense())
 			skill_runtime.on_attack(target, est)
 	else:
 		if global_position.distance_to(target.global_position) <= stats.attack_range + 12.0:
@@ -240,7 +262,7 @@ func take_damage(amount: float, _is_melee: bool = false) -> float:
 		return 0.0
 	var burn_extra: float = _burn_amount()
 	var raw: float = amount + burn_extra
-	var dmg: float = maxf(1.0, raw - current_armor())
+	var dmg: float = maxf(1.0, raw - current_defense())
 	var prev_hp: float = hp
 	hp = max(0.0, hp - dmg)
 	_update_hp_bar()
@@ -370,13 +392,13 @@ func current_attack() -> float:
 			bonus += st.amount
 	return stats.attack + bonus
 
-func current_armor() -> float:
+func current_defense() -> float:
 	var bonus: float = 0.0
 	for raw in _statuses:
 		var st: StatusEffect = raw
-		if st.kind == StatusEffect.Kind.BUFF_ARMOR:
+		if st.kind == StatusEffect.Kind.BUFF_DEFENSE:
 			bonus += st.amount
-	return stats.armor + bonus
+	return stats.defense + bonus
 
 func current_move_speed() -> float:
 	var s: float = stats.move_speed

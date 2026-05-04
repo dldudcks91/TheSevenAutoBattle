@@ -91,7 +91,7 @@ func show_for(slot: RosterSlot, kind_label: String, accent: Color) -> void:
 		match slot.item_data.stat_key:
 			ItemData.StatKey.ATTACK:     stat_name = "공격"
 			ItemData.StatKey.HP:         stat_name = "HP"
-			ItemData.StatKey.ARMOR:      stat_name = "방어"
+			ItemData.StatKey.DEFENSE:    stat_name = "방어"
 			ItemData.StatKey.MOVE_SPEED: stat_name = "이동속도"
 		_desc_lbl.text = "%s +%s" % [stat_name, str(slot.item_data.value)]
 	else:

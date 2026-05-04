@@ -2,7 +2,7 @@ class_name HeroInfoPopup
 extends Control
 
 # 그리드에 배치된 영웅 토큰 클릭 시 우측에 띄우는 정보 패널.
-# - 풀 스탯(HP/ATK/ARM/SPD/사거리/공격간격) + 직업 + 기본 스킬 + 장착 아이템.
+# - 풀 스탯(HP/ATK/DEF/SPD/사거리/공격속도) + 직업 + 기본 스킬 + 장착 아이템.
 # - 닫기: 팝업 패널 밖 빈 곳 좌클릭 (PlacementZone과 HandCard는 자체 입력 캡처).
 # - 다른 영웅 클릭 시 prep_phase가 show_for를 다시 호출해 내용만 교체.
 
@@ -52,6 +52,20 @@ func show_for(slot: RosterSlot, boosts: Dictionary = {}, inventory: Array = []) 
 	_fill_empty_skill_slot(_skill_name3_lbl, _skill_desc3_lbl)
 	show()
 
+# 적 유닛처럼 RosterSlot 없이 UnitData만으로 패널을 띄울 때 사용한다.
+# 부스트/아이템 보너스 없음 — 순수 베이스 스탯만 표시.
+func show_for_unit_data(ud: UnitData) -> void:
+	if ud == null:
+		hide()
+		return
+	_name_lbl.text = tr(ud.name_key)
+	_job_lbl.text = ""
+	_fill_stat_grid(ud, {}, {})
+	_fill_skill(ud.default_skill_id)
+	_fill_empty_skill_slot(_skill_name2_lbl, _skill_desc2_lbl)
+	_fill_empty_skill_slot(_skill_name3_lbl, _skill_desc3_lbl)
+	show()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
@@ -64,7 +78,7 @@ const _UPGRADE_BONUS_COLOR := Color(0.3, 0.9, 0.4)  # 초록색 — 업그레이
 
 # ─── helpers ──────────────────────────────────────────────────────────────
 func _compute_item_bonuses(slot: RosterSlot, inventory: Array) -> Dictionary:
-	var b := {"attack": 0.0, "hp": 0.0, "armor": 0.0, "move_speed": 0.0}
+	var b := {"attack": 0.0, "hp": 0.0, "defense": 0.0, "move_speed": 0.0}
 	var unit_id: StringName = slot.unit_data.id if slot.unit_data != null else &""
 	for it in slot.items:
 		_add_item_bonus(b, it)
@@ -84,7 +98,7 @@ func _add_item_bonus(b: Dictionary, it: ItemData) -> void:
 	match it.stat_key:
 		ItemData.StatKey.ATTACK:     b["attack"]     += it.value
 		ItemData.StatKey.HP:         b["hp"]         += it.value
-		ItemData.StatKey.ARMOR:      b["armor"]      += it.value
+		ItemData.StatKey.DEFENSE:    b["defense"]    += it.value
 		ItemData.StatKey.MOVE_SPEED: b["move_speed"] += it.value
 
 func _fill_stat_grid(ud: UnitData, boosts: Dictionary = {}, item_bonuses: Dictionary = {}) -> void:
@@ -93,19 +107,19 @@ func _fill_stat_grid(ud: UnitData, boosts: Dictionary = {}, item_bonuses: Dictio
 	var range_text: String = "%d (%s)" % [ud.attack_range, tr(&"LABEL_RANGED" if ud.is_ranged else &"LABEL_MELEE")]
 	var atk_boost: int = int(boosts.get("atk", 0))
 	var hp_boost: int = int(boosts.get("hp", 0))
-	var arm_boost: int = int(boosts.get("armor", 0))
+	var def_boost: int = int(boosts.get("defense", 0))
 	var atk_item: float = float(item_bonuses.get("attack", 0.0))
 	var hp_item: float = float(item_bonuses.get("hp", 0.0))
-	var arm_item: float = float(item_bonuses.get("armor", 0.0))
+	var def_item: float = float(item_bonuses.get("defense", 0.0))
 	var spd_item: float = float(item_bonuses.get("move_speed", 0.0))
 	# [label, base_text, has_upgrade, upgrade_text, has_item, item_text]
 	var rows: Array = [
 		[tr(&"LABEL_HP"),  str(int(ud.max_hp)),     hp_boost > 0,  "(+%d)" % int(hp_boost * EffectiveStats.UPGRADE_HP_VALUE),    hp_item > 0.0,  "(+%d)" % int(hp_item)],
 		[tr(&"LABEL_ATK"), str(int(ud.attack)),      atk_boost > 0, "(+%d)" % int(atk_boost * EffectiveStats.UPGRADE_ATK_VALUE),  atk_item > 0.0, "(+%d)" % int(atk_item)],
-		[tr(&"LABEL_DEF"), str(int(ud.armor)),       arm_boost > 0, "(+%d)" % int(arm_boost * EffectiveStats.UPGRADE_ARMOR_VALUE),arm_item > 0.0, "(+%d)" % int(arm_item)],
+		[tr(&"LABEL_DEF"), str(int(ud.defense)),     def_boost > 0, "(+%d)" % int(def_boost * EffectiveStats.UPGRADE_DEFENSE_VALUE),def_item > 0.0, "(+%d)" % int(def_item)],
 		[tr(&"LABEL_SPD"), str(int(ud.move_speed)), false, "",                                                                    spd_item > 0.0, "(+%d)" % int(spd_item)],
 		[tr(&"LABEL_RANGE"), range_text,             false, "",                                                                    false, ""],
-		[tr(&"LABEL_INTERVAL"), "%.2fs" % ud.attack_interval, false, "",                                                          false, ""],
+		[tr(&"LABEL_AS"), "%.2fs" % ud.attack_speed, false, "",                                                                  false, ""],
 	]
 	for row in rows:
 		var k_lbl := Label.new()
