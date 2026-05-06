@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/battle/Unit.gd" id="1_unit"]
+[ext_resource type="Script" path="res://src/battle/ai/UnitAI.gd" id="2_ai"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(20, 30)
+
+[node name="Unit" type="CharacterBody2D"]
+script = ExtResource("1_unit")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_1")
+disabled = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -10)
+centered = true
+
+[node name="HpBarBg" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -55.0
+offset_right = 20.0
+offset_bottom = -49.0
+color = Color(0.08, 0.08, 0.08, 1)
+
+[node name="HpBarFill" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -55.0
+offset_right = 20.0
+offset_bottom = -49.0
+color = Color(0.25, 0.85, 0.35, 1)
+
+[node name="UnitAI" type="Node" parent="."]
+script = ExtResource("2_ai")

@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/main/Main.gd" id="1_main"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 540.0
+offset_top = 340.0
+offset_right = 740.0
+offset_bottom = 380.0
+text = "TheSevenAutoBattle (M0 boot)"
+horizontal_alignment = 1
