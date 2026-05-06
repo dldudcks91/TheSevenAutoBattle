@@ -1,25 +1,25 @@
 wave,chapter,tactic_key,e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12
-# Chapter 1 - 오크 (W1-5): 기초 학습 (방어력 도입 → 숫자 압박 → 미니보스)
+# Chapter 1 - Orcs (W1-5): 기초 학습 (방어력 도입 → 숫자 압박 → 지휘관·기마 → 미니보스)
 1,1,crane_wing,orc,orc,orc,orc,,,,,,,,
-2,1,lure_ambush,armored_orc,armored_orc,orc,orc,orc,,,,,,,
-3,1,ambush_sides,armored_orc,armored_orc,armored_orc,orc,orc,orc,,,,,,
-4,1,vanguard_push,armored_orc,armored_orc,armored_orc,armored_orc,orc,orc,orc,orc,,,,
-5,1,MINIBOSS,elite_orc,elite_orc,armored_orc,armored_orc,orc,orc,orc,orc,,,,
-# Chapter 2 - 언데드 (W6-10): 원거리·부활·디버프·기동 → 미니보스
+2,1,lure_ambush,orc_veteran,orc_veteran,orc,orc,orc,,,,,,,
+3,1,ambush_sides,orc_berserker,orc_berserker,goblin,goblin,goblin,goblin,orc,orc,,,,
+4,1,vanguard_push,warg_rider,warg_rider,orc_warchief,orc,orc,orc,orc,goblin_thief,,,,
+5,1,MINIBOSS,orc_warchief,orc_warchief,orc_veteran,orc_veteran,orc_berserker,orc_berserker,orc,orc,orc,goblin,,
+# Chapter 2 - Undead (W6-10): 원거리 → 마법면역+부활 → 디버프 → 기동 → 미니보스
 6,2,defensive_box,skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,skeleton_archer,,,,,,,
-7,2,chain_link,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,,,,
-8,2,raid_split,greatsword_skeleton,greatsword_skeleton,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,,,
-9,2,diminishing,orc_rider,orc_rider,greatsword_skeleton,greatsword_skeleton,armored_skeleton,armored_skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,,
-10,2,MINIBOSS,armored_skeleton,armored_skeleton,armored_skeleton,greatsword_skeleton,greatsword_skeleton,orc_rider,orc_rider,skeleton_archer,skeleton_archer,skeleton_archer,,
-# Chapter 3 - 야수+혼합 (W11-15): 처치 타이밍·스노우볼·종합 압박 → 미니보스
-11,3,pincer,werewolf,werewolf,slime,slime,slime,slime,slime,slime,slime,slime,,
-12,3,shock_front,werewolf,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,skeleton_archer,skeleton_archer,,
-13,3,split_pressure,werebear,werewolf,werewolf,slime,slime,slime,slime,armored_orc,armored_orc,armored_skeleton,armored_skeleton,
-14,3,gauntlet,werebear,werebear,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,greatsword_skeleton,skeleton_archer,skeleton_archer
-15,3,MINIBOSS,werebear,werebear,werebear,werewolf,werewolf,werewolf,slime,slime,slime,armored_orc,armored_orc,skeleton_archer
-# Chapter 4 - 엔드게임 (W16-20): 혼합 고강도 → 최종보스
-16,4,siege_wave,elite_orc,elite_orc,werebear,werebear,armored_skeleton,armored_skeleton,greatsword_skeleton,greatsword_skeleton,orc_rider,orc_rider,skeleton_archer,skeleton_archer
-17,4,death_march,werebear,werebear,werebear,orc_rider,orc_rider,orc_rider,armored_orc,armored_orc,armored_skeleton,armored_skeleton,skeleton_archer,skeleton_archer
-18,4,chaos_tide,elite_orc,elite_orc,werebear,werebear,werewolf,werewolf,werewolf,armored_orc,armored_orc,armored_skeleton,greatsword_skeleton,skeleton_archer
-19,4,final_push,werebear,werebear,werebear,werebear,elite_orc,elite_orc,werewolf,werewolf,orc_rider,orc_rider,skeleton_archer,skeleton_archer
-20,4,FINALBOSS,werebear,elite_orc,elite_orc,werewolf,werewolf,werewolf,orc_rider,orc_rider,armored_skeleton,armored_skeleton,greatsword_skeleton,skeleton_archer
+7,2,chain_link,ghost,ghost,necromancer,skeleton,skeleton,skeleton,skeleton_archer,,,,,
+8,2,raid_split,lich,death_knight,zombie,zombie,skeleton,skeleton,skeleton_archer,skeleton_archer,,,,
+9,2,diminishing,reaper,reaper,zombie_butcher,zombie_butcher,skeleton_archer,skeleton_archer,skeleton,skeleton,necromancer,,,
+10,2,MINIBOSS,dread_knight,lich,reaper,reaper,death_knight,death_knight,skeleton,skeleton,skeleton,skeleton_archer,skeleton_archer,
+# Chapter 3 - Demons (W11-15): 매혹 → 화염 광역 → 도발·피흡 → 혼합 핀치 → 미니보스
+11,3,pincer,succubus,imp,imp,imp,imp,imp,,,,,,
+12,3,shock_front,demon_fire_keeper,demon_fire_thrower,demon_fire_thrower,fire_imp,fire_imp,imp,imp,,,,,
+13,3,split_pressure,demon_tormentor,demon_tormentor,clawed_demon,clawed_demon,demoness,fire_imp,fire_imp,imp,,,,
+14,3,gauntlet,high_demon,demon_tormentor,demon_tormentor,demon_fire_keeper,demoness,clawed_demon,clawed_demon,fire_imp,imp,imp,,
+15,3,MINIBOSS,high_demon,demoness,demoness,demon_tormentor,demon_tormentor,demon_fire_thrower,demon_fire_thrower,clawed_demon,clawed_demon,imp,imp,
+# Chapter 4 - 엔드게임 혼합 (W16-20): 종합 압박 → 다양성 → 카오스 → 보스 직전 → 최종보스
+16,4,siege_wave,high_demon,demon_tormentor,dread_knight,death_knight,orc_warchief,orc_veteran,demon_fire_thrower,skeleton_archer,clawed_demon,zombie,orc,orc
+17,4,death_march,demon_lord,high_demon,dread_knight,reaper,reaper,warg_rider,wolf_rider,demoness,lich,demon_fire_keeper,skeleton_archer,orc_axe_thrower
+18,4,chaos_tide,high_demon,demon_tormentor,demon_tormentor,death_knight,reaper,orc_warchief,orc_berserker,zombie_butcher,clawed_demon,fire_imp,goblin_thief,necromancer
+19,4,final_push,demon_lord,high_demon,high_demon,dread_knight,demon_tormentor,demoness,death_knight,reaper,orc_warchief,demon_fire_keeper,demon_fire_thrower,skeleton_archer
+20,4,FINALBOSS,demon_lord,demon_tormentor,demon_tormentor,demon_fire_keeper,demon_fire_keeper,high_demon,high_demon,demoness,clawed_demon,clawed_demon,fire_imp,imp

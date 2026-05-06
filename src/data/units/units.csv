@@ -1,21 +1,66 @@
-id,name_key,is_player,max_hp,attack,attack_range,attack_speed,move_speed,defense,cost,is_ranged,body_radius,hit_frame_ratio,job,sprite_dir,sprite_scale,default_skill_id
-soldier,UNIT_SOLDIER,true,100,10,1,1.0,105,1,2,false,24,0.45,SOLDIER,Soldier,3.0,soldier_suppress
-armored_axeman,UNIT_ARMORED_AXEMAN,true,200,5,1,2.0,74,5,3,false,24,0.5,AXEMAN,Armored Axeman,3.0,axeman_battle_cry
-swordsman,UNIT_SWORDSMAN,true,80,18,1,0.85,116,0,3,false,24,0.45,SWORDSMAN,Swordsman,3.0,swordsman_slaughter_growth
-knight,UNIT_KNIGHT,true,300,7,1,1.4,74,8,4,false,24,0.5,KNIGHT,Knight,3.0,knight_undying_will
-knight_templar,UNIT_KNIGHT_TEMPLAR,true,180,8,1,1.25,84,4,4,false,24,0.5,TEMPLAR,Knight Templar,3.0,templar_combat_aura
-lancer,UNIT_LANCER,true,90,12,1,1.0,210,1,4,false,24,0.45,LANCER,Lancer,3.0,lancer_charge
-archer,UNIT_ARCHER,true,70,14,4,0.85,95,0,3,true,24,0.6,ARCHER,Archer,3.0,archer_critical
-priest,UNIT_PRIEST,true,90,4,3,1.25,95,0,3,true,24,0.6,PRIEST,Priest,3.0,priest_healing_prayer
-wizard,UNIT_WIZARD,true,70,10,4,1.0,95,0,4,true,24,0.6,WIZARD,Wizard,3.0,wizard_fireball
-orc,UNIT_ORC,false,80,11,1,0.9,116,0,0,false,24,0.5,SOLDIER,Orc,3.0,
-skeleton,UNIT_SKELETON,false,70,9,1,1.0,105,0,0,false,24,0.4,SOLDIER,Skeleton,3.0,
-armored_orc,UNIT_ARMORED_ORC,false,130,8,1,1.4,84,6,0,false,24,0.5,SOLDIER,Armored Orc,3.0,
-elite_orc,UNIT_ELITE_ORC,false,120,11,1,1.0,105,2,0,false,24,0.5,SOLDIER,Elite Orc,3.0,
-orc_rider,UNIT_ORC_RIDER,false,110,13,1,0.9,189,1,0,false,24,0.45,LANCER,Orc rider,3.0,
-armored_skeleton,UNIT_ARMORED_SKELETON,false,110,9,1,1.25,95,5,0,false,24,0.45,SOLDIER,Armored Skeleton,3.0,
-greatsword_skeleton,UNIT_GREATSWORD_SKELETON,false,100,13,1,1.1,95,1,0,false,24,0.5,SWORDSMAN,Greatsword Skeleton,3.0,
-skeleton_archer,UNIT_SKELETON_ARCHER,false,65,11,4,0.85,105,0,0,true,24,0.6,ARCHER,Skeleton Archer,3.0,
-slime,UNIT_SLIME,false,60,7,1,1.25,84,0,0,false,24,0.4,SOLDIER,Slime,3.0,
-werebear,UNIT_WEREBEAR,false,160,13,1,1.0,116,2,0,false,24,0.5,SOLDIER,Werebear,3.0,
-werewolf,UNIT_WEREWOLF,false,90,15,1,0.7,168,1,0,false,24,0.4,SOLDIER,Werewolf,3.0,
+id,name_key,is_player,max_hp,attack,attack_range,attack_speed,move_speed,defense,cost,is_ranged,body_radius,hit_frame_ratio,job,sprite_dir,sprite_scale,default_skill_id,race,class
+shield_man,UNIT_SHIELD_MAN,true,220,6,1,1.5,75,6,4,false,24,0.5,AXEMAN,minifolks/MinifolksHumans/MiniShieldMan/no_outline,3.0,,HUMANS,KNIGHT
+sword_man,UNIT_SWORD_MAN,true,100,13,1,0.95,110,1,3,false,24,0.45,SOLDIER,minifolks/MinifolksHumans/MiniSwordMan/no_outline,3.0,,HUMANS,WARRIOR
+spear_man,UNIT_SPEAR_MAN,true,110,12,1,1.05,95,2,3,false,24,0.5,LANCER,minifolks/MinifolksHumans/MiniSpearMan/no_outline,3.0,,HUMANS,SPEARMAN
+cavalier_man,UNIT_CAVALIER_MAN,true,100,13,1,0.95,195,1,4,false,24,0.45,LANCER,minifolks/MinifolksHumans/MiniCavalierMan/no_outline,3.0,,HUMANS,RIDER
+archer_man,UNIT_ARCHER_MAN,true,70,13,4,0.9,100,0,3,true,24,0.6,ARCHER,minifolks/MinifolksHumans/MiniArcherMan/no_outline,3.0,,HUMANS,ARCHER
+mage,UNIT_MAGE,true,70,11,4,1.0,95,0,4,true,24,0.6,WIZARD,minifolks/MinifolksHumans/MiniMage/no_outline,3.0,,HUMANS,MAGE
+arch_mage,UNIT_ARCH_MAGE,true,85,5,3,1.2,95,0,3,true,24,0.6,PRIEST,minifolks/MinifolksHumans/MiniArchMage/no_outline,3.0,,HUMANS,PRIEST
+king_man,UNIT_KING_MAN,true,180,8,1,1.25,85,4,4,false,24,0.5,TEMPLAR,minifolks/MinifolksHumans/MiniKingMan/no_outline,3.0,,HUMANS,GENERAL
+viking_swordman,UNIT_VIKING_SWORDMAN,true,220,6,1,1.5,75,6,4,false,24,0.5,AXEMAN,minifolks/MinifolksVikings/MiniVikingSwordman/no_outline,3.0,,VIKINGS,KNIGHT
+viking_berserker,UNIT_VIKING_BERSERKER,true,100,15,1,0.9,115,0,3,false,24,0.45,SOLDIER,minifolks/MinifolksVikings/MiniVikingBerserker/no_outline,3.0,,VIKINGS,WARRIOR
+viking_spearman,UNIT_VIKING_SPEARMAN,true,110,12,1,1.05,95,2,3,false,24,0.5,LANCER,minifolks/MinifolksVikings/MiniVikingSpearman/no_outline,3.0,,VIKINGS,SPEARMAN
+viking_horseman,UNIT_VIKING_HORSEMAN,true,100,13,1,0.95,200,1,4,false,24,0.45,LANCER,minifolks/MinifolksVikings/MiniVikingHorseman/no_outline,3.0,,VIKINGS,RIDER
+viking_archer,UNIT_VIKING_ARCHER,true,70,13,4,0.9,100,0,3,true,24,0.6,ARCHER,minifolks/MinifolksVikings/MiniVikingArcher/no_outline,3.0,,VIKINGS,ARCHER
+viking_jarl,UNIT_VIKING_JARL,true,180,9,1,1.2,85,4,4,false,24,0.5,TEMPLAR,minifolks/MinifolksVikings/MiniVikingJarl/no_outline,3.0,,VIKINGS,GENERAL
+bear_warrior,UNIT_BEAR_WARRIOR,true,240,6,1,1.5,72,6,4,false,24,0.5,AXEMAN,minifolks/MiniBeastmens/MiniBearWarrior/no_outline,3.0,,BEASTMEN,KNIGHT
+fox_swordsman,UNIT_FOX_SWORDSMAN,true,90,15,1,0.85,125,0,3,false,24,0.45,SWORDSMAN,minifolks/MiniBeastmens/MiniFoxSwordsman/no_outline,3.0,,BEASTMEN,WARRIOR
+panda_warrior,UNIT_PANDA_WARRIOR,true,120,11,1,1.1,90,2,3,false,24,0.5,LANCER,minifolks/MiniBeastmens/MiniPandaWarrior/no_outline,3.0,,BEASTMEN,SPEARMAN
+wolf_pathfinder,UNIT_WOLF_PATHFINDER,true,75,13,4,0.9,110,0,3,true,24,0.6,ARCHER,minifolks/MiniBeastmens/MiniWolfPathfinder/no_outline,3.0,,BEASTMEN,ARCHER
+cat_robber,UNIT_CAT_ROBBER,true,75,16,1,0.7,140,0,3,false,24,0.4,SWORDSMAN,minifolks/MiniBeastmens/MiniCatRobber/no_outline,3.0,,BEASTMEN,ASSASSIN
+rabbit_wizard,UNIT_RABBIT_WIZARD,true,70,11,4,1.0,95,0,4,true,24,0.6,WIZARD,minifolks/MiniBeastmens/MiniRabbitWizard/no_outline,3.0,,BEASTMEN,MAGE
+deer_druid,UNIT_DEER_DRUID,true,85,5,3,1.2,95,0,3,true,24,0.6,PRIEST,minifolks/MiniBeastmens/MiniDeerDruid/no_outline,3.0,,BEASTMEN,PRIEST
+lion_knight,UNIT_LION_KNIGHT,true,180,9,1,1.25,90,4,4,false,24,0.5,TEMPLAR,minifolks/MiniBeastmens/MiniLionKnight/no_outline,3.0,,BEASTMEN,GENERAL
+fire_prince,UNIT_FIRE_PRINCE,true,210,7,1,1.45,75,5,4,false,24,0.5,AXEMAN,minifolks/MiniOrderOfTheFire/MiniFirePrince/no_outline,3.0,,ORDER_OF_THE_FIRE,KNIGHT
+fire_warrior,UNIT_FIRE_WARRIOR,true,100,13,1,0.95,108,1,3,false,24,0.45,SOLDIER,minifolks/MiniOrderOfTheFire/MiniFireWarrior/no_outline,3.0,,ORDER_OF_THE_FIRE,WARRIOR
+fire_mage,UNIT_FIRE_MAGE,true,70,12,4,1.0,95,0,4,true,24,0.6,WIZARD,minifolks/MiniOrderOfTheFire/MiniFireMage/no_outline,3.0,,ORDER_OF_THE_FIRE,MAGE
+fire_priestess,UNIT_FIRE_PRIESTESS,true,85,6,3,1.2,95,0,3,true,24,0.6,PRIEST,minifolks/MiniOrderOfTheFire/MiniFirePriestess/no_outline,3.0,,ORDER_OF_THE_FIRE,PRIEST
+fire_princess,UNIT_FIRE_PRINCESS,true,180,9,1,1.25,85,4,4,false,24,0.5,TEMPLAR,minifolks/MiniOrderOfTheFire/MiniFirePrincess/no_outline,3.0,,ORDER_OF_THE_FIRE,GENERAL
+dark_elf_guard,UNIT_DARK_ELF_GUARD,true,200,6,1,1.45,75,6,4,false,24,0.5,AXEMAN,minifolks/MiniDarkElves/MiniDarkElfGuard/no_outline,3.0,,DARK_ELVES,KNIGHT
+dark_elf_swordsman,UNIT_DARK_ELF_SWORDSMAN,true,95,14,1,0.9,115,0,3,false,24,0.45,SWORDSMAN,minifolks/MiniDarkElves/MiniDarkElfSwordsman/no_outline,3.0,,DARK_ELVES,WARRIOR
+dark_elf_rider,UNIT_DARK_ELF_RIDER,true,95,14,1,0.95,200,1,4,false,24,0.45,LANCER,minifolks/MiniDarkElves/MiniDarkElfRider/no_outline,3.0,,DARK_ELVES,RIDER
+dark_elf_archer,UNIT_DARK_ELF_ARCHER,true,68,14,4,0.9,100,0,3,true,24,0.6,ARCHER,minifolks/MiniDarkElves/MiniDarkElfArcher/no_outline,3.0,,DARK_ELVES,ARCHER
+dark_elf_assassin,UNIT_DARK_ELF_ASSASSIN,true,72,17,1,0.7,140,0,3,false,24,0.4,SWORDSMAN,minifolks/MiniDarkElves/MiniDarkElfAssassin/no_outline,3.0,,DARK_ELVES,ASSASSIN
+dark_elf_wizard,UNIT_DARK_ELF_WIZARD,true,68,12,4,1.0,95,0,4,true,24,0.6,WIZARD,minifolks/MiniDarkElves/MiniDarkElfWizard/no_outline,3.0,,DARK_ELVES,MAGE
+dark_elf_sorceress,UNIT_DARK_ELF_SORCERESS,true,82,6,3,1.15,95,0,3,true,24,0.6,PRIEST,minifolks/MiniDarkElves/MiniDarkElfSorceress/no_outline,3.0,,DARK_ELVES,PRIEST
+dark_elf_spellstealer,UNIT_DARK_ELF_SPELLSTEALER,true,170,9,1,1.2,85,3,4,false,24,0.5,TEMPLAR,minifolks/MiniDarkElves/MiniDarkElfSpellstealer/no_outline,3.0,,DARK_ELVES,GENERAL
+goblin,UNIT_GOBLIN,false,40,7,1,0.9,120,0,0,false,24,0.4,SOLDIER,minifolks/MinifolksOrcs/MiniGoblin/no_outline,3.0,,ORCS,WARRIOR
+goblin_thief,UNIT_GOBLIN_THIEF,false,45,9,1,0.85,150,0,0,false,24,0.4,SWORDSMAN,minifolks/MinifolksOrcs/MiniGoblinThief/no_outline,3.0,,ORCS,ASSASSIN
+orc,UNIT_ORC,false,80,11,1,0.9,110,0,0,false,24,0.5,SOLDIER,minifolks/MinifolksOrcs/MiniOrc/no_outline,3.0,,ORCS,WARRIOR
+orc_axe_thrower,UNIT_ORC_AXE_THROWER,false,70,12,4,0.9,95,0,0,true,24,0.6,ARCHER,minifolks/MinifolksOrcs/MiniOrcAxeThrower/no_outline,3.0,,ORCS,ARCHER
+orc_berserker,UNIT_ORC_BERSERKER,false,90,14,1,0.85,120,0,0,false,24,0.45,SOLDIER,minifolks/MinifolksOrcs/MiniOrcBerserker/no_outline,3.0,,ORCS,WARRIOR
+orc_veteran,UNIT_ORC_VETERAN,false,130,11,1,1.0,95,4,0,false,24,0.5,SOLDIER,minifolks/MinifolksOrcs/MiniOrcVeteran/no_outline,3.0,,ORCS,WARRIOR
+orc_warchief,UNIT_ORC_WARCHIEF,false,160,10,1,1.2,90,3,0,false,24,0.5,TEMPLAR,minifolks/MinifolksOrcs/MiniOrcWarChief/no_outline,3.0,,ORCS,GENERAL
+orc_warrior,UNIT_ORC_WARRIOR,false,110,12,1,0.95,105,2,0,false,24,0.45,SOLDIER,minifolks/MinifolksOrcs/MiniOrcWarrior/no_outline,3.0,,ORCS,WARRIOR
+warg_rider,UNIT_WARG_RIDER,false,100,13,1,0.95,190,1,0,false,24,0.45,LANCER,minifolks/MinifolksOrcs/MiniWargRider/no_outline,3.0,,ORCS,RIDER
+wolf_rider,UNIT_WOLF_RIDER,false,95,13,1,0.9,200,1,0,false,24,0.45,LANCER,minifolks/MinifolksOrcs/MiniWolfRider/no_outline,3.0,,ORCS,RIDER
+skeleton,UNIT_SKELETON,false,55,9,1,1.0,100,0,0,false,24,0.4,SOLDIER,minifolks/MinifolksUndead/MiniSkeleton/no_outline,3.0,,UNDEAD,WARRIOR
+skeleton_archer,UNIT_SKELETON_ARCHER,false,55,11,4,0.85,100,0,0,true,24,0.6,ARCHER,minifolks/MinifolksUndead/MiniSkeletonArcher/no_outline,3.0,,UNDEAD,ARCHER
+zombie,UNIT_ZOMBIE,false,120,8,1,1.3,75,3,0,false,24,0.5,SOLDIER,minifolks/MinifolksUndead/MiniZombie/no_outline,3.0,,UNDEAD,WARRIOR
+zombie_butcher,UNIT_ZOMBIE_BUTCHER,false,140,12,1,1.2,80,3,0,false,24,0.5,SOLDIER,minifolks/MinifolksUndead/MiniZombieButcher/no_outline,3.0,,UNDEAD,WARRIOR
+ghost,UNIT_GHOST,false,80,10,1,0.95,110,0,0,false,24,0.45,SWORDSMAN,minifolks/MinifolksUndead/MiniGhost/no_outline,3.0,,UNDEAD,ASSASSIN
+reaper,UNIT_REAPER,false,90,15,1,0.8,135,0,0,false,24,0.4,SWORDSMAN,minifolks/MinifolksUndead/MiniReaper/no_outline,3.0,,UNDEAD,ASSASSIN
+necromancer,UNIT_NECROMANCER,false,75,9,4,1.1,90,0,0,true,24,0.6,WIZARD,minifolks/MinifolksUndead/MiniNecromancer/no_outline,3.0,,UNDEAD,MAGE
+lich,UNIT_LICH,false,90,12,4,1.0,90,0,0,true,24,0.6,WIZARD,minifolks/MinifolksUndead/MiniLich/no_outline,3.0,,UNDEAD,MAGE
+death_knight,UNIT_DEATH_KNIGHT,false,170,10,1,1.2,85,5,0,false,24,0.5,KNIGHT,minifolks/MinifolksUndead/MiniDeathKnight/no_outline,3.0,,UNDEAD,KNIGHT
+dread_knight,UNIT_DREAD_KNIGHT,false,220,12,1,1.25,80,6,0,false,24,0.5,KNIGHT,minifolks/MinifolksUndead/MiniDreadKnight/no_outline,3.0,,UNDEAD,KNIGHT
+imp,UNIT_IMP,false,45,8,1,0.85,130,0,0,false,24,0.4,SOLDIER,minifolks/MinifolksDemons/MiniImp/no_outline,3.0,,DEMONS,WARRIOR
+fire_imp,UNIT_FIRE_IMP,false,50,10,4,0.85,120,0,0,true,24,0.6,ARCHER,minifolks/MinifolksDemons/MiniFireImp/no_outline,3.0,,DEMONS,ARCHER
+clawed_demon,UNIT_CLAWED_DEMON,false,100,12,1,0.9,110,1,0,false,24,0.45,SOLDIER,minifolks/MinifolksDemons/MiniClawedDemon/no_outline,3.0,,DEMONS,WARRIOR
+demoness,UNIT_DEMONESS,false,80,12,4,1.0,95,0,0,true,24,0.6,WIZARD,minifolks/MinifolksDemons/MiniDemoness/no_outline,3.0,,DEMONS,MAGE
+succubus,UNIT_SUCCUBUS,false,80,11,1,0.9,120,0,0,false,24,0.45,SWORDSMAN,minifolks/MinifolksDemons/MiniSuccubus/no_outline,3.0,,DEMONS,ASSASSIN
+demon_tormentor,UNIT_DEMON_TORMENTOR,false,150,11,1,1.0,90,4,0,false,24,0.5,KNIGHT,minifolks/MinifolksDemons/MiniDemonTormentor/no_outline,3.0,,DEMONS,KNIGHT
+demon_fire_keeper,UNIT_DEMON_FIRE_KEEPER,false,80,13,4,1.05,90,0,0,true,24,0.6,WIZARD,minifolks/MinifolksDemons/MiniDemonFireKeeper/no_outline,3.0,,DEMONS,MAGE
+demon_fire_thrower,UNIT_DEMON_FIRE_THROWER,false,75,13,4,0.9,95,0,0,true,24,0.6,ARCHER,minifolks/MinifolksDemons/MiniDemonFireThrower/no_outline,3.0,,DEMONS,ARCHER
+high_demon,UNIT_HIGH_DEMON,false,180,14,1,1.1,90,4,0,false,24,0.5,KNIGHT,minifolks/MinifolksDemons/MiniHighDemon/no_outline,3.0,,DEMONS,KNIGHT
+demon_lord,UNIT_DEMON_LORD,false,260,14,1,1.2,80,5,0,false,24,0.5,TEMPLAR,minifolks/MinifolksDemons/MiniDemonLord/no_outline,3.0,,DEMONS,GENERAL

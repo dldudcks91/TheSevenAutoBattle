@@ -21,7 +21,7 @@ anchor_bottom = 0.0
 offset_left = 672.0
 offset_top = 220.0
 offset_right = 952.0
-offset_bottom = 700.0
+offset_bottom = 540.0
 grow_horizontal = 1
 grow_vertical = 1
 
@@ -42,8 +42,13 @@ theme_override_constants/separation = 12
 
 [node name="NameLbl" type="Label" parent="Panel/Margin/VBox/Header"]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
+
+[node name="TagsBox" type="HBoxContainer" parent="Panel/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 6
 
 [node name="JobLbl" type="Label" parent="Panel/Margin/VBox/Header"]
 layout_mode = 2
@@ -72,40 +77,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 
 [node name="SkillDesc" type="Label" parent="Panel/Margin/VBox/SkillBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-autowrap_mode = 2
-
-[node name="HSep3" type="HSeparator" parent="Panel/Margin/VBox"]
-layout_mode = 2
-
-[node name="SkillBox2" type="VBoxContainer" parent="Panel/Margin/VBox"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 64)
-theme_override_constants/separation = 4
-
-[node name="SkillName2" type="Label" parent="Panel/Margin/VBox/SkillBox2"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-
-[node name="SkillDesc2" type="Label" parent="Panel/Margin/VBox/SkillBox2"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-autowrap_mode = 2
-
-[node name="HSep4" type="HSeparator" parent="Panel/Margin/VBox"]
-layout_mode = 2
-
-[node name="SkillBox3" type="VBoxContainer" parent="Panel/Margin/VBox"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 64)
-theme_override_constants/separation = 4
-
-[node name="SkillName3" type="Label" parent="Panel/Margin/VBox/SkillBox3"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-
-[node name="SkillDesc3" type="Label" parent="Panel/Margin/VBox/SkillBox3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 autowrap_mode = 2

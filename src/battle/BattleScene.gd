@@ -4,8 +4,8 @@ extends Node2D
 # Soldier(좌) vs Orc(우) 자동 전투.
 
 const UNIT_SCENE: PackedScene = preload("res://src/battle/Unit.tscn")
-const SOLDIER_DATA: UnitData = preload("res://assets/data/units/allies/soldier.tres")
-const ORC_DATA: UnitData = preload("res://assets/data/units/enemies/orc.tres")
+const SOLDIER_DATA: BattleUnitData = preload("res://assets/data/units/allies/soldier.tres")
+const ORC_DATA: BattleUnitData = preload("res://assets/data/units/enemies/orc.tres")
 
 const ARENA_Y: float = 420.0
 const ALLY_X: float = 400.0
@@ -17,7 +17,7 @@ func _ready() -> void:
 	_spawn(ORC_DATA, Vector2(ENEMY_X, ARENA_Y))
 
 
-func _spawn(data: UnitData, pos: Vector2) -> Unit:
+func _spawn(data: BattleUnitData, pos: Vector2) -> Unit:
 	var unit: Unit = UNIT_SCENE.instantiate()
 	add_child(unit)
 	unit.global_position = pos

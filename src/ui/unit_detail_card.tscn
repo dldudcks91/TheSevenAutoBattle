@@ -32,6 +32,10 @@ layout_mode = 2
 text = "—"
 theme_override_font_sizes/font_size = 18
 
+[node name="TagsBox" type="HBoxContainer" parent="Margin/HBox/Info"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
 [node name="HpBarBg" type="ColorRect" parent="Margin/HBox/Info"]
 custom_minimum_size = Vector2(200, 10)
 layout_mode = 2

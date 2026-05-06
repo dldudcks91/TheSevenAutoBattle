@@ -72,3 +72,84 @@ STAT_HP,체력,HP
 STAT_ATK,공격력,ATK
 STAT_DEFENSE,방어력,Defense
 STAT_ATTACK_SPEED,공격속도,Atk Speed
+UNIT_SHIELD_MAN,방패병,Shield Man
+UNIT_SWORD_MAN,검사,Sword Man
+UNIT_SPEAR_MAN,창병,Spear Man
+UNIT_CAVALIER_MAN,중장 기사,Cavalier
+UNIT_ARCHER_MAN,궁수,Archer
+UNIT_MAGE,마법사,Mage
+UNIT_ARCH_MAGE,대마법사,Arch Mage
+UNIT_KING_MAN,왕,King
+UNIT_VIKING_SWORDMAN,바이킹 검사,Viking Swordman
+UNIT_VIKING_BERSERKER,바이킹 광전사,Viking Berserker
+UNIT_VIKING_SPEARMAN,바이킹 창병,Viking Spearman
+UNIT_VIKING_HORSEMAN,바이킹 기마병,Viking Horseman
+UNIT_VIKING_ARCHER,바이킹 궁수,Viking Archer
+UNIT_VIKING_JARL,바이킹 수장,Viking Jarl
+UNIT_BEAR_WARRIOR,곰 전사,Bear Warrior
+UNIT_FOX_SWORDSMAN,여우 검사,Fox Swordsman
+UNIT_PANDA_WARRIOR,판다 전사,Panda Warrior
+UNIT_WOLF_PATHFINDER,늑대 추적자,Wolf Pathfinder
+UNIT_CAT_ROBBER,고양이 도둑,Cat Robber
+UNIT_RABBIT_WIZARD,토끼 마법사,Rabbit Wizard
+UNIT_DEER_DRUID,사슴 드루이드,Deer Druid
+UNIT_LION_KNIGHT,사자 기사,Lion Knight
+UNIT_FIRE_PRINCE,화염 왕자,Fire Prince
+UNIT_FIRE_WARRIOR,화염 전사,Fire Warrior
+UNIT_FIRE_MAGE,화염술사,Fire Mage
+UNIT_FIRE_PRIESTESS,화염 여사제,Fire Priestess
+UNIT_FIRE_PRINCESS,화염 공주,Fire Princess
+UNIT_DARK_ELF_GUARD,다크엘프 호위병,Dark Elf Guard
+UNIT_DARK_ELF_SWORDSMAN,다크엘프 검사,Dark Elf Swordsman
+UNIT_DARK_ELF_RIDER,다크엘프 기마병,Dark Elf Rider
+UNIT_DARK_ELF_ARCHER,다크엘프 궁수,Dark Elf Archer
+UNIT_DARK_ELF_ASSASSIN,다크엘프 암살자,Dark Elf Assassin
+UNIT_DARK_ELF_WIZARD,다크엘프 마법사,Dark Elf Wizard
+UNIT_DARK_ELF_SORCERESS,다크엘프 여사제,Dark Elf Sorceress
+UNIT_DARK_ELF_SPELLSTEALER,다크엘프 마법강탈자,Dark Elf Spellstealer
+UNIT_GOBLIN,고블린,Goblin
+UNIT_GOBLIN_THIEF,고블린 도둑,Goblin Thief
+UNIT_ORC_AXE_THROWER,오크 도끼투척병,Orc Axe Thrower
+UNIT_ORC_BERSERKER,오크 광전사,Orc Berserker
+UNIT_ORC_VETERAN,오크 정예병,Orc Veteran
+UNIT_ORC_WARCHIEF,오크 부족장,Orc Warchief
+UNIT_ORC_WARRIOR,오크 전사,Orc Warrior
+UNIT_WARG_RIDER,와르그 기수,Warg Rider
+UNIT_WOLF_RIDER,늑대 기수,Wolf Rider
+UNIT_ZOMBIE,좀비,Zombie
+UNIT_ZOMBIE_BUTCHER,좀비 도살자,Zombie Butcher
+UNIT_GHOST,유령,Ghost
+UNIT_REAPER,사신,Reaper
+UNIT_NECROMANCER,강령술사,Necromancer
+UNIT_LICH,리치,Lich
+UNIT_DEATH_KNIGHT,죽음의 기사,Death Knight
+UNIT_DREAD_KNIGHT,공포의 기사,Dread Knight
+UNIT_IMP,임프,Imp
+UNIT_FIRE_IMP,화염 임프,Fire Imp
+UNIT_CLAWED_DEMON,발톱 데몬,Clawed Demon
+UNIT_DEMONESS,여데몬,Demoness
+UNIT_SUCCUBUS,서큐버스,Succubus
+UNIT_DEMON_TORMENTOR,고문 데몬,Demon Tormentor
+UNIT_DEMON_FIRE_KEEPER,화염 수호자,Demon Fire Keeper
+UNIT_DEMON_FIRE_THROWER,화염 투척병,Demon Fire Thrower
+UNIT_HIGH_DEMON,상위 데몬,High Demon
+UNIT_DEMON_LORD,데몬 군주,Demon Lord
+RACE_HUMANS,인간,Humans
+RACE_VIKINGS,바이킹,Vikings
+RACE_BEASTMEN,수인족,Beastmen
+RACE_ORDER_OF_THE_FIRE,화염교단,Order of the Fire
+RACE_DARK_ELVES,다크엘프,Dark Elves
+RACE_ORCS,오크,Orcs
+RACE_UNDEAD,언데드,Undead
+RACE_DEMONS,데몬,Demons
+CLASS_KNIGHT,기사,Knight
+CLASS_WARRIOR,전사,Warrior
+CLASS_SPEARMAN,창병,Spearman
+CLASS_RIDER,기마,Rider
+CLASS_ARCHER,궁수,Archer
+CLASS_ASSASSIN,암살자,Assassin
+CLASS_MAGE,마법사,Mage
+CLASS_PRIEST,사제,Priest
+CLASS_GENERAL,지휘관,General
+SYNERGY_HEADER_CLASS,직업,Class
+SYNERGY_HEADER_RACE,종족,Race

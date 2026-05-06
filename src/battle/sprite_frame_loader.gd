@@ -7,8 +7,8 @@ class_name SpriteFrameLoader
 const ANIMS := {
 	"idle":   {"folder": "Idle",     "fps": 8.0,  "loop": true},
 	"walk":   {"folder": "Walk",     "fps": 10.0, "loop": true},
-	"attack": {"folder": "Attack01", "fps": 12.0, "loop": false},
-	"hurt":   {"folder": "Hurt",     "fps": 12.0, "loop": false},
+	"attack": {"folder": "Attack01", "fps": 12.0, "loop": false, "fallbacks": ["Attack", "Attack_2"]},
+	"hurt":   {"folder": "Hurt",     "fps": 12.0, "loop": false, "fallbacks": ["Hit"]},
 	"death":  {"folder": "Death",    "fps": 8.0,  "loop": false},
 }
 
@@ -35,16 +35,27 @@ static func build(sprite_dir: String) -> SpriteFrames:
 		frames.add_animation(anim_name)
 		frames.set_animation_speed(anim_name, conf.fps)
 		frames.set_animation_loop(anim_name, conf.loop)
-		var folder: String = overrides.get(anim_name, conf.folder)
-		_load_frames_into(frames, anim_name, sprite_dir, folder)
+		var primary: String = overrides.get(anim_name, conf.folder)
+		var candidates: Array[String] = [primary]
+		var fallbacks: Array = conf.get("fallbacks", [])
+		for fb in fallbacks:
+			candidates.append(String(fb))
+		_load_frames_into(frames, anim_name, sprite_dir, candidates)
 
 	return frames
 
-static func _load_frames_into(frames: SpriteFrames, anim: StringName, sprite_dir: String, folder: String) -> void:
-	var dir_path := "res://assets/units/%s/%s" % [sprite_dir, folder]
-	var dir := DirAccess.open(dir_path)
+static func _load_frames_into(frames: SpriteFrames, anim: StringName, sprite_dir: String, folder_candidates: Array[String]) -> void:
+	var dir_path: String = ""
+	var dir: DirAccess = null
+	for candidate in folder_candidates:
+		var p := "res://assets/units/%s/%s" % [sprite_dir, candidate]
+		var d := DirAccess.open(p)
+		if d != null:
+			dir_path = p
+			dir = d
+			break
 	if dir == null:
-		push_warning("SpriteFrameLoader: missing %s" % dir_path)
+		push_warning("SpriteFrameLoader: missing %s/{%s}" % [sprite_dir, ",".join(folder_candidates)])
 		return
 
 	var pngs: Array[String] = []

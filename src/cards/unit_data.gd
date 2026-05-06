@@ -16,6 +16,10 @@ var body_radius: float = 22.0
 var hit_frame_ratio: float = 0.4  # damage applies at this fraction through the attack animation
 var job: GameEnums.Job = GameEnums.Job.SOLDIER
 
+# 시너지 시스템 — units.csv 의 class / race 컬럼.
+var unit_class: GameEnums.Class = GameEnums.Class.WARRIOR
+var race: GameEnums.Race = GameEnums.Race.HUMANS
+
 # Sprite folder name under res://assets/units/. Animations expected:
 # Idle, Walk, Attack01, Hurt, Death (frames named "{sprite_dir}-{Anim}_NN.png")
 var sprite_dir: String = "Soldier"
@@ -40,6 +44,13 @@ static func from_row(row: Dictionary) -> UnitData:
 	d.body_radius = float(row["body_radius"])
 	d.hit_frame_ratio = float(row["hit_frame_ratio"])
 	d.job = GameEnums.Job[row["job"]]
+	# 신규 시너지 컬럼 — 누락 시 합리적 기본값.
+	var class_str: String = String(row.get("class", "WARRIOR")).strip_edges()
+	if class_str != "" and class_str in GameEnums.Class:
+		d.unit_class = GameEnums.Class[class_str]
+	var race_str: String = String(row.get("race", "HUMANS")).strip_edges()
+	if race_str != "" and race_str in GameEnums.Race:
+		d.race = GameEnums.Race[race_str]
 	d.sprite_dir = row["sprite_dir"]
 	d.sprite_scale = float(row["sprite_scale"])
 	var skill_id: String = String(row.get("default_skill_id", "")).strip_edges()

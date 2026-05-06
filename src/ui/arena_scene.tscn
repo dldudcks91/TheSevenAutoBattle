@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://ccvrnromi562s"]
 
-[ext_resource type="Script" path="res://src/ui/arena_scene.gd" id="1_arena"]
 [ext_resource type="Script" uid="uid://cqbyiqrwj5w0s" path="res://src/ui/placement_zone.gd" id="2_pzone"]
 [ext_resource type="Script" uid="uid://cquqkr0r3ab0b" path="res://src/battle/grid_overlay.gd" id="3_grid"]
 [ext_resource type="PackedScene" uid="uid://3g3donq82lyd" path="res://src/ui/unit_info_hud.tscn" id="4_hud"]
@@ -14,7 +13,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("5_theme")
-script = ExtResource("1_arena")
 
 [node name="Backdrop" type="ColorRect" parent="." unique_id=760350215]
 layout_mode = 1
@@ -87,8 +85,6 @@ editor_only = false
 visible = false
 position = Vector2(24, 120)
 script = ExtResource("3_grid")
-width = 1872
-height = 630
 
 [node name="BattleLayer" type="Node2D" parent="." unique_id=1889001587]
 

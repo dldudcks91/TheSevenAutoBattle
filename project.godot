@@ -25,6 +25,7 @@ RunState="*res://src/economy/run_state.gd"
 ItemDB="*res://src/data/items/item_db.gd"
 UnitDB="*res://src/data/units/unit_db.gd"
 SkillDB="*res://src/data/skills/skill_db.gd"
+SynergyDB="*res://src/data/synergy_db.gd"
 
 [display]
 

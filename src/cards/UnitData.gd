@@ -1,5 +1,8 @@
-class_name UnitData
+class_name BattleUnitData
 extends Resource
+
+# .tres 기반 신규 유닛 데이터 (M2 1v1 검증용 BattleScene이 사용).
+# 메인 게임은 csv 기반 unit_data.gd (RefCounted) 사용 — 이 두 시스템은 분리.
 
 enum Team { ALLY = 0, ENEMY = 1 }
 

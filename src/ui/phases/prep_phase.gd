@@ -54,6 +54,7 @@ var _enemy_info_popup: HeroInfoPopup = null  # 같은 스크립트, 다른 위�
 var _card_info_popup: CardInfoPopup = null
 var _coord_mapper: PrepCoordMapper = null
 var _item_drop_zone: ItemDropZone = null
+var _synergy_panel: SynergyPanel = null
 
 func bind_shell(s: Dictionary) -> void:
 	shell = s
@@ -84,6 +85,7 @@ func _ready() -> void:
 	_spawn_hero_info_popup()
 	_spawn_enemy_info_popup()
 	_spawn_card_info_popup()
+	_spawn_synergy_panel()
 	_build_bottom_bar()
 	_build_hand()
 	_build_item_slot()
@@ -514,7 +516,19 @@ func _make_hand_portrait(unit_data: UnitData) -> Control:
 	holder.add_child(sprite)
 	return holder
 
+func _spawn_synergy_panel() -> void:
+	_synergy_panel = SynergyPanel.new()
+	add_child(_synergy_panel)
+	# arena_root의 PlayerZone 좌측 위쪽 — TopBar 아래 마진.
+	_synergy_panel.position = Vector2(12, 96)
+	_synergy_panel.update_from_grid(RunState.grid_cells)
+
+func _refresh_synergy_panel() -> void:
+	if _synergy_panel != null:
+		_synergy_panel.update_from_grid(RunState.grid_cells)
+
 func _refresh_hand_state() -> void:
+	_refresh_synergy_panel()
 	var remaining: int = _gold_remaining()
 	for i in _hand_cards.size():
 		var card: Button = _hand_cards[i] as Button

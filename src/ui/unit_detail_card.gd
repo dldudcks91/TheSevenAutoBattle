@@ -14,6 +14,7 @@ const HP_FG_COLOR := Color(0.3, 0.85, 0.4)
 
 @onready var _portrait: TextureRect = $Margin/HBox/Portrait
 @onready var _name_lbl: Label = $Margin/HBox/Info/NameLabel
+@onready var _tags_box: HBoxContainer = $Margin/HBox/Info/TagsBox
 @onready var _hp_bar_bg: ColorRect = $Margin/HBox/Info/HpBarBg
 @onready var _hp_bar_fg: ColorRect = $Margin/HBox/Info/HpBarBg/HpBarFg
 @onready var _hp_lbl: Label = $Margin/HBox/Info/HpLabel
@@ -36,8 +37,19 @@ func bind_unit(u: Unit) -> void:
 	_unit = u
 	_portrait.texture = _get_portrait(u.data.sprite_dir)
 	_name_lbl.text = tr(u.data.name_key)
+	_rebuild_tags(u.data)
 	visible = true
 	_refresh()
+
+func _rebuild_tags(ud: UnitData) -> void:
+	for c in _tags_box.get_children():
+		c.queue_free()
+	var row: HBoxContainer = SynergyChip.make_row_for(ud)
+	while row.get_child_count() > 0:
+		var chip: Node = row.get_child(0)
+		row.remove_child(chip)
+		_tags_box.add_child(chip)
+	row.queue_free()
 
 func clear() -> void:
 	_unit = null

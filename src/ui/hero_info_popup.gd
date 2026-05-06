@@ -18,13 +18,10 @@ const _STAR_COLOR := Color(1.0, 0.85, 0.0)
 
 @onready var _name_lbl: Label = $Panel/Margin/VBox/Header/NameLbl
 @onready var _job_lbl: Label = $Panel/Margin/VBox/Header/JobLbl
+@onready var _tags_box: HBoxContainer = $Panel/Margin/VBox/TagsBox
 @onready var _stat_grid: GridContainer = $Panel/Margin/VBox/StatGrid
 @onready var _skill_name_lbl: Label = $Panel/Margin/VBox/SkillBox/SkillName
 @onready var _skill_desc_lbl: Label = $Panel/Margin/VBox/SkillBox/SkillDesc
-@onready var _skill_name2_lbl: Label = $Panel/Margin/VBox/SkillBox2/SkillName2
-@onready var _skill_desc2_lbl: Label = $Panel/Margin/VBox/SkillBox2/SkillDesc2
-@onready var _skill_name3_lbl: Label = $Panel/Margin/VBox/SkillBox3/SkillName3
-@onready var _skill_desc3_lbl: Label = $Panel/Margin/VBox/SkillBox3/SkillDesc3
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE  # 루트는 입력을 통과시켜야 그리드/핸드 클릭이 가능.
@@ -46,10 +43,9 @@ func show_for(slot: RosterSlot, boosts: Dictionary = {}, inventory: Array = []) 
 	else:
 		_job_lbl.text = ""
 	var item_bonuses: Dictionary = _compute_item_bonuses(slot, inventory)
+	_rebuild_tags(ud)
 	_fill_stat_grid(ud, boosts, item_bonuses)
 	_fill_skill(ud.default_skill_id)
-	_fill_empty_skill_slot(_skill_name2_lbl, _skill_desc2_lbl)
-	_fill_empty_skill_slot(_skill_name3_lbl, _skill_desc3_lbl)
 	show()
 
 # 적 유닛처럼 RosterSlot 없이 UnitData만으로 패널을 띄울 때 사용한다.
@@ -60,11 +56,20 @@ func show_for_unit_data(ud: UnitData) -> void:
 		return
 	_name_lbl.text = tr(ud.name_key)
 	_job_lbl.text = ""
+	_rebuild_tags(ud)
 	_fill_stat_grid(ud, {}, {})
 	_fill_skill(ud.default_skill_id)
-	_fill_empty_skill_slot(_skill_name2_lbl, _skill_desc2_lbl)
-	_fill_empty_skill_slot(_skill_name3_lbl, _skill_desc3_lbl)
 	show()
+
+func _rebuild_tags(ud: UnitData) -> void:
+	for c in _tags_box.get_children():
+		c.queue_free()
+	var row: HBoxContainer = SynergyChip.make_row_for(ud)
+	while row.get_child_count() > 0:
+		var chip: Node = row.get_child(0)
+		row.remove_child(chip)
+		_tags_box.add_child(chip)
+	row.queue_free()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
@@ -170,11 +175,6 @@ func _fill_skill(skill_id: StringName) -> void:
 		return
 	_skill_name_lbl.text = tr(sd.name_key)
 	_skill_desc_lbl.text = tr(sd.desc_key)
-
-func _fill_empty_skill_slot(name_lbl: Label, desc_lbl: Label) -> void:
-	name_lbl.text = "—"
-	name_lbl.add_theme_color_override("font_color", _MUTED)
-	desc_lbl.text = ""
 
 func _job_key(job: int) -> StringName:
 	match job:
