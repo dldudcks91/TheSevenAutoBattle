@@ -31,10 +31,10 @@ func cell_origin(cell_idx: int) -> Vector2:
 func cell_center(cell_idx: int) -> Vector2:
 	return cell_origin(cell_idx) + cell_size() * 0.5
 
-# 셀 내부 사분면(2×2) 중심까지의 상대 오프셋.
+# 셀 내부 서브그리드 중심까지의 상대 오프셋. SUB_GRID_COLS x SUB_GRID_ROWS 차원에 일반화.
 # count == 1 → 중심(원점)에 단일 큰 토큰.
-# count 2~4  → 사분면 0=좌상, 1=우상, 2=좌하, 3=우하 순으로 채움.
-# count > 4  → 5번째부터는 사분면을 다시 순회하며 작은 지터를 더해 시각적으로 겹치지 않게.
+# count 2~CAPACITY → 슬롯 순서대로 서브셀 중심에 채움.
+# count > CAPACITY → 같은 슬롯을 다시 순회하며 작은 지터로 겹침 방지.
 func sub_cell_offset(idx: int, total: int, cs: Vector2) -> Vector2:
 	if total <= 1:
 		return Vector2.ZERO
@@ -42,10 +42,10 @@ func sub_cell_offset(idx: int, total: int, cs: Vector2) -> Vector2:
 	var layer: int = idx / SUB_GRID_CAPACITY
 	var col: int = slot % SUB_GRID_COLS
 	var row: int = slot / SUB_GRID_COLS
-	# 사분면 중심 = 셀 중심에서 ±cell_size/4.
-	var qx: float = (-0.25 + float(col) * 0.5) * cs.x
-	var qy: float = (-0.25 + float(row) * 0.5) * cs.y
-	# layer >= 1 (5번째 이상)은 같은 사분면 안쪽에서 시계방향으로 약간 비틀어 겹침 방지.
+	# 서브셀 중심 = 셀 중심에서 ((col+0.5)/SUB_COLS - 0.5) * 셀너비.
+	var qx: float = ((float(col) + 0.5) / float(SUB_GRID_COLS) - 0.5) * cs.x
+	var qy: float = ((float(row) + 0.5) / float(SUB_GRID_ROWS) - 0.5) * cs.y
+	# layer >= 1 (CAPACITY 초과분)은 같은 서브셀 안쪽에서 시계방향으로 약간 비틀어 겹침 방지.
 	if layer > 0:
 		var jitter_radius: float = min(cs.x, cs.y) * 0.08
 		var angle: float = float(layer) * (TAU / 8.0)

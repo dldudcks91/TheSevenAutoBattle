@@ -1,6 +1,6 @@
 ﻿extends Control
 
-# PREP phase: 셸의 PlayerZone(3x3 셀 + 배치 토큰) / EnemyZone(적 프리뷰) /
+# PREP phase: 셸의 PlayerZone(4x4 셀 + 배치 토큰) / EnemyZone(적 프리뷰) /
 # HandSlot(핸드카드) / BottomBar(돌아가기/요약/전투시작)을 채운다.
 # PlacementZone은 셸 소속이라 시그널만 연결.
 
@@ -11,8 +11,8 @@ const CardInfoPopupScript := preload("res://src/ui/card_info_popup.gd")
 # 적 토큰 클릭 판정 반경(EnemyZone 로컬 px). 토큰 사이 간격을 감안해 넉넉히.
 const _ENEMY_CLICK_RADIUS_PX: float = 60.0
 
-const GRID_COLS := 3
-const GRID_ROWS := 3
+const GRID_COLS := 4
+const GRID_ROWS := 4
 const GRID_CELLS := GRID_COLS * GRID_ROWS
 
 # 셀 내부 2×2 서브그리드 — 영웅이 누적될 때 ×N 뱃지 대신 사분면에 분산 배치.
@@ -571,16 +571,24 @@ func _render_placed() -> void:
 	for c in zone.get_children():
 		c.queue_free()
 
+	# 셀 1개 = 2×2 서브셀 (셀당 4명 누적의 4개 슬롯). 체커보드 음영으로 가시화.
+	const SUB_DARK := Color(0.16, 0.18, 0.26, 0.6)
+	const SUB_LIGHT := Color(0.22, 0.24, 0.32, 0.6)
 	for i in GRID_CELLS:
-		var rect := ColorRect.new()
-		rect.size = _coord_mapper.cell_size()
-		rect.position = _coord_mapper.cell_origin(i)
-		rect.color = Color(0.18, 0.20, 0.28, 0.6)
-		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		zone.add_child(rect)
+		var origin: Vector2 = _coord_mapper.cell_origin(i)
+		var cs: Vector2 = _coord_mapper.cell_size()
+		var sub_size: Vector2 = Vector2(cs.x / float(SUB_GRID_COLS), cs.y / float(SUB_GRID_ROWS))
+		for sx in SUB_GRID_COLS:
+			for sy in SUB_GRID_ROWS:
+				var sub_rect := ColorRect.new()
+				sub_rect.size = sub_size
+				sub_rect.position = origin + Vector2(float(sx) * sub_size.x, float(sy) * sub_size.y)
+				sub_rect.color = SUB_DARK if (sx + sy) % 2 == 0 else SUB_LIGHT
+				sub_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				zone.add_child(sub_rect)
 		var border := ReferenceRect.new()
-		border.size = rect.size
-		border.position = rect.position
+		border.size = cs
+		border.position = origin
 		border.border_color = Color(0.4, 0.42, 0.55, 0.7)
 		border.border_width = 1.0
 		border.editor_only = false
@@ -597,9 +605,15 @@ func _render_placed() -> void:
 		var cs: Vector2 = _coord_mapper.cell_size()
 		var visible: int = min(count, SUB_GRID_CAPACITY)
 		# 사분면(2×2) 중심에 배치. count==1 이면 셀 중심.
+		# y_comp: 스프라이트 중심이 발 위쪽이라 시각적으로 발이 셀 바닥에 닿도록 보정.
+		# y_lift: 유닛을 반 칸(셀 높이/2) 위로 올려 셀 라인에 발이 닿게 한다.
+		var ud0: UnitData = slot.unit_data
+		var y_comp: float = ud0.sprite_scale * TOKEN_SCALE_SOLO * 18.0
+		var y_lift: float = cs.y * 0.5
 		for k in visible:
 			var pos: Vector2 = center + _coord_mapper.sub_cell_offset(k, count, cs)
-			var token: Node = _make_field_token(slot.unit_data, pos, false)
+			pos.y += y_comp - y_lift
+			var token: Node = _make_field_token(ud0, pos, false)
 			token.name = "token_%d_%d" % [i, k]
 			zone.add_child(token)
 

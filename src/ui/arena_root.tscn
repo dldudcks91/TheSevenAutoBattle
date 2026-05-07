@@ -158,9 +158,9 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 300.0
-offset_top = 240.0
-offset_right = 660.0
-offset_bottom = 600.0
+offset_top = 180.0
+offset_right = 780.0
+offset_bottom = 660.0
 mouse_filter = 0
 script = ExtResource("2_pzone")
 

@@ -7,8 +7,8 @@ signal drag_started(from_idx: int)
 signal drag_ended
 signal cell_clicked(cell_idx: int)
 
-const GRID_COLS := 3
-const GRID_ROWS := 3
+const GRID_COLS := 4
+const GRID_ROWS := 4
 # 좌클릭 press~release 사이 이동 거리가 이 값 이하이면 "클릭", 초과면 드래그 의도로 본다.
 const CLICK_MAX_TRAVEL_PX := 6.0
 

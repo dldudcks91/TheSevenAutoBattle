@@ -1,10 +1,10 @@
 class_name DeploymentBoard
 extends RefCounted
 
-# 3x3 영구 그리드 상태와 paid/unpaid 회계.
+# 4x4 영구 그리드 상태와 paid/unpaid 회계.
 # 각 셀은 {slot: RosterSlot, paid: bool, hand_idx: int} Dictionary 배열.
 
-const GRID_CELLS_TOTAL: int = 9
+const GRID_CELLS_TOTAL: int = 16
 const MAX_UPGRADE_LEVEL: int = 3
 
 var grid_cells: Array = []
