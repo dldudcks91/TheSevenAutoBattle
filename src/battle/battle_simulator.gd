@@ -29,6 +29,7 @@ var _detail_card: UnitDetailCard = null
 var _kills: int = 0
 var _losses: int = 0
 var _round_index: int = 0  # start(plan)에서 캡처. 보상 가산은 battle_phase가 책임.
+var _joker_engine: JokerEngine = null  # 상시 조커 — 전투 이벤트를 구독 (SCENES.md §D).
 # 유닛 클릭이 처리된 프레임 — 같은 프레임의 _unhandled_input이 deselect로 덮어쓰는 것을 막는 가드.
 var _last_select_frame: int = -1
 
@@ -43,7 +44,9 @@ func start(plan: BattlePlan) -> void:
 		push_error("BattleSimulator.start: plan is null")
 		return
 	_round_index = plan.round_index
-	_spawn_player_plan(plan.player_units, player_spawn_x, plan.global_items)
+	_joker_engine = JokerEngine.new()
+	_joker_engine.setup(plan.jokers, Callable(self, "_battle_log"))
+	_spawn_player_plan(plan.player_units, player_spawn_x)
 	_spawn_enemy_lineup(plan.enemy_lineup, enemy_spawn_x, plan.enemy_positions)
 	print("[Battle] round %d start — player=%d enemy=%d" % [
 		_round_index + 1, _players.size(), _enemies.size()
@@ -59,24 +62,18 @@ func start(plan: BattlePlan) -> void:
 		if is_instance_valid(u) and u.skill_runtime != null:
 			u.skill_runtime.on_deploy()
 
-func _spawn_player_plan(plan: Array, x: float, global_items: Array = []) -> void:
+# 덱빌딩 플랜 — 각 entry = {card: Card, mods: Array[Card], position: Vector2}. 1칸 1유닛.
+func _spawn_player_plan(units: Array, fallback_x: float) -> void:
 	var row: int = 0
-	for entry in plan:
-		var slot: RosterSlot = entry["slot"] as RosterSlot
-		if slot == null or slot.unit_data == null:
+	for entry in units:
+		var card: Card = entry.get("card") as Card
+		if card == null or card.unit_data == null:
 			continue
-		var boosts: Dictionary = entry.get("boosts", {}) as Dictionary
-		var effective: EffectiveStats = EffectiveStats.from_slot_with_boosts(slot, boosts, global_items)
-		var positions: Array = entry.get("positions", []) as Array
-		if positions.is_empty():
-			var deploy_count: int = int(entry.get("count", 0))
-			for _i in deploy_count:
-				_spawn_unit_at(slot.unit_data, effective, GameEnums.Team.PLAYER, Vector2(x, spawn_top_y + spawn_row_gap * float(row)))
-				row += 1
-		else:
-			for raw_pos in positions:
-				var p: Vector2 = raw_pos as Vector2
-				_spawn_unit_at(slot.unit_data, effective, GameEnums.Team.PLAYER, p)
+		var mods: Array = entry.get("mods", []) as Array
+		var effective: EffectiveStats = EffectiveStats.from_card_with_mods(card, mods)
+		var pos: Vector2 = entry.get("position", Vector2(fallback_x, spawn_top_y + spawn_row_gap * float(row))) as Vector2
+		_spawn_unit_at(card.unit_data, effective, GameEnums.Team.PLAYER, pos)
+		row += 1
 
 func _spawn_enemy_lineup(lineup: Array, x: float, positions: Array = []) -> void:
 	var n: int = lineup.size()
@@ -139,10 +136,22 @@ func _is_alive(u) -> bool:
 func _on_unit_died(u: Unit, team: GameEnums.Team) -> void:
 	if team == GameEnums.Team.ENEMY:
 		_kills += 1
+		_emit_joker_event(GameEnums.BattleEvent.KILL, u)
 	else:
 		_losses += 1
+		_emit_joker_event(GameEnums.BattleEvent.ALLY_DEATH, u)
 	if _selected == u:
 		u.set_selected(false)
+
+# 조커는 항상 플레이어 소유이므로 allies=_players 로 전달 (처치=우리가 잡음, 사망=우리가 잃음).
+func _emit_joker_event(ev: int, subject: Unit) -> void:
+	if _joker_engine == null:
+		return
+	_joker_engine.on_event(ev, {"allies": _players, "enemies": _enemies, "subject": subject})
+
+func _battle_log(text: String) -> void:
+	# "빠르게" 최소 연출 — 조커 발동을 콘솔에 남긴다. 시각 플래시는 후속.
+	print("[Joker] %s" % text)
 
 func bind_detail_card(card: UnitDetailCard) -> void:
 	_detail_card = card

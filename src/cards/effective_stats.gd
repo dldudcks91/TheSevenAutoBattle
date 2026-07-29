@@ -55,6 +55,23 @@ static func _apply_item(s: EffectiveStats, it: ItemData) -> void:
 		ItemData.StatKey.HP:         s.max_hp     += it.value
 		ItemData.StatKey.DEFENSE:    s.defense    += it.value
 
+# 덱빌딩 모델 — 병사 카드 + 부착된 시한부 강화(mods)로 전투 스탯 산출.
+# 강화는 그 전투에만 유효하며 전투 후 카드째 회수된다 (개별 유닛 영구 누적 없음).
+static func from_card_with_mods(card: Card, mods: Array) -> EffectiveStats:
+	var s := from_unit_data(card.unit_data)
+	for m in mods:
+		var mc := m as Card
+		if mc == null:
+			continue
+		match String(mc.mod_stat):
+			"atk":          s.attack += mc.mod_amount
+			"hp":           s.max_hp += mc.mod_amount
+			"defense":      s.defense += mc.mod_amount
+			"attack_speed": s.attack_speed += mc.mod_amount
+			"move_speed":   s.move_speed += mc.mod_amount
+		# 키워드형 강화(mod_keyword)는 최소 구현에서 스탯 무영향 — 후속 확장(다단히트·흡혈 등).
+	return s
+
 # Enemies carry no items; wraps UnitData in the same interface.
 static func from_unit_data(d: UnitData) -> EffectiveStats:
 	var s := EffectiveStats.new()

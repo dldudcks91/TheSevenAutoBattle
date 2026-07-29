@@ -1,113 +1,97 @@
 class_name DeploymentBoard
 extends RefCounted
 
-# 4x4 영구 그리드 상태와 paid/unpaid 회계.
-# 각 셀은 {slot: RosterSlot, paid: bool, hand_idx: int} Dictionary 배열.
+# 덱빌딩 모델의 임시 배치판 — 3×3, 1칸 1유닛. 매 전투 초기화된다 (GAME_DESIGN §4).
+# 배치는 예산 상한 + 칸 상한이라는 이중 제약을 받는다: 칸이 다 차면 남는 예산이 강화로 밀린다.
+# paid/unpaid·영구 그리드 개념은 폐기 — 배치는 골드가 아니라 budget 만 소모한다.
+#
+# 각 셀 = null 또는 { "card": Card, "mods": Array }  (mods = 부착된 시한부 강화 카드들)
 
-const GRID_CELLS_TOTAL: int = 16
-const MAX_UPGRADE_LEVEL: int = 3
+const GRID_CELLS_TOTAL: int = 9   # 3×3
 
-var grid_cells: Array = []
-# 셀별 스탯 보정 카운트. {"atk": int, "hp": int, "defense": int} 형태.
-# 각 값은 해당 스탯에 적용된 업그레이드 횟수. 합계가 MAX_UPGRADE_LEVEL 이하여야 한다.
-var grid_cell_boosts: Array = []
+var cells: Array = []
+var budget_total: int = 10
+var budget_spent: int = 0
 
-func ensure_grid() -> void:
-	if grid_cells.size() != GRID_CELLS_TOTAL:
-		grid_cells.clear()
-		grid_cell_boosts.clear()
-		for _i in GRID_CELLS_TOTAL:
-			grid_cells.append([])
-			grid_cell_boosts.append({})
-		return
-	for i in GRID_CELLS_TOTAL:
-		if not (grid_cells[i] is Array):
-			grid_cells[i] = []
-	if grid_cell_boosts.size() != GRID_CELLS_TOTAL:
-		grid_cell_boosts.clear()
-		for _i in GRID_CELLS_TOTAL:
-			grid_cell_boosts.append({})
+# 매 전투 준비 시 판을 비우고 예산을 새로 설정.
+func reset(new_budget: int) -> void:
+	cells.clear()
+	for _i in GRID_CELLS_TOTAL:
+		cells.append(null)
+	budget_total = new_budget
+	budget_spent = 0
 
-func clear() -> void:
-	grid_cells.clear()
-	grid_cell_boosts.clear()
-	ensure_grid()
+func ensure() -> void:
+	if cells.size() != GRID_CELLS_TOTAL:
+		reset(budget_total)
 
-func get_cell_boost_count(cell_idx: int) -> int:
-	if cell_idx < 0 or cell_idx >= GRID_CELLS_TOTAL:
-		return 0
-	var total: int = 0
-	for v in grid_cell_boosts[cell_idx].values():
-		total += int(v)
-	return total
+func budget_left() -> int:
+	return budget_total - budget_spent
 
-func get_cell_boosts(cell_idx: int) -> Dictionary:
-	if cell_idx < 0 or cell_idx >= GRID_CELLS_TOTAL:
-		return {}
-	return grid_cell_boosts[cell_idx].duplicate()
+func can_place(cost: int) -> bool:
+	return cost <= budget_left()
 
-func add_cell_boost(cell_idx: int, stat: String) -> bool:
-	if cell_idx < 0 or cell_idx >= GRID_CELLS_TOTAL:
+func is_empty_cell(cell_idx: int) -> bool:
+	return _valid(cell_idx) and cells[cell_idx] == null
+
+func _valid(cell_idx: int) -> bool:
+	return cell_idx >= 0 and cell_idx < GRID_CELLS_TOTAL
+
+# 병사 카드를 빈 칸에 배치. 성공 시 예산 차감.
+func place_soldier(cell_idx: int, card: Card) -> bool:
+	if not _valid(cell_idx) or cells[cell_idx] != null:
 		return false
-	if get_cell_boost_count(cell_idx) >= MAX_UPGRADE_LEVEL:
+	if not can_place(card.cost):
 		return false
-	var d: Dictionary = grid_cell_boosts[cell_idx]
-	d[stat] = int(d.get(stat, 0)) + 1
+	cells[cell_idx] = {"card": card, "mods": []}
+	budget_spent += card.cost
 	return true
 
-func clear_cell_boosts(cell_idx: int) -> void:
-	if cell_idx < 0 or cell_idx >= GRID_CELLS_TOTAL:
-		return
-	grid_cell_boosts[cell_idx].clear()
+# 시한부 강화를 이미 배치된 병사에 부착. 성공 시 예산 차감. (부착 상한 없음 — 미결)
+func attach_mod(cell_idx: int, card: Card) -> bool:
+	if not _valid(cell_idx) or cells[cell_idx] == null:
+		return false
+	if not can_place(card.cost):
+		return false
+	var entry: Dictionary = cells[cell_idx]
+	(entry["mods"] as Array).append(card)
+	budget_spent += card.cost
+	return true
 
-func swap_cell_boosts(idx_a: int, idx_b: int) -> void:
-	if idx_a < 0 or idx_a >= GRID_CELLS_TOTAL:
-		return
-	if idx_b < 0 or idx_b >= GRID_CELLS_TOTAL:
-		return
-	var tmp: Dictionary = grid_cell_boosts[idx_a]
-	grid_cell_boosts[idx_a] = grid_cell_boosts[idx_b]
-	grid_cell_boosts[idx_b] = tmp
+# 셀 회수 — 병사 + 부착 강화 전부 반환하고 예산 환급. 반환 카드 목록을 돌려준다(핸드 복귀용).
+func remove_cell(cell_idx: int) -> Array:
+	if not _valid(cell_idx) or cells[cell_idx] == null:
+		return []
+	var entry: Dictionary = cells[cell_idx]
+	var freed: Array = []
+	var card: Card = entry["card"]
+	freed.append(card)
+	budget_spent -= card.cost
+	for m in (entry["mods"] as Array):
+		freed.append(m)
+		budget_spent -= (m as Card).cost
+	cells[cell_idx] = null
+	return freed
 
-func total_count() -> int:
-	var total: int = 0
-	for i in GRID_CELLS_TOTAL:
-		total += (grid_cells[i] as Array).size()
-	return total
+func cell_at(cell_idx: int):
+	if not _valid(cell_idx):
+		return null
+	return cells[cell_idx]
 
-func unpaid_cost(hire_price_resolver: Callable) -> int:
-	var total: int = 0
-	for i in GRID_CELLS_TOTAL:
-		var entries: Array = grid_cells[i]
-		for entry in entries:
-			var d: Dictionary = entry as Dictionary
-			if not bool(d.get("paid", false)):
-				total += int(hire_price_resolver.call((d["slot"] as RosterSlot).unit_data))
-	return total
+func soldier_count() -> int:
+	var n := 0
+	for e in cells:
+		if e != null:
+			n += 1
+	return n
 
-func unpaid_count() -> int:
-	var total: int = 0
-	for i in GRID_CELLS_TOTAL:
-		var entries: Array = grid_cells[i]
-		for entry in entries:
-			if not bool((entry as Dictionary).get("paid", false)):
-				total += 1
-	return total
-
-# 모든 unpaid entry를 paid로 확정 + hand_idx 무효화. "전투 시작" 시점에 호출.
-func commit_paid() -> void:
-	for i in GRID_CELLS_TOTAL:
-		var entries: Array = grid_cells[i]
-		for entry in entries:
-			var d: Dictionary = entry as Dictionary
-			d["paid"] = true
-			d["hand_idx"] = -1
-
-# 리롤 시 hand 풀이 갈아엎혀 hand_idx 의미 소실 — 모든 unpaid의 hand_idx를 -1로.
-func invalidate_unpaid_hand_indices() -> void:
-	for i in GRID_CELLS_TOTAL:
-		var entries: Array = grid_cells[i]
-		for entry in entries:
-			var d: Dictionary = entry as Dictionary
-			if not bool(d.get("paid", false)):
-				d["hand_idx"] = -1
+# 배치된 모든 카드(병사 + 부착 강화) — 전투 후 회수용.
+func all_played_cards() -> Array:
+	var out: Array = []
+	for e in cells:
+		if e == null:
+			continue
+		out.append(e["card"])
+		for m in (e["mods"] as Array):
+			out.append(m)
+	return out

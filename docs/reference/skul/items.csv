@@ -1,0 +1,96 @@
+name,category,rarity,effect
+Sphinx,quintessence,Common,Decreases incoming damage by 15%. Makes you immune to trap damage for 10 seconds
+Dwarf,quintessence,Common,Increases Crit Rate by 5%. Increases Basic Attack by 20% for 10 seconds
+Slime,quintessence,Common,Increases Max HP by 20. Become invincible for 1 second
+Face Bug,quintessence,Common,Increases Physical and Magic Attack by 15%. Throws a Face Bug to stun the enemy
+Pegasus,quintessence,Common,Movement Speed increased by 7%. Fly forward quickly
+Yeti,quintessence,Common,Increases Max HP by 25. Throws a yeti's snowball inflicting freeze
+Kobold,quintessence,Common,Increases Physical Attack by 20%. Strikes an enemy with a pickaxe
+Unstable Quintessence,quintessence,Common,Increases Physical and Magic Attack by 15%. Creates an explosion
+Mana Golem,quintessence,Rare,Decreases incoming damage by 20%. Creates a mana explosion
+Medusa,quintessence,Rare,Increases Skill Cooldown Speed by 40%. Deals Magic Damage and slows time
+Orc,quintessence,Rare,Basic Attack increased by 15%. Attack and damage increased by 100%
+Cyclops,quintessence,Rare,Max HP +40. Gains a shield of 20 for 6 seconds
+Gryphon,quintessence,Rare,Increases Movement Speed by 20%. Creates a storm
+Ifrit,quintessence,Rare,Unleashes flame dealing Magic Damage and inflicting burn
+Harpy,quintessence,Rare,Increases Attack Speed by 30%. Increases Speed by 30% and Movement by 50%
+Kiliban,quintessence,Rare,Increases Movement Speed by 30%. Throws sword for teleport
+Centauros,quintessence,Rare,Increases Physical Attack by 30%. Throws spear inflicting bleed
+Naias,quintessence,Rare,Increases Max HP by 40. Fires 4 ice bolts inflicting freeze
+Succubus,quintessence,Rare,Increases Crit Rate by 10%. Charms nearby enemies
+Imp,quintessence,Unique,Cooldown Speed increased by 15%. Summons imps shooting fireballs
+Weapon Master,quintessence,Unique,Increases Physical Attack by 45%. Arsenal materializes and charges
+Flame Dragon,quintessence,Unique,Increases Physical and Magic Attack by 30%. Spews powerful flame
+Evil Eye,quintessence,Unique,Increases Magic Attack by 65%. Blinks dealing Magic Damage and stunning
+Evil Spirit,quintessence,Unique,Increases Attack Speed by 40%. Moves behind nearest enemy
+Suonisio,quintessence,Legendary,Increases Skill Cooldown Speed by 80%. Creates explosion
+Shadow Knights,quintessence,Legendary,Increases Physical Attack by 65%. Shadow cavalry charges grants HP barrier
+Archdemon,quintessence,Legendary,Increases Max HP by 60. Shoots multiple spirit flames
+Lyweasel,item,Common,Movement Speed +15%. Quickly teleports to front
+Carleon Insignia,item,Common,Generates 30 Gold per Carleon item upon changing maps
+Standard-issue Carleon Bow,item,Common,Increases Crit Rate by 6%
+Standard-issue Carleon Sword,item,Common,Increases Physical Attack by 20%
+Standard-issue Carleon Armor,item,Common,Decreases incoming damage by 15%
+Ring of Wind,item,Common,Increases Attack Speed by 15% and Movement Speed by 10%
+Discolored Dark Quartz Shard,item,Common,Increases HP by 40
+Hate Stone,item,Common,Increases Magic Attack by 55% for 3 seconds when hit
+Knight's Determination,item,Common,Decreases incoming damage by 30% when HP is 30% or less
+Explosive Ointment,item,Common,When hit creates an explosion dealing Physical Damage
+Bottled Embers,item,Common,Attacks create 10% chance of burning enemies
+Draft Stone,item,Common,Increases Skeleton Soldier's Attack by 30%
+Eleventh Finger of Lightning,item,Rare,Randomly drops lightning every 8 seconds
+Water Spirit Undine,item,Rare,Spirit follows attacking every 3 seconds with freeze chance
+Execution Axe,item,Rare,Increases Physical Attack by 35% increases Power Skull Max HP
+Bone of Swiftness,item,Rare,2 Speed Skulls increase Attack Speed by 20%
+Thorny Pauldrons,item,Rare,Increases Dash Damages by 100% decreases damage by 10%
+Thorny Boots,item,Rare,Increases Physical Attack by 20%. Inflicts damage on landing
+Brawler's Knuckle,item,Rare,Increases Physical Attack by 20% and Crit Rate by 7%
+Emergency Bomb,item,Rare,Increases Physical Attack by 20%. Drops bomb on double-jump
+Bone Hourglass,item,Rare,Decreases swap cooldown by 0.5 seconds per skill use
+Grudge Stone,item,Rare,Increases Max HP by 30. Kill explosion chance
+Assassin Dagger,item,Rare,Increases Crit Rate by 10% affects Speed Skulls
+Hidden Dagger,item,Rare,Increases Crit Rate by 7%. Throws dagger while dashing
+Ritual Staff,item,Rare,Increases Magic Attack by 50% affects Balance Skulls
+Berserker's Gauntlet,item,Rare,Increases Attack Speed up to 60% based on HP loss
+Gold Incense Burner,item,Rare,Increases Gold gain by 10% Max HP by 25
+Rake of Fury,item,Rare,Increases Attack Speed by 55% for 3 seconds per kill
+Clown's Surprise Box,item,Rare,Throws jack-in-the-boxes on swap
+Magic Mirror,item,Rare,Decreases damage by 10%. Swap stuns enemies
+Vampire Fang,item,Rare,Restores 1 HP every 3 kills
+Warrior's Pauldrons,item,Rare,Creates wall every 20 seconds nullifying frontal damage
+Warrior's Gloves,item,Rare,On dash creates energy blast
+Elementalists' Blessing,item,Rare,Increases Magic Attack by 45% per Spirit
+Priestess' Veil,item,Rare,Increases Attack by 40 decreases damage by 50%
+Ice Scale Spaulders,item,Rare,30% chance to freeze on dash attack
+Fire Spirit Salamander,item,Rare,Summons fire spirit shooting flames every 5 seconds
+Coward's Cape,item,Rare,Increases Dash Cooldown Speed by 100% with 4+ enemies
+Ancient Incense Burner,item,Rare,Increases Quintessence Cooldown Speed by 50%
+Iron Shoes of Bitter Cold,item,Rare,Increases Magic Attack by 35% freeze on landing
+Naia's Heart,item,Rare,Increases Max HP by 35. Incoming damage freezes enemies
+Magic Bead of Darkness,item,Rare,On swap stuns nearby enemies
+Ceremonial Dagger,item,Rare,Increases Crit Rate by 5%. Critical hits boost Magic
+Thief Armor,item,Rare,Throws shuriken on normal attacks
+Giant's Axe,item,Rare,Increases Physical Attack by 30%. Swap sends enemies flying
+Mage's Necklace,item,Rare,Creates burning orb hurling fireball at nearest enemy
+Sphinx Eye,item,Rare,Decreases trap damage by 75% Magic Attack by 35%
+Wind Armor,item,Rare,Increases Dashing Distance by 40% dash reset chance
+Broken Mana Engine,item,Rare,Increases Skill Cooldown Speed by 30% dash creates magic mass
+Bone of Courage,item,Unique,Amplifies next attack by 50% every 3 seconds
+Mana Bone,item,Unique,On skill cast creates mana storm
+Dark Priest Robe,item,Unique,Creates 30 HP barrier when HP drops to 30 or below
+Explosive Arrow,item,Unique,All projectiles explode upon contact
+Gunpowder Sword,item,Unique,Successful critical hit creates explosion
+Thief's Black Steel Dagger,item,Unique,Each attack increases Crit Rate by 2% stacks to 20
+Manatech Circulator,item,Unique,Using skills decreases all cooldowns by 1 second
+Demonomicon,item,Unique,Decreases Swap Cooldown by 0.5 per kill increases Magic Attack
+Jagamon Thorn,item,Unique,Basic Attacks inflict 10 additional true damage
+Hero's Holy Sword,item,Unique,Dashing increases Physical Attack by 90% for 1 second
+Master Fighter,item,Unique,Increases Attack by 70% with 2 or fewer enemies
+Ninja Mask,item,Unique,Amplifies damage dealt from behind by 40%
+Ruby Heart,item,Unique,Restores 1 HP per kill for 2 seconds on swap
+Diorite Circlet,item,Unique,Successful Quintessence attacks increase Magic Attack by 100%
+Rear Blast,item,Unique,Successful Item attacks increase Physical Attack by 70%
+Manatech Dagger,item,Unique,Makes basic attacks inflict Critical Damage every 3 seconds
+Earth Spirit Gnome,item,Unique,Spirit casts rock magic every 7 seconds
+Raven Monarch's Father,item,Legendary,On swap creates vortex pulling enemies
+Sylphid Wings,item,Legendary,Increases Aerial Attack Speed by 70% and Movement Speed by 100%. Enables extra jump

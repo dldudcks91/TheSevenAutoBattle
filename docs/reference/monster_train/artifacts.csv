@@ -1,0 +1,158 @@
+name,clan_or_source,rarity,effect
+A Forgotten Name,Stygian Guard,Common,"When you play your third spell of the turn, all cards gain +1 [magicpower] for the rest of this battle."
+Abandoned Antumbra,Umbra,Uncommon,"At start of turn, add a common or uncommon [snack] unit to hand."
+Abandoned Stave,General,Rare,+1[ember] per turn for every 2 [blight] cards in your deck.
+Advanced Prototype,General,Uncommon,"Steward units get +5[attack], +5[health], [damageshield] 2, and [multistrike] 1."
+Ashes of the Fallen,Hellhorned,Common,[summon] abilities trigger an additional time.
+Base Charge,Wurmkin [Hellforged DLC],Common,"At the start of battle, add 2[corrupt] to each floor."
+Blank Pages,General [Hellforged DLC],Rare,"At start of turn, if you do not have a Champion in your hand, add a random one to your hand."
+Blood for Blood,General,Uncommon,"When your Pyre kills a unit, restore 5 Pyre health."
+Bog Slime,Wurmkin [Hellforged DLC],Common,"When a spell with [consume] is played, gain 1[corrupt]."
+Boon of the Blacksmith,General,Common,Your Pyre gets +15[attack].
+Broken Wheel,General [Hellforged DLC],Common,"When a non-Champion unit dies, it is Purged."
+Capricious Reflection,General [Hellforged DLC],Uncommon,Cards in reward packs and unit banners come with a random upgrade.
+Carving Corusca,Wurmkin [Hellforged DLC],Common,"When a card with Extract is played, gain 1[ember] and 1[corrupt]."
+Chain of Gems,Umbra,Common,Apply [damageshield] 2 to the first friendly unit summoned each turn.
+Channelheart,Awoken,Common,Sting spells get +20 [magicpower].
+Cheater's Hand,General [Hellforged DLC],Uncommon,"Draw +1 each turn, then return 1 card to the top of your draw pile."
+Cleansing Water,General,Uncommon,50% chance to remove all [buff] effects on an enemy unit when it enters your train.
+Collection of Tails,Hellhorned,Common,[rage] does not decay on friendly units.
+Combustible Wax,Melting Remnant,Common,Grant +3 stacks of [burnout] each time it is applied.
+Commemorative Spike,Umbra,Common,"At the start of battle, summon a Morsel Miner on each floor."
+Concussive Coals,General,Uncommon,50% chance to apply Dazed when an enemy unit enters your train.
+Conscription Notice,General [Hellforged DLC],Uncommon,"When you first summon your Champion, gain a random unit card with +10[attack], +10[health], -1[ember], and -1[size]."
+Consumed Crown,Hellhorned,Common,Friendly units gain +2[attack] on [slay].
+Corrupted Cloud,General [Hellforged DLC],Common,"At end of turn, deal 4 damage to friendly units."
+Cracked Helmet,General [Hellforged DLC],Common,Damage spells get [piercing].
+Cursed Vines,Awoken,Common,"At start of turn, add a Vine Grasp spell with Purge to your hand."
+Cuttlebeard,Stygian Guard,Common,Grant +2 stacks of [frostbite] each time it is applied. [frostbite] does not decay.
+Dante's Cloak,General,Rare,+2 [magicpower] for every [blight] card in your deck.
+Decayed Decoy,Wurmkin [Hellforged DLC],Common,Grant +1 stack of [corruptpoison] each time it is applied.
+Divine A Forgotten Name,Stygian Guard,Common,"When you play your third spell of the turn, all cards gain +2 [magicpower] for the rest of this battle. Remove this artifact after 1 battle."
+Divine Advanced Prototype,General,Uncommon,"Steward units get +10[attack], +10[health], [damageshield] 4, and [multistrike] 2. Remove this artifact after 1 battle."
+Divine Chain of Gems,Umbra,Common,Apply [damageshield] 4 to the first friendly unit summoned each turn. Remove this artifact after 1 battle.
+Divine Cleansing Water,General,Uncommon,75% chance to remove all [buff] effects on an enemy unit when it enters your train. Remove this artifact after 1 battle.
+Divine Concussive Coals,General,Uncommon,Apply [dazed] 1 when an enemy unit enters your train. Remove this artifact after 1 battle.
+Divine Consumed Crown,Hellhorned,Common,Friendly units gain +4[attack] on [slay]. Remove this artifact after 1 battle.
+Divine Emblem of the Exiles,Awoken,Uncommon,"At start of turn, the front friendly unit on each floor gains +10[health]. Remove this artifact after 1 battle."
+Divine Exploding Candle,Melting Remnant,Uncommon,Deal 5 damage to enemy units when a friendly unit dies. Remove this artifact after 1 battle.
+Divine Forever Flame,General,Uncommon,Units cost -4[ember]. Remove this artifact after 1 battle.
+Divine Hammered Chestplates,General,Common,Friendly units get +10[health]. Remove this artifact after 1 battle.
+Divine Infused Mallet,General,Uncommon,50% chance to deal 10 damage when an enemy unit enters your train. Remove this artifact after 1 battle.
+Divine Mark of a Champion,General [Hellforged DLC],Uncommon,"When played, your Champion gains +100% attack. Remove this artifact after 1 battle."
+Divine Mark of an Exile,General [Hellforged DLC],Uncommon,"When played, your Champion gains +100% max health. Remove this artifact after 1 battle."
+Divine Notice Stone,Wurmkin [Hellforged DLC],Common,"When you play a card with [consume], all cards gain +2 [magicpower] for the rest of this battle. Remove this artifact after 1 battle."
+Divine Pyrewall,General,Common,Your Pyre starts the next battle with [armor] 30. Remove this artifact after 1 battle.
+Divine Rules of Containment,Stygian Guard,Common,Enemy units enter with [frostbite] 4. Remove this artifact after 1 battle.
+Divine Scorched Steel,Hellhorned,Common,Friendly units enter with [armor] 10. Remove this artifact after 1 battle.
+Divine Scorching Restraints,Hellhorned,Common,Friendly units enter with [rage] 6. Remove this artifact after 1 battle.
+Divine Tempered Talisman,General,Common,+6 [magicpower]. Remove this artifact after 1 battle.
+Divine Token of a Traitor,Stygian Guard,Uncommon,Playing a spell deals 4 damage to a random enemy unit on that floor. Remove this artifact after 1 battle.
+Divine Traitor's Quill,General,Common,"When a card with [consume] is played, deal 60 damage to the front enemy unit. Remove this artifact after 1 battle."
+Divine Winged Indulgence,General,Uncommon,Enemy units get -2[attack]. Remove this artifact after 1 battle.
+Divine Winged Steel,General,Uncommon,"When you play your third card of the turn, draw 2. Remove this artifact after 1 battle."
+Divine Worn Grindstone,General [Hellforged DLC],Uncommon,Friendly units get +10[attack]. Remove this artifact after 1 battle.
+Dun Echo,Wurmkin [Hellforged DLC],Common,One additional card in each draft pack will be [infused].
+Echo Seedling,Wurmkin [Hellforged DLC],Common,"The first time each battle a card with [consume] is played, add 2 copies to hand."
+Ember Stasis,General,Common,Playing a [blight] card deals 120 damage to the front enemy unit.
+Emblem of the Exiles,Awoken,Uncommon,"At start of turn, the front friendly unit on each floor gains +5[health]."
+Encased Divinity,Wurmkin [Hellforged DLC],Common,"At the start of battle, the top floor gains 1[corrupt] that cannot be removed."
+Encased Ember,Melting Remnant,Common,Gain 5[ember] when a [tomb] unit dies.
+Exploding Candle,Melting Remnant,Uncommon,Deal 5 damage to enemy units when a [burnout] unit dies.
+Fade's First Blade,Melting Remnant,Common,Friendly units gain [rage] 3 whenever they lose a stack of [burnout].
+Faulty Loader,General [Hellforged DLC],Common,Apply [dazed] 3 and [meleeweakness] 1 to enemy units on the bottom floor in the first wave of combat.
+Fel's Remorse,General,Champion,+1[ember] per turn. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+Fel's Remorse2,General,Champion,+1[ember] per turn. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+Flicker's Liquor,Melting Remnant,Common,"When you play a unit, a random card in hand is reduced to 0[ember] until played or discarded."
+Forever Flame,General,Uncommon,Units cost -2[ember].
+Fossilized Fangs,Umbra,Common,[feed] abilities trigger an additional time.
+Founding Seal,Stygian Guard,Uncommon,[incant] abilities trigger an additional time.
+Free Reroll,General [Hellforged DLC],Uncommon,Rerolls are free.
+Frozen Nostalgia,General,Common,-1[capacity] on each floor. +15 [magicpower].
+Gnarled Root,Awoken,Common,Friendly units get +1[attack] per stack of [spikes].
+Golden Vault,General [Hellforged DLC],Uncommon,"As long as you have at least 25[coin], lose 25[coin] when you take Pyre damage in combat instead of taking damage."
+Grrrg's Goad,Hellhorned,Uncommon,[demon] units get [multistrike] 1.
+Guild Marker,General,Uncommon,Merchant costs are reduced by 25%.
+Hammered Chestplates,General,Common,Friendly units get +5[health].
+Hardened Hull,Wurmkin [Hellforged DLC],Common,"When an Egg unit is summoned, remove [hatch] 3 and apply [armor] 30."
+Heaven's Gold,General,Uncommon,Your Pyre gets +1[attack] for every 10[coin] you have.
+Hell's Banners,General,Common,"When you summon the second unit during a turn, gain 3[ember]."
+Herzal's Compound,General,Champion,Draw +1 each turn. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+Herzal's Compound2,General,Champion,Draw +1 each turn. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+History of the World,General,Common,+3[capacity] on a random floor.
+Hope for Peace,General,Rare,Spells with [annihilate] have [consume] instead.
+Icicle Fracture,Stygian Guard,Common,"At end of turn, apply [freeze] to a random card in your hand."
+Immortality Potion,General [Hellforged DLC],Common,Friendly non-Morsel units get [endless].
+Imp-cicle,Hellhorned,Uncommon,"At start of turn, add a random [imp] unit to hand."
+Improved Firebox,General,Common,Gain 7[ember] on the first turn of battle.
+Infused Mallet,General,Uncommon,25% chance to deal 5 damage when an enemy unit enters your train.
+Iron Dropcage,General,Uncommon,"Whenever you play a spell that would [ascend] or [descend] an enemy unit, also apply [dazed] 2."
+Jackstrips,General,Common,Deal 2 damage whenever an enemy unit moves between floors.
+Judgemental Fittings,General [Hellforged DLC],Common,Enemy units enter with [damageshield] 1.
+Kinstone Totem,Stygian Guard,Uncommon,"When a card is discarded before the end of your turn, gain 1[ember]."
+Light of Seraph,General,Champion,+1[capacity] on each floor. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+Light of Seraph2,General,Champion,+1[capacity] on each floor. [halfbreak]Your Pyre gets +10[attack] and +30[pyrehealth].
+Light's Gift,General,Uncommon,Apply [dazed] to enemy units when they enter the floor below the Pyre Room.
+Lightstone Casing,General,Common,Spells get an extra upgrade slot.
+Lost Luggage,General [Hellforged DLC],Uncommon,"At the start of battle, draw until you have 10 cards."
+Mark of a Champion,General [Hellforged DLC],Uncommon,"When played, your Champion gains +50% attack."
+Mark of an Exile,General [Hellforged DLC],Uncommon,"When played, your Champion gains +50% max health."
+Mask of Penumbra,Umbra,Common,"When you play your first [snack] unit each turn, draw 1."
+Melting Spout,Melting Remnant,Common,[tomb] units get +30[health] and [burnout] 1.
+Memorial Fund,Melting Remnant,Common,Gain 5[coin] when a friendly unit dies.
+Mind Hoard,Wurmkin [Hellforged DLC],Common,Increase [emptycorrupt] by 1 on each floor.
+Mine Jacks,Umbra,Common,+2[capacity] on the middle floor.
+Mold Braces,Melting Remnant,Common,Friendly units gain '[extinguish]: Apply [armor] 5 to the front friendly unit.'
+Notice Stone,Wurmkin [Hellforged DLC],Common,"When a card with [consume] is played, all cards gain +1 [magicpower] for the rest of this battle."
+Penitent Remains,General,Common,"When summoned, friendly units get +2[attack] for every [blight] card in your deck."
+Petrified Crucible,Awoken,Common,[spikes] deal +1 damage per stack.
+Petrified Heart,General,Uncommon,Friendly units get +10[health] and [heal_immune].
+Precious Plating,General,Common,Your Pyre gets +40[pyrehealth].
+Priory's Cloak,Awoken,Common,"When a friendly unit is healed, deal damage to the front enemy unit equal to the amount healed."
+Pyrestone Housing,General,Common,Units get an extra upgrade slot.
+Pyrewall,General,Common,Your Pyre starts each battle with [armor] 15.
+Queen's Tail,Hellhorned,Uncommon,"When you summon your first [imp] unit each turn, gain 1[ember] and draw 1."
+Railforger's Hammer,General,Champion,+1[capacity] on each floor.
+Railhammer,Hellhorned,Common,Grant +4 stacks of [armor] each time it is applied to friendly units.
+Rationing Scales,General [Hellforged DLC],Common,"Before each battle, set Pyre health to 50. If this reduces Pyre health, gain 3[coin] for each health lost."
+Refined Void,Umbra,Common,Friendly units enter with [lifesteal] 2.
+Refracting Lenses,General,Uncommon,"When a card with [consume] is played, restore 5 Pyre health."
+Resin Block,Melting Remnant,Common,"When a friendly unit dies, apply +10[attack] to that unit."
+Resonant Shard,Hellhorned,Common,[rage] adds an additional +1[attack] per stack.
+Rootsplit Mask,Awoken,Common,Apply [rooted] to enemy units when they enter the floor below the Pyre Room.
+Rules of Containment,Stygian Guard,Common,Enemy units enter with [frostbite] 2.
+Sap Tap,Awoken,Common,"The first time each turn a friendly unit is healed, draw 1."
+Scorched Steel,Hellhorned,Common,Friendly units enter with [armor] 5.
+Scorching Restraints,Hellhorned,Common,Friendly units enter with [rage] 3.
+Serrated Mandibles,Wurmkin [Hellforged DLC],Common,"When one or more [corrupt] are added to a floor, apply [corruptpoison] 1 to a random enemy unit, twice."
+Shadelamp,Umbra,Uncommon,"The first time each turn an enemy unit dies, add 2 [snack] units to hand."
+Shadowbox,Umbra,Common,"When you play your 20th [snack] unit of the battle, deal 150 damage to enemy units on all floors."
+Shard of Divinity,General [Hellforged DLC],Champion,Your Pyre starts each battle with [armor] 100.
+Sigiled Seaweed,Stygian Guard,Common,50% chance to apply [silence] when an enemy unit enters your train.
+Sinner's Salve,General [Hellforged DLC],Uncommon,Blights and Scourges cost 0[ember].
+Sketches of Salvation,General,Uncommon,"At the start of battle, summon 4 random units from your deck on the middle floor."
+Split Anvil,General,Uncommon,"When you play a spell, spells in hand that cost less are reduced to 0[ember] for the turn."
+Teeth of Gold,Umbra,Common,Deal 3 damage to the back enemy unit when a unit is [eaten].
+Tempered Talisman,General,Common,+3 [magicpower].
+Tethys' Scales,Stygian Guard,Common,50% chance to apply [spellweakness] 1 when an enemy unit enters your train.
+The Bloating Fungus,Awoken,Uncommon,[regen] restores +1 health per stack.
+The First Hellpact,General,Uncommon,X Cost cards get +3 to their X value when played.
+The Unbroken Horn,Hellhorned,Common,Conserve [ember] between turns.
+Thorn Casing,Awoken,Common,Sting spells get +10 [magicpower] and [piercing].
+Thornfruit,Awoken,Uncommon,"At start of turn, add a Sting spell to your hand."
+Titan's Claws,Stygian Guard,Common,"At end of turn, [freeze] cards are reduced to 0[ember] until played or discarded."
+Token of a Traitor,Stygian Guard,Uncommon,Playing a spell deals 2 damage to a random enemy unit on that floor.
+Totem Fragment,Stygian Guard,Common,Apply [spellweakness] 2 to enemy units when they enter the floor below the Pyre Room.
+Traitor's Quill,General,Common,"When a card with [consume] is played, deal 30 damage to the front enemy unit."
+Vapor Funnel,General,Uncommon,Apply [dazed] to enemy units when they enter the Pyre Room. Your Pyre gets -5[attack].
+Vial of Tears,General [Hellforged DLC],Common,"At end of turn, restore 5 health to friendly units."
+Volatile Gauge,General,Uncommon,"When you draw any non-Champion card, its cost is randomized between 1[ember] and 3[ember]. Draw +3 each turn."
+Votive Key,Melting Remnant,Uncommon,Apply [endless] to the first friendly unit played each turn.
+Waxer Snuffer,Melting Remnant,Common,[extinguish] abilities trigger an additional time.
+Weathered Coldstones,General,Common,"When you play a [blight] card, restore 5 Pyre health."
+Wing Clippings,General,Uncommon,Spell cards with [consume] have a 50% chance to be discarded instead.
+Winged Indulgence,General,Uncommon,Enemy units get -1[attack].
+Winged Steel,General,Uncommon,"When you play your third card of the turn, draw 1."
+Winged Technology,Umbra,Common,[snack] units enter with [damageshield] 1.
+Worn Grindstone,General [Hellforged DLC],Uncommon,Friendly units get +5[attack].
+Wurmtooth,Wurmkin [Hellforged DLC],Starter,Clan starter cards are [infused]. One card in each draft pack will be [infused].

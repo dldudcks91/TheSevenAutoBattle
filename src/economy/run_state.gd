@@ -1,104 +1,182 @@
 extends Node
-# Autoload singleton — facade for the live run's mutable state.
-# 실제 책임은 Economy/RosterStore/DeploymentBoard/RunProgress 4개 모듈에 위임된다.
-# 외부 호출처(prep_phase / battle_simulator / arena_root / result_phase / main_menu)는
-# 기존 API 서명을 그대로 유지하기 위해 facade getter/메서드를 통해 동일하게 접근한다.
+# Autoload singleton — 덱빌딩 런의 가변 상태 facade.
+# 책임은 Economy / DeckStore / DeploymentBoard / RunProgress / JokerStore 5개 모듈에 위임된다.
+# 필드 read/write × phase 매트릭스는 docs/game_design/SCENES.md §B 참조.
+#
+# 덱빌딩 모델 전환(2026-07-29): 영구 그리드·골드 고용·리롤·유물 인벤토리는 폐기.
+# 영구 자산 = 덱 · 조커 · 골드. 전장(배치판)은 매 전투 초기화된다.
 
 const GRID_CELLS_TOTAL: int = DeploymentBoard.GRID_CELLS_TOTAL
 
 var economy := Economy.new()
-var roster_store := RosterStore.new()
+var decks := DeckStore.new()
 var deployment := DeploymentBoard.new()
 var progress := RunProgress.new()
+var joker_store := JokerStore.new()
+
+# PREP → BATTLE 커밋 산출물.
+var deployed: Array = []            # [{card: Card, mods: Array, position: Vector2}]
+var enemy_positions: Array = []     # [Vector2]
+var last_battle_stats: Dictionary = {}
+var discard_left: int = 0
 
 # ─── Lifecycle ────────────────────────────────────────────────────────────
 func _ready() -> void:
 	economy.load_balance()
 	progress.load_rounds()
-	deployment.ensure_grid()
+	deployment.reset(economy.DEPLOY_BUDGET)
 
 func reset_run() -> void:
 	economy.gold = economy.STARTING_GOLD
-	roster_store.clear()
 	progress.reset()
-	deployment.clear()
-	roster_store.rng.randomize()
-	roll_hand()
+	joker_store.clear()
+	joker_store.slot_count = economy.JOKER_SLOTS
+	decks.clear()
+	decks.rng.randomize()
+	decks.seed_starter(_starter_deck())
+	deployed.clear()
+	enemy_positions.clear()
+	last_battle_stats.clear()
+	# 핸드 드로우/판 세팅은 PREP 진입(prep_phase._ready → begin_prep)에서 단일 지점으로 수행.
 
-# ─── Facade: balance constants ────────────────────────────────────────────
-var STARTING_GOLD: int:
-	get: return economy.STARTING_GOLD
-var REWARD_PER_ROUND: int:
-	get: return economy.REWARD_PER_ROUND
-var REWARD_GROWTH_PER_ROUND: int:
-	get: return economy.REWARD_GROWTH_PER_ROUND
-var HIRE_PRICE_PER_COST: int:
-	get: return economy.HIRE_PRICE_PER_COST
-var REROLL_COST: int:
-	get: return economy.REROLL_COST
-var SHOP_ITEM_OFFER_COUNT: int:
-	get: return economy.SHOP_ITEM_OFFER_COUNT
-var HAND_OFFER_COUNT: int:
-	get: return economy.HAND_OFFER_COUNT
+# 시작 덱 시드 — 확정 전까지 UnitDB 병사를 1장씩 담는 임시 시드 (GAME_DESIGN §12 미결).
+func _starter_deck() -> Array[Card]:
+	var out: Array[Card] = []
+	for ud in UnitDB.all_player_units():
+		out.append(Card.from_unit(ud))
+	return out
 
-var TOTAL_ROUNDS: int:
-	get: return progress.total_rounds()
+# ─── PREP 진입 — 판 초기화 + 예산 리셋 + 덱 드로우 + 버리기 횟수 리셋 ───
+func begin_prep() -> void:
+	deployment.reset(current_deploy_budget())
+	decks.draw_hand(economy.HAND_DRAW_COUNT)
+	discard_left = economy.DISCARD_LIMIT
 
-# ─── Facade: state (getter는 동일 참조 반환 — 외부 인덱스 mutate 그대로 통과) ──
+func current_deploy_budget() -> int:
+	# 예산 성장 곡선은 후속 슬라이스 (GAME_DESIGN §5·§12).
+	return economy.DEPLOY_BUDGET
+
+# ─── Facade: 상태 접근 (getter는 동일 참조 반환) ───────────────────────────
 var gold: int:
 	get: return economy.gold
 	set(v): economy.gold = v
 
-var roster: Array[RosterSlot]:
-	get: return roster_store.roster
+var deck: Array[Card]:
+	get: return decks.deck
 
-var hand: Array[RosterSlot]:
-	get: return roster_store.hand
+var discard: Array[Card]:
+	get: return decks.discard
 
-var inventory: Array[ItemData]:
-	get: return roster_store.inventory
+var hand: Array[Card]:
+	get: return decks.hand
 
-var grid_cells: Array:
-	get: return deployment.grid_cells
+var jokers: Array[Joker]:
+	get: return joker_store.jokers
 
 var current_round: int:
 	get: return progress.current_round
 	set(v): progress.current_round = v
 
 var rng: RandomNumberGenerator:
-	get: return roster_store.rng
+	get: return decks.rng
 
-# ─── Facade: hand / shop ──────────────────────────────────────────────────
-func roll_hand() -> void:
-	roster_store.roll_hand(UnitDB.all_player_units(), economy.HAND_OFFER_COUNT, _get_grid_unit_types())
+var budget_total: int:
+	get: return deployment.budget_total
 
-func _get_grid_unit_types() -> Array[UnitData]:
-	var seen: Dictionary = {}
-	var result: Array[UnitData] = []
-	for i in DeploymentBoard.GRID_CELLS_TOTAL:
-		var entries: Array = deployment.grid_cells[i]
-		for entry in entries:
-			var ud: UnitData = ((entry as Dictionary)["slot"] as RosterSlot).unit_data
-			if not seen.has(ud.id):
-				seen[ud.id] = true
-				result.append(ud)
-	return result
+var budget_spent: int:
+	get: return deployment.budget_spent
 
-func reroll_hand() -> bool:
-	if not economy.spend(economy.REROLL_COST):
+var TOTAL_ROUNDS: int:
+	get: return progress.total_rounds()
+
+var STARTING_GOLD: int:
+	get: return economy.STARTING_GOLD
+
+func budget_left() -> int:
+	return deployment.budget_left()
+
+func board_cells() -> Array:
+	return deployment.cells
+
+func soldier_count() -> int:
+	return deployment.soldier_count()
+
+# ─── PREP: 배치 (골드 무관 — 예산만 소모) ─────────────────────────────────
+# 핸드 인덱스의 병사 카드를 빈 칸에 배치.
+func place_soldier(cell_idx: int, hand_idx: int) -> bool:
+	if hand_idx < 0 or hand_idx >= decks.hand.size():
 		return false
-	roll_hand()
+	var c: Card = decks.hand[hand_idx]
+	if not c.is_soldier():
+		return false
+	if not deployment.place_soldier(cell_idx, c):
+		return false
+	decks.hand.remove_at(hand_idx)
 	return true
 
-func roll_shop_item_offers() -> Array[ItemData]:
-	return ItemDB.random_offers(roster_store.rng, economy.SHOP_ITEM_OFFER_COUNT)
+# 핸드 인덱스의 시한부 강화 카드를 배치된 병사에 부착.
+func attach_mod(cell_idx: int, hand_idx: int) -> bool:
+	if hand_idx < 0 or hand_idx >= decks.hand.size():
+		return false
+	var c: Card = decks.hand[hand_idx]
+	if not c.is_mod():
+		return false
+	if not deployment.attach_mod(cell_idx, c):
+		return false
+	decks.hand.remove_at(hand_idx)
+	return true
 
-func reroll_items() -> Array[ItemData]:
-	if not economy.spend(economy.REROLL_COST):
-		return []
-	return roll_shop_item_offers()
+# 셀 회수 — 병사+강화 카드를 핸드로 되돌리고 예산 환급.
+func remove_cell(cell_idx: int) -> void:
+	var freed := deployment.remove_cell(cell_idx)
+	for c in freed:
+		decks.hand.append(c as Card)
 
-# ─── Facade: economy ──────────────────────────────────────────────────────
+# 버리기 — 선택 카드를 버림 더미로 보내고 재드로우. 횟수 제한.
+func discard_and_redraw(indices: Array[int]) -> bool:
+	if discard_left <= 0 or indices.is_empty():
+		return false
+	decks.discard_and_redraw(indices)
+	discard_left -= 1
+	return true
+
+# ─── 커밋: PREP → BATTLE (골드 차감 없음) ─────────────────────────────────
+func commit_deployment(deployed_entries: Array, enemy_pos: Array) -> void:
+	deployed = deployed_entries
+	enemy_positions = enemy_pos
+
+# ─── 전투 종료 — 낸 카드 + 안 낸 핸드 전량 회수, 판 초기화 ─────────────────
+func recall_after_battle() -> void:
+	decks.recall(deployment.all_played_cards())
+	decks.recall(decks.hand.duplicate())
+	decks.hand.clear()
+	deployment.reset(deployment.budget_total)
+
+# ─── RESULT: 보상 (정액 + 이자) ───────────────────────────────────────────
+func current_round_reward() -> int:
+	return progress.current_round_reward(economy)
+
+func interest_amount() -> int:
+	return economy.interest_for(economy.gold)
+
+func grant_round_reward() -> void:
+	economy.gold += current_round_reward() + interest_amount()
+
+func advance_round() -> void:
+	# 라운드만 진행. 핸드 드로우/판 세팅은 다음 PREP 진입(begin_prep)에서 수행.
+	progress.advance_round()
+
+# ─── 라운드 조회 ──────────────────────────────────────────────────────────
+func current_enemy_lineup() -> Array:
+	return progress.current_enemy_lineup()
+
+func current_tactic_key() -> StringName:
+	return progress.current_tactic_key()
+
+func is_last_round() -> bool:
+	return progress.is_last_round()
+
+# ─── 경제 헬퍼 ────────────────────────────────────────────────────────────
 func can_afford(amount: int) -> bool:
 	return economy.can_afford(amount)
 
@@ -108,76 +186,18 @@ func spend(amount: int) -> bool:
 func refund(amount: int) -> void:
 	economy.refund(amount)
 
-func buy_item(it: ItemData) -> bool:
-	return economy.buy_item(it, roster_store.inventory)
+# ─── SHOP: 편성 ───────────────────────────────────────────────────────────
+func add_card(c: Card) -> void:
+	decks.add_to_deck(c)
 
-func hire_price_for(unit: UnitData) -> int:
-	return economy.hire_price_for(unit)
+func remove_card(c: Card) -> bool:
+	return decks.remove_from_deck(c)
 
-func equip_item(slot_idx: int, inventory_idx: int) -> bool:
-	return roster_store.equip_item(slot_idx, inventory_idx)
+func add_joker(j: Joker) -> bool:
+	return joker_store.add(j)
 
-func unequip_item(slot_idx: int, item_idx: int) -> bool:
-	return roster_store.unequip_item(slot_idx, item_idx)
+func replace_joker(idx: int, j: Joker) -> Joker:
+	return joker_store.replace(idx, j)
 
-# ─── Facade: deployment grid ──────────────────────────────────────────────
-func _ensure_grid() -> void:
-	deployment.ensure_grid()
-
-func grid_total_count() -> int:
-	return deployment.total_count()
-
-func grid_unpaid_cost() -> int:
-	return deployment.unpaid_cost(Callable(economy, "hire_price_for"))
-
-func grid_unpaid_count() -> int:
-	return deployment.unpaid_count()
-
-func grid_commit_paid() -> void:
-	deployment.commit_paid()
-
-func grid_invalidate_unpaid_hand_indices() -> void:
-	deployment.invalidate_unpaid_hand_indices()
-
-# 셀의 총 업그레이드 횟수 (별 표시용).
-func grid_get_upgrade(cell_idx: int) -> int:
-	return deployment.get_cell_boost_count(cell_idx)
-
-# 셀의 스탯별 업그레이드 카운트 Dictionary 반환.
-func grid_get_boosts(cell_idx: int) -> Dictionary:
-	return deployment.get_cell_boosts(cell_idx)
-
-# stat 스탯에 업그레이드 1회 추가 (MAX_UPGRADE_LEVEL 초과 시 false 반환).
-func grid_add_boost(cell_idx: int, stat: String) -> bool:
-	return deployment.add_cell_boost(cell_idx, stat)
-
-# 셀 업그레이드 전부 초기화.
-func grid_reset_upgrade(cell_idx: int) -> void:
-	deployment.clear_cell_boosts(cell_idx)
-
-# 두 셀의 업그레이드 보정값을 교환 (드래그 스왑 시 호출).
-func grid_swap_boosts(idx_a: int, idx_b: int) -> void:
-	deployment.swap_cell_boosts(idx_a, idx_b)
-
-var MAX_UPGRADE_LEVEL: int:
-	get: return DeploymentBoard.MAX_UPGRADE_LEVEL
-
-# ─── Facade: round progress ───────────────────────────────────────────────
-func current_tactic_key() -> StringName:
-	return progress.current_tactic_key()
-
-func current_enemy_lineup() -> Array:
-	return progress.current_enemy_lineup()
-
-func is_last_round() -> bool:
-	return progress.is_last_round()
-
-func current_round_reward() -> int:
-	return progress.current_round_reward(economy)
-
-func grant_round_reward() -> void:
-	progress.grant_round_reward(economy)
-
-func advance_round() -> void:
-	progress.advance_round()
-	roll_hand()
+func jokers_full() -> bool:
+	return joker_store.is_full()

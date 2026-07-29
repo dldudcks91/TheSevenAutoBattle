@@ -1,0 +1,151 @@
+name,rarity,cost,effect,unlock
+8 Ball,Common,5,#1# in #2# chance for each played 8 to create a Tarot card when scored (Must have room),
+Abstract Joker,Common,4,+#1# Mult for each Joker card (Currently +#2# Mult),
+Acrobat,Uncommon,6,X#1# Mult on final hand of round,Play #1# hands (#2#)
+Ancient Joker,Rare,8,"Each played card with #2# suit gives X#1# Mult when scored, suit changes at end of round",
+Arrowhead,Uncommon,7,Played cards with Spade suit give +#1# Chips when scored,Have at least #1# cards with #2# suit in your deck
+Astronomer,Uncommon,8,All Planet cards and Celestial Packs in the shop are free,Discover every Planet card
+Banner,Common,5,+#1# Chips for each remaining discard,
+Baron,Rare,8,Each King held in hand gives X#1# Mult,
+Baseball Card,Rare,8,Uncommon Jokers each give X#1# Mult,
+Blackboard,Uncommon,6,X#1# Mult if all cards held in hand are #2# or #3#,
+Bloodstone,Uncommon,7,#1# in #2# chance for played cards with Heart suit to give X#3# Mult when scored,Have at least #1# cards with #2# suit in your deck
+Blue Joker,Common,5,+#1# Chips for each remaining card in deck (Currently +#2# Chips),
+Blueprint,Rare,10,Copies ability of Joker to the right,Win a run
+Bootstraps,Uncommon,7,+#1# Mult for every $#2# you have (Currently +#3# Mult),Have at least #1# Polychrome Jokers
+Brainstorm,Rare,10,Copies the ability of leftmost Joker,Discard a Royal Flush
+Bull,Uncommon,6,+#1# Chips for each $1 you have (Currently +#2# Chips),
+Burglar,Uncommon,6,"When Blind is selected, gain +#1# Hands and lose all discards",
+Burnt Joker,Rare,8,Upgrade the level of the first discarded poker hand each round,Sell a total of #1# cards (#2#)
+Business Card,Common,4,Played face cards have a #1# in #2# chance to give $2 when scored,
+Caino,Legendary,20,This Joker gains X#1# Mult when a face card is destroyed (Currently X#2# Mult),?????
+Campfire,Rare,9,"This Joker gains X#1# Mult for each card sold, resets when Boss Blind is defeated (Currently X#2# Mult)",
+Card Sharp,Uncommon,6,X#1# Mult if played poker hand has already been played this round,
+Cartomancer,Uncommon,6,Create a Tarot card when Blind is selected (Must have room),Discover every Tarot card
+Castle,Uncommon,6,"This Joker gains +#1# Chips per discarded #2# card, suit changes every round (Currently +#3# Chips)",
+Cavendish,Common,4,X#1# Mult #2# in #3# chance this card is destroyed at end of round,
+Ceremonial Dagger,Uncommon,6,"When Blind is selected, destroy Joker to the right and permanently add double its sell value to this Mult (Currently +#1# Mult)",
+Certificate,Uncommon,6,"When round begins, add a random playing card with a random seal to your hand",Have a Gold playing card with a Gold Seal
+Chaos the Clown,Common,4,#1# free Reroll per shop,
+Chicot,Legendary,20,Disables effect of every Boss Blind,?????
+Clever Joker,Common,4,+#1# Chips if played hand contains a #2#,
+Cloud 9,Uncommon,7,Earn $#1# for each 9 in your full deck at end of round (Currently $#2#),
+Constellation,Uncommon,6,This Joker gains X#1# Mult every time a Planet card is used (Currently X#2# Mult),
+Crafty Joker,Common,4,+#1# Chips if played hand contains a #2#,
+Crazy Joker,Common,4,+#1# Mult if played hand contains a #2#,
+Credit Card,Common,1,Go up to -$#1# in debt,
+Delayed Gratification,Common,4,Earn $#1# per discard if no discards are used by end of the round,
+Devious Joker,Common,4,+#1# Chips if played hand contains a #2#,
+Diet Cola,Uncommon,6,Sell this card to create a free #1#,
+DNA,Rare,8,"If first hand of round has only 1 card, add a permanent copy to deck and draw it to hand",
+Driver's License,Rare,7,X#1# Mult if you have at least 16 Enhanced cards in your full deck (Currently #2#),Enhance #1# cards in your deck
+Droll Joker,Common,4,+#1# Mult if played hand contains a #2#,
+Drunkard,Common,4,+#1# discard each round,
+Dusk,Uncommon,5,Retrigger all played cards in final hand of round,
+Egg,Common,4,Gains $#1# of sell value at end of round,
+Erosion,Uncommon,6,+#1# Mult for each card below #3# in your full deck (Currently +#2# Mult),
+Even Steven,Common,4,"Played cards with even rank give +#1# Mult when scored (10, 8, 6, 4, 2)",
+Faceless Joker,Common,4,Earn $#1# if #2# or more face cards are discarded at the same time,
+Fibonacci,Uncommon,8,"Each played Ace, 2, 3, 5, or 8 gives +#1# Mult when scored",
+Flash Card,Uncommon,5,This Joker gains +#1# Mult per reroll in the shop (Currently +#2# Mult),
+Flower Pot,Uncommon,6,"X#1# Mult if poker hand contains a Diamond card, Club card, Heart card, and Spade card",Reach Ante level #1#
+Fortune Teller,Common,6,+#1# Mult per Tarot card used this run (Currently +#2#),
+Four Fingers,Uncommon,7,All Flushes and Straights can be made with 4 cards,
+Gift Card,Uncommon,6,Add $#1# of sell value to every Joker and Consumable card at end of round,
+Glass Joker,Uncommon,6,This Joker gains X#1# Mult for every Glass Card that is destroyed (Currently X#2# Mult),Have at least #1# #2#s in your deck
+Gluttonous Joker,Common,5,Played cards with #2# suit give +#1# Mult when scored,
+Golden Joker,Common,6,Earn $#1# at end of round,
+Golden Ticket,Common,5,Played Gold cards earn $#1# when scored,Play a 5 card hand that contains only Gold cards
+Greedy Joker,Common,5,Played cards with #2# suit give +#1# Mult when scored,
+Green Joker,Common,4,+#1# Mult per hand played -#2# Mult per discard (Currently +#3# Mult),
+Gros Michel,Common,5,+#1# Mult #2# in #3# chance this card is destroyed at end of round,
+Hack,Uncommon,6,"Retrigger each played 2, 3, 4, or 5",
+Half Joker,Common,5,+#1# Mult if played hand contains #2# or fewer cards,
+Hallucination,Common,4,#1# in #2# chance to create a Tarot card when any Booster Pack is opened (Must have room),
+Hanging Chad,Common,4,Retrigger first played card used in scoring #1# additional times,Beat a Boss Blind with a #1#
+Hiker,Uncommon,5,Every played card permanently gains +#1# Chips when scored,
+Hit the Road,Rare,8,This Joker gains X#1# Mult for every Jack discarded this round (Currently X#2# Mult),Discard 5 Jacks at the same time
+Hologram,Uncommon,7,This Joker gains X#1# Mult every time a playing card is added to your deck (Currently X#2# Mult),
+Ice Cream,Common,5,+#1# Chips -#2# Chips for every hand played,
+Invisible Joker,Rare,8,"After #1# rounds, sell this card to Duplicate a random Joker (Currently #2#/#1#)",Win a run without ever having more than 4 Jokers
+Joker,Common,2,+#1# Mult,
+Joker Stencil,Uncommon,8,X1 Mult for each empty Joker slot Joker Stencil included (Currently X#1# ),
+Jolly Joker,Common,3,+#1# Mult if played hand contains a #2#,
+Juggler,Common,4,+#1# hand size,
+Loyalty Card,Uncommon,5,X#1# Mult every #2# hands played #3#,
+Luchador,Uncommon,5,Sell this card to disable the current Boss Blind,
+Lucky Cat,Uncommon,6,This Joker gains X#1# Mult every time a Lucky card successfully triggers (Currently X#2# Mult),
+Lusty Joker,Common,5,Played cards with #2# suit give +#1# Mult when scored,
+Mad Joker,Common,4,+#1# Mult if played hand contains a #2#,
+Madness,Uncommon,7,"When Small Blind or Big Blind is selected, gain X#1# Mult and destroy a random Joker (Currently X#2# Mult)",
+Mail-In Rebate,Common,4,"Earn $#1# for each discarded #2#, rank changes every round",
+Marble Joker,Uncommon,6,Adds one Stone card to deck when Blind is selected,
+Matador,Uncommon,7,Earn $#1# if played hand triggers the Boss Blind ability,Defeat a Boss Blind in 1 hand without using any discards
+Merry Andy,Uncommon,7,"+#1# discards each round, #2# hand size",Win a run in #1# or fewer rounds
+Midas Mask,Uncommon,7,All played face cards become Gold cards when scored,
+Mime,Uncommon,5,Retrigger all card held in hand abilities,
+Misprint,Common,4,[random +0 to +23 Mult] (blank in source localization),
+Mr. Bones,Uncommon,5,Prevents Death if chips scored are at least 25% of required chips self destructs,Lose #1# runs (#2#)
+Mystic Summit,Common,5,+#1# Mult when #2# discards remaining,
+Obelisk,Rare,8,This Joker gains X#1# Mult per consecutive hand played without playing your most played poker hand (Currently X#2# Mult),
+Odd Todd,Common,4,"Played cards with odd rank give +#1# Chips when scored (A, 9, 7, 5, 3)",
+Onyx Agate,Uncommon,7,Played cards with Club suit give +#1# Mult when scored,Have at least #1# cards with #2# suit in your deck
+Oops! All 6s,Uncommon,4,Doubles all listed probabilities (ex: 1 in 3 -> 2 in 3),"In one hand, earn at least #1# chips"
+Pareidolia,Uncommon,5,All cards are considered face cards,
+Perkeo,Legendary,20,Creates a Negative copy of 1 random consumable card in your possession at the end of the shop,?????
+Photograph,Common,5,First played face card gives X#1# Mult when scored,
+Popcorn,Common,5,+#1# Mult -#2# Mult per round played,
+Raised Fist,Common,5,Adds double the rank of lowest ranked card held in hand to Mult,
+Ramen,Uncommon,6,"X#1# Mult, loses X#2# Mult per card discarded",
+Red Card,Common,5,This Joker gains +#1# Mult when any Booster Pack is skipped (Currently +#2# Mult),
+Reserved Parking,Common,6,Each face card held in hand has a #2# in #3# chance to give $#1#,
+Ride the Bus,Common,6,This Joker gains +#1# Mult per consecutive hand played without a scoring face card (Currently +#2# Mult),
+Riff-raff,Common,6,"When Blind is selected, create #1# Common Jokers (Must have room)",
+Rocket,Uncommon,6,Earn $#1# at end of round Payout increases by $#2# when Boss Blind is defeated,
+Rough Gem,Uncommon,7,Played cards with Diamond suit earn $#1# when scored,Have at least #1# cards with #2# suit in your deck
+Runner,Common,5,Gains +#2# Chips if played hand contains a Straight (Currently +#1# Chips),
+Satellite,Uncommon,6,Earn $#1# at end of round per unique Planet card used this run (Currently $#2#),Have $#1# or more
+Scary Face,Common,4,Played face cards give +#1# Chips when scored,
+Scholar,Common,4,Played Aces give +#2# Chips and +#1# Mult when scored,
+Seance,Uncommon,6,"If poker hand is a #1#, create a random Spectral card (Must have room)",
+Seeing Double,Uncommon,6,X#1# Mult if played hand has a scoring Club card and a scoring card of any other suit,Play a hand that contains #1#
+Seltzer,Uncommon,6,Retrigger all cards played for the next #1# hands,
+Shoot the Moon,Common,5,Each Queen held in hand gives +#1# Mult,Play every Heart in your deck in a single round
+Shortcut,Uncommon,7,Allows Straights to be made with gaps of 1 rank (ex: 10 8 6 5 3),
+Showman,Uncommon,5,"Joker, Tarot, Planet, and Spectral cards may appear multiple times",Reach Ante level #1#
+Sixth Sense,Uncommon,6,"If first hand of round is a single 6, destroy it and create a Spectral card (Must have room)",
+Sly Joker,Common,3,+#1# Chips if played hand contains a #2#,
+Smeared Joker,Uncommon,7,"Hearts and Diamonds count as the same suit, Spades and Clubs count as the same suit",Have at least #1# #2# in your deck
+Smiley Face,Common,4,Played face cards give +#1# Mult when scored,
+Sock and Buskin,Uncommon,6,Retrigger all played face cards,Play a total of #1# face cards (#2#)
+Space Joker,Uncommon,5,#1# in #2# chance to upgrade level of played poker hand,
+Spare Trousers,Uncommon,6,This Joker gains +#1# Mult if played hand contains a #2# (Currently +#3# Mult),
+Splash,Common,3,Every played card counts in scoring,
+Square Joker,Common,4,This Joker gains +#2# Chips if played hand has exactly 4 cards (Currently #1# Chips),
+Steel Joker,Uncommon,7,Gives X#1# Mult for each Steel Card in your full deck (Currently X#2# Mult),
+Stone Joker,Uncommon,6,Gives +#1# Chips for each Stone Card in your full deck (Currently +#2# Chips),
+Stuntman,Rare,7,"+#1# Chips, -#2# hand size","In one hand, earn at least #1# chips"
+Supernova,Common,5,Adds the number of times poker hand has been played this run to Mult,
+Superposition,Common,4,Create a Tarot card if poker hand contains an Ace and a Straight (Must have room),
+Swashbuckler,Common,4,Adds the sell value of all other owned Jokers to Mult (Currently +#1# Mult),Sell a total of #1# Joker cards (#2#)
+The Duo,Rare,8,X#1# Mult if played hand contains a #2#,Win a run without playing a #1#
+The Family,Rare,8,X#1# Mult if played hand contains a #2#,Win a run without playing a #1#
+The Idol,Uncommon,6,Each played #2# of #3# gives X#1# Mult when scored Card changes every round,"In one hand, earn at least #1# chips"
+The Order,Rare,8,X#1# Mult if played hand contains a #2#,Win a run without playing a #1#
+The Tribe,Rare,8,X#1# Mult if played hand contains a #2#,Win a run without playing a #1#
+The Trio,Rare,8,X#1# Mult if played hand contains a #2#,Win a run without playing a #1#
+Throwback,Uncommon,6,X#1# Mult for each Blind skipped this run (Currently X#2# Mult),Continue a saved run from the main menu
+To Do List,Common,4,"Earn $#1# if poker hand is a #2#, poker hand changes at end of round",
+To the Moon,Uncommon,5,Earn an extra $#1# of interest for every $5 you have at end of round,
+Trading Card,Uncommon,6,"If first discard of round has only 1 card, destroy it and earn $#1#",
+Triboulet,Legendary,20,Played Kings and Queens each give X#1# Mult when scored,?????
+Troubadour,Uncommon,6,"+#1# hand size, -#2# hand each round",Win #1# consecutive rounds by playing only 1 hand
+Turtle Bean,Uncommon,6,"+#1# hand size, reduces by #2# every round",
+Vagabond,Rare,8,Create a Tarot card if hand is played with $#1# or less,
+Vampire,Uncommon,7,"This Joker gains X#1# Mult per scoring Enhanced card played, removes card Enhancement (Currently X#2# Mult)",
+Walkie Talkie,Common,4,Each played 10 or 4 gives +#1# Chips and +#2# Mult when scored,
+Wee Joker,Rare,8,This Joker gains +#2# Chips when each played 2 is scored (Currently +#1# Chips),Win a run in #1# or fewer rounds
+Wily Joker,Common,4,+#1# Chips if played hand contains a #2#,
+Wrathful Joker,Common,5,Played cards with #2# suit give +#1# Mult when scored,
+Yorick,Legendary,20,This Joker gains X#1# Mult every #2# [#3#] cards discarded (Currently X#4# Mult),?????
+Zany Joker,Common,4,+#1# Mult if played hand contains a #2#,

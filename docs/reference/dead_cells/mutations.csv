@@ -1,0 +1,54 @@
+name,stat,effect,unlock
+Adrenaline,Brutality,Melee attacks restore a small amount of HP depending on attack damage for 5 sec after dodging an attack at the last moment.,100
+Frenzy,Brutality,Melee attacks restore a small amount of HP depending on attack damage as long as you have an active speed buff.,50
+Initiative,Brutality,Your first melee strike against an enemy inflicts +[100 base] damage.,50
+Killer Instinct,Brutality,"Reduces the cooldown of your skills by [0.4 base, 3 max] seconds for each enemy killed in hand to hand combat.",
+Melee,Brutality,"Melee attacks slow down enemies for [0.2 base, 0.8 max] seconds.",50
+Open Wounds,Brutality,Melee attacks inflict bleeding ([18 base] DPS for 1.5 seconds),50
+Porcupack,Brutality,Rolling through enemies attacks them with the melee weapon in backpack for [75% base] of the usual damages.,80
+Predator,Brutality,"Killing an enemy with a melee strike makes you invisible for [1 base, 3.5 max] seconds.",50
+Scheme,Brutality,Your next melee attack after using a skill inflicts +[200 base] damage.,50
+Tainted Flask,Brutality,"Using a health flask adds +[20% base] damage to your attacks for 12 sec. If no flasks are left, killing 12 elite enemies will refill one flask.",50
+Vengeance,Brutality,+[60% base] damage dealt for 8 seconds and -30% damage taken for 3 seconds after taking damage.,
+Acrobatipack,Tactics,"Attacking with a ranged weapon, after rolling with a ranged weapon in your backpack fires a projectile of said weapon, dealing [25% base] of the usual damages.",120
+Barbed Tips,Tactics,Inflicts [40 base] dps per arrow stuck to enemies.,80
+Crow's Foot,Tactics,"Rolling leaves 3 crow's feet behind you (with a maximum of 9), inflicting [50 base] damage and slowing the enemies for 1.5 seconds.",50
+Hunter's Instinct,Tactics,"Decreases skill cooldowns by [0.3 base, 2.5 max] seconds for each enemy killed with using ranged attacks.",
+Networking,Tactics,"Enemies with arrows stuck in them share [35% base, 75% max] of the damage they receive.",50
+Parting Gift,Tactics,Causes a bomb ([75 base] damage) to appear when you kill an enemy with a non-melee attack.,100
+Point Blank,Tactics,Close-ranged ranged attacks inflicts [30 base]% bonus damage.,80
+Ranger's Gear,Tactics,Your next ranged attack after using a skill inflicts [180 base] damage.,50
+Ripper,Tactics,"Hand to hand attacks cause 6 arrows stuck in the attacked enemy to fall out, each one dealing [118 base] damage.",100
+Support,Tactics,+[10% base] damage if you're close to a deployed skill.,
+Tactical Retreat,Tactics,"Dodging an attack at the last moment slows down nearby enemies for [1 base, 3 max] seconds.",100
+Tranquility,Tactics,+[25% base] damage if there are no enemies near you.,
+Armadillopack,Survival,"Rolling also parries attack and projectiles with the shield in your backpack, for [50% base] of the usual damages.",100
+Berserker,Survival,"Killing an enemy with a melee attack reduces the damage you take by [10% base, 60% max] for 5 sec. Can stack up to 90%. Also makes you immune to stuns.",100
+Blind Faith,Survival,"Reduces the cooldown on your skills by [2.8 base, 6 max] seconds with each successful parry.",
+Counterattack,Survival,The attack following a successful parry inflicts +[210 base] damage.,
+Extended Healing,Survival,"Your health flask heals 85%, its effect is spread over 10 seconds and you deal +[25% base] damage during this time.",100
+Gastronomy,Survival,The effect of food increases by +65%. If you recycle food you deal +[10% base] damage for 300 seconds.,50
+Heart of Ice,Survival,"Attacking a slowed, stunned, frozen, or rooted enemy at close range reduces skill cooldowns by [0.6 base, 2 max] seconds. Works with both melee and ranged weapons.",50
+Kill Rhythm,Survival,Alternate weapons to increase your attack speed by [15% base] in 2 seconds.,150
+Necromancy,Survival,"Recover [0.3% base, 2.5% max] HP after killing an enemy, up to a maximum of 50% HP.",
+Soldier's Resistance,Survival,Increases your health by [7% base. 40% max].,100
+Spite,Survival,Successful parries and reflected shots inflict [140 base] damage.,100
+What Doesn't Kill Me,Survival,"Recover [2% base, 6% max] HP after parrying a melee attack.",50
+Acceptance,Any,"Amount of kills required to remove a curse is reduced by 50%, but consuming food curses you.",200
+Alienation,Any,Reducing a curse restores 5% HP but increases the number of enemies required to lift the curse by 50%.,50
+Ammo,Any,Ammo for your weapons is now 2 times what it was.,50
+Combo,Any,"Each consecutive hit that connects continues your combo, increasing your damage dealt.",
+Dead Inside,Any,"HP is increased by 50%, but the efficiency of all sources of healing (food, mutations or health potions) is cut in half.",100
+Disengagement,Any,"Once per biome, if your HP falls below 15%, a force field protects you for 5 sec.",200
+Emergency Triage,Any,Health potions only restore 35% HP but their use speed is increased by 275% and it completely protects you for 1.5 sec.,100
+Frostbite,Any,Enemies suffer [30 base] DPS while they are slowed down.,100
+Get Rich Quick,Any,Accumulate bonus gold for every enemy killed while you have an active speed boost and cash it in when it ends.,50
+Gold Plating,Any,Lose gold instead of health when hit. The gold lost is proportional to the health loss prevented.,50
+Instinct of the Master of Arms,Any,"Reduces the cooldown on your skills by [0.08 base, 1 max] sec with each critical hit.",
+Masochist,Any,Trap damage is capped at 10% of your max HP. When hit by a trap your movement speed increases by 20% for 20 sec.,100
+Midas' Blood,Any,Gain 3 gold per health points you lose.,50
+No Mercy,Any,Execute mobs under 15% health. Effect halved on bosses.,100
+Recovery,Any,Time available to recover your health after a hit is multiplied by 3.,50
+Velocity,Any,Running speed duration bonus (for kill combo) multiplied by 3.,50
+Wish,Any,Turns the next item picked legendary. Cannot be removed once activated. Cannot be removed. Let's hope it was worth it.,200
+Ygdar Orus Li Ox,Any,"Saves you ONE TIME if you die prematurely while not cursed. Cannot be picked up after first mutation selection. Cannot be dropped once picked up, even if used.",

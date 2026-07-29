@@ -1,0 +1,129 @@
+name,type,effect
+Acorn Charm,charm,Gain 8 Shell
+Balance Charm,charm,"Set Health, Attack and Counter to 3"
+Battle Charm,charm,+2 Attack
+Bite Charm,charm,Start with 4 Teeth
+Bling Charm,charm,Gain 5 Bling from each kill
+Block Charm,charm,Start with 1 Block
+Bom Charm,charm,Apply 1 Bom
+Bombskull Charm,charm,"When destroyed, deal 8 damage to enemies in the row."
+Boonfire Charm,charm,When consumed apply 2 Overburn to all enemies
+Bread Charm,charm,Gain Consume
+Cake Charm,charm,Boost effects by 5 and gain Consume
+Chuckle Charm,charm,Remove Charm limit
+Cloudberry Charm,charm,Restore 2 Health on kill
+Critical Charm,charm,Gain Critical
+Durian Charm,charm,"+4 Attack, Remove all effects"
+Flameblade Charm,charm,Replace current Attack with apply Overburn
+Frenzy Charm,charm,Add x1 Frenzy and gain Consume
+Frog Charm,charm,Gain Fury 3
+Frosthand Charm,charm,Apply 1 Frost
+Gnome Charm,charm,Add x1 Frenzy and gain Aimless
+Goat Charm,charm,Apply 1 Demonize
+Greed Charm,charm,Gain Greed
+Heart Charm,charm,+5 Health
+Hog Charm,charm,"Add HogHeaded, +7 Health"
+Hook Charm,charm,Gain Yank
+Lamb Charm,charm,Gain Faith 2 (Increases summon's Attack by 2)
+Lumin Ring,charm,Boost effects by 1
+Moko Charm,charm,"Add x1 Frenzy, -2 Attack"
+Molten Egg Charm,charm,"Gain Consume, +5 Attack"
+Moose Charm,charm,"Increase Counter by 1, +3 Attack"
+Noomlin Charm,charm,Gain Noomlin
+Pengu Charm,charm,"When Snow'd, gain equal Attack"
+Peppernut Charm,charm,"When Shell'd, gain Spice instead"
+Pinch Charm,charm,Draw 2 on kill
+Pomegranate Charm,charm,"Gain Barrage, reduce Attack by 2"
+Punchfist Charm,charm,Gain Smackback
+Raspberry Charm,charm,"+1 Attack, +3 Health"
+Recycle Charm,charm,"Gain Recycle 1, +3 Attack"
+Scrap Charm,charm,Add 1 Scrap
+Shield Charm,charm,Gain 3 Shell on kill
+Shroom Charm,charm,Apply 1 Shroom
+Snowball Charm,charm,Apply 1 Snow
+Spark Charm,charm,"Gain Spark (Triggers when deployed, cannot be recalled)"
+Spice Charm,charm,Gain 2 Spice when hit
+Squid Charm,charm,Apply 3 Ink
+Strawberry Charm,charm,When consumed add +2 Health to all allies
+Sun Charm,charm,Reduce Counter by 1
+Tiger Charm,charm,Gain 1 Teeth when hit
+Trash Charm,charm,Gain Trash 1
+Truffle Charm,charm,"Apply 3 Shroom, -2 Health"
+Weakness Charm,charm,Reduce Attack by 2
+Azul Battle Axe,item,Apply Overburn equal to damage dealt
+Azul Candle,item,Double the target's Overburn
+Azul Skull,item,Kill an ally. Apply 4 Overburn to front enemy
+B.I.N.K,item,Apply 2 Ink. Hits all enemies
+Beepop Mask,item,Summon Beepop
+Berry Basket,item,Restore 2 Health. Barrage.
+Berry Bell,item,Increase Health by 1. Barrage.
+Berry Blade,item,Restore Health to front ally equal to damage dealt
+Blank Mask,item,Summon a copy of an ally. Consume
+Blaze Bom,item,Add x1 Frenzy. Apply 4 Bom
+Blaze Tea,item,Add x1 Frenzy. Increase Counter by 1. Consume.
+Blizzard Bottle,item,Apply 3 Snow
+Bom Barrel,item,Apply 4 Bom. Barrage. Trash 4
+Broken Vase,item,Maybe it can be fixed...
+Clockwork Bom,item,Apply 2 Bom. Critical
+Demonheart,item,Apply 1 Demonize. Restore 7 Health
+Dragon Pepper,item,Apply 7 Spice. Consume
+Fallow Mask,item,Summon Fallow
+Flamewater,item,Increase Attack by 1
+Flask of Ink,item,Apply 4 Ink
+Foggy Brew,item,Apply 1 Haze. Aimless. Consume
+Forging Stove,item,Destroy a card in your hand. Add its Attack to a random ally
+Frenzy Wrench,item,Add x1 Frenzy to an Item in your hand. Recycle 2
+Frost Bell,item,Apply 2 Frost. Barrage.
+Frostbite Shard,item,Reduce the target's effects by 1. Consume.
+Frostbloom,item,Apply 3 Frost
+Gearhammer,item,Gain +1 Attack
+Gigi's Cookie Box,item,Add 2 Scrap. Increase Attack by 2. Trash 2. Consume.
+Gigi's Gizmo,item,Add 1 Scrap. Recycle 1.
+Grabber,item,Noomlin. Yank.
+Haze Keg,item,Apply 1 Haze. Recycle 2.
+Hongo's Hammer,item,Apply 3 Shroom
+Ice Dice,item,Apply 1 Block to a random ally. Apply 1 Block to a random enemy
+JunJun Mask,item,Summon JunJun
+Junk,item,Does absolutely nothing...
+Leech Mask,item,Summon Leech on the enemy side. Consume
+Lumin Goop,item,Could be used to fix something...
+Lumin Lantern,item,Boost a random ally's effects by 1. Boost a random enemy's effects by 2.
+Magma Booster,item,Increase Attack by 3. Add Aimless to the target
+Mini Muncher,item,Destroy a card in your hand. Noomlin
+Molten Dip,item,Increase Attack by 2. Barrage. Consume.
+Noomlin Biscuit,item,Add Noomlin to a card in your hand. Consume.
+Nutshell Cake,item,Apply 9 Shell. Reduce Health by 2. Consume.
+Peppereaper,item,Apply 3 Spice
+Peppering,item,Apply 2 Spice. Barrage.
+Pinkberry Juice,item,Increase Health by 4
+Pom Mask,item,Summon Pom on the enemy side. Consume.
+Pombomb,item,Hits all undamaged enemies
+Proto-Stomper,item,Trash 2
+Scrap Pile,item,Add 1 Scrap
+Scrappy Sword,item,A traditional trusty weapon
+Shade Clay,item,Make a copy of an Item in your hand. Consume
+Shade Wisp,item,Summon a copy of an enemy on your side with 1 Health
+Sheepopper Mask,item,Summon Sheepopper on the enemy side. Consume
+Shell Shield,item,Apply 4 Shell
+Shellbo,item,Apply 5 Shell. Barrage
+Skullmist Tea,item,Kill an ally. Add their Attack to all allies. Consume.
+Slapcrackers,item,Aimless
+Snow Stick,item,Apply 2 Snow
+Snowcake,item,Apply 12 Snow. Consume
+Snowzooka,item,Apply 2 Snow. Critical.
+Soulbound Skulls,item,Add Soulbound to an ally. Add Soulbound to a random enemy
+Spice Stones,item,Double the target's Spice
+Spore Pack,item,Apply 2 Shroom. Barrage
+Storm Globe,item,Apply 4 Snow. Reduce by 1 when played
+Stormbear Spirit,item,Target must be Snow'd
+Sun Rod,item,Count down Counter by 2
+Sunburst Tootoo,item,Count down Counter by 2
+Suncream,item,Reduce Counter by 1. Recycle 1. Consume.
+Sunlight Drum,item,Count down Counter by 1. Barrage
+Sunsong Box,item,Increase Attack by 1. Count down Counter by 1. Recycle 1.
+Supersnower,item,Apply 4 Snow. Recycle 2.
+Tar Blade,item,Deal additional damage equal to Tar Blades in hand
+The Lumin Vase,item,Apply 1 Lumin
+Tiger Skull,item,Kill an ally. Apply 4 Teeth to a random ally.
+Tigris Mask,item,Summon Tigris. Consume
+Yeti Skull,item,Kill an ally. Apply 3 Snow to enemies in the row.

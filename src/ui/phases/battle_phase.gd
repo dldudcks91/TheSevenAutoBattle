@@ -49,9 +49,11 @@ func _ready() -> void:
 func _on_battle_ended(result: BattleResult) -> void:
 	# 보상 가산 / 라운드 진행 단일 지점. 마지막 라운드 클리어 시 advance_round 호출 안 함.
 	if result.won:
-		RunState.progress.grant_round_reward(RunState.economy)
+		RunState.grant_round_reward()  # 정액 + 이자 (Economy.interest_for)
 		if not result.was_last_round:
 			RunState.advance_round()
+	# 낸 카드 + 안 낸 핸드 전량 덱/버림으로 회수, 배치판 초기화 (전장은 임시).
+	RunState.recall_after_battle()
 	await get_tree().create_timer(POST_BATTLE_DELAY).timeout
 	transition_requested.emit(ARENA_ROOT.PhaseId.RESULT, result)
 

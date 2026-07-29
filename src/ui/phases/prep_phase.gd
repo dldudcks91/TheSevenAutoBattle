@@ -1,60 +1,37 @@
-﻿extends Control
+extends Control
 
-# PREP phase: 셸의 PlayerZone(4x4 셀 + 배치 토큰) / EnemyZone(적 프리뷰) /
-# HandSlot(핸드카드) / BottomBar(돌아가기/요약/전투시작)을 채운다.
-# PlacementZone은 셸 소속이라 시그널만 연결.
+# PREP phase (덱빌딩 모델): 적 공개 → 덱 드로우 → 예산 안에서 3×3 배치 → 버리기 → 전투 시작.
+# 골드를 쓰지 않는다 (배치는 예산만 소모). 셸 슬롯 사용은 docs/game_design/SCENES.md §C.PREP 참조.
+#
+# 옛 누적 모델(4×4·사분면 누적·paid/unpaid·아이템·시너지)에서 전면 재작성됨:
+#  · 1칸 1유닛 (사분면 없음)  · 배치=예산 소모(골드 무관)  · 핸드=내 덱에서 드로우  · 버리기(횟수 제한)
+#  · 아이템/시너지 UI 제거(조커로 통합)  · 전력 지표 신설
 
 const ARENA_ROOT := preload("res://src/ui/arena_root.gd")
-const HERO_INFO_POPUP_SCENE := preload("res://src/ui/hero_info_popup.tscn")
-const ENEMY_INFO_POPUP_SCENE := preload("res://src/ui/enemy_info_popup.tscn")
-const CardInfoPopupScript := preload("res://src/ui/card_info_popup.gd")
-# 적 토큰 클릭 판정 반경(EnemyZone 로컬 px). 토큰 사이 간격을 감안해 넉넉히.
-const _ENEMY_CLICK_RADIUS_PX: float = 60.0
 
-const GRID_COLS := 4
-const GRID_ROWS := 4
+const GRID_COLS := 3
+const GRID_ROWS := 3
 const GRID_CELLS := GRID_COLS * GRID_ROWS
-
-# 셀 내부 2×2 서브그리드 — 영웅이 누적될 때 ×N 뱃지 대신 사분면에 분산 배치.
-const SUB_GRID_COLS := 2
-const SUB_GRID_ROWS := 2
-const SUB_GRID_CAPACITY := SUB_GRID_COLS * SUB_GRID_ROWS  # 4
-
-# 필드 토큰 스케일 배율 — 셀에 단독 배치된 토큰 기준값.
 const TOKEN_SCALE_SOLO := 0.75
 
-# 전투 좌표계: PlayerZone 글로벌(36,168)~(954,738), EnemyZone(966,168)~(1884,738).
-const BATTLE_PLAYER_X_MIN := 36.0
-const BATTLE_PLAYER_X_MAX := 954.0
-const BATTLE_Y_MIN := 168.0
-const BATTLE_Y_MAX := 738.0
+const _SELECTED_BORDER := Color(1.0, 0.65, 0.2)
+const _SOLDIER_ACCENT := Color(0.55, 0.72, 0.95)
+const _MOD_ACCENT := Color(0.55, 0.85, 0.55)
+const _SPELL_ACCENT := Color(0.95, 0.75, 0.45)
+const _AURA_ACCENT := Color(0.75, 0.6, 0.95)
+const _TRAP_ACCENT := Color(0.9, 0.55, 0.6)
 
 signal transition_requested(next: int, payload: Variant)
 signal main_menu_requested
 
 var shell: Dictionary = {}
-
-# 셀 상태는 RunState.grid_cells (영구 그리드)로 이관.
-# 각 셀은 Array of {slot: RosterSlot, paid: bool, hand_idx: int} Dictionary.
-# paid==true 는 이전 라운드에서 결제 완료된 영구 자산, paid==false 는 이번 PREP 미결제.
-# hand_idx 는 unpaid entry의 현재 hand 슬롯 인덱스(-1 이면 무효 — 카드 회수 시 단순 폐기).
-
-# hand index → cell index (-1 = 미배치). 카드는 1회용.
-# unpaid entry만 _card_to_cell에 등록된다 (paid는 hand_idx=-1 이라 영향 없음).
-var _card_to_cell: Array[int] = []
-var _selected_cell: int = -1
-var _selected_hand_idx: int = -1  # 주황 테두리를 표시할 핸드 카드 인덱스 (-1 = 없음)
-var _selected_enemy_idx: int = -1  # 적 진영에서 클릭 선택된 적 인덱스 (-1 = 없음)
-var _enemy_sel_box: ReferenceRect = null
-var _hand_cards: Array[Control] = []
-var _summary_lbl: Label = null
-var _start_battle_btn: Button = null
-var _hero_info_popup: HeroInfoPopup = null
-var _enemy_info_popup: HeroInfoPopup = null  # 같은 스크립트, 다른 위치/색상.
-var _card_info_popup: CardInfoPopup = null
 var _coord_mapper: PrepCoordMapper = null
-var _item_drop_zone: ItemDropZone = null
-var _synergy_panel: SynergyPanel = null
+var _hand_cards: Array[Control] = []
+var _marked_for_discard: Array[int] = []
+var _summary_lbl: Label = null
+var _power_lbl: Label = null
+var _discard_btn: Button = null
+var _start_btn: Button = null
 
 func bind_shell(s: Dictionary) -> void:
 	shell = s
@@ -63,51 +40,36 @@ func _ready() -> void:
 	if shell.is_empty():
 		push_error("prep_phase: shell not bound")
 		return
+	# 판 초기화 + 예산 리셋 + 덱 드로우 + 버리기 횟수 리셋 (단일 지점).
+	RunState.begin_prep()
 	_coord_mapper = PrepCoordMapper.new(shell.player_zone, GRID_COLS, GRID_ROWS)
-	_reset_placement_state()
 
-	# PlacementZone 시그널 연결 + 셀 상태/프리뷰 콜백 주입
 	var pz: PlacementZone = shell.player_zone
 	if not pz.place_requested.is_connected(_on_place_requested):
 		pz.place_requested.connect(_on_place_requested)
 	if not pz.swap_requested.is_connected(_on_swap_requested):
 		pz.swap_requested.connect(_on_swap_requested)
-	if not pz.drag_started.is_connected(_on_drag_started):
-		pz.drag_started.connect(_on_drag_started)
 	if not pz.drag_ended.is_connected(_on_drag_ended):
 		pz.drag_ended.connect(_on_drag_ended)
 	if not pz.cell_clicked.is_connected(_on_cell_clicked):
 		pz.cell_clicked.connect(_on_cell_clicked)
 	pz.get_cell_has_unit = Callable(self, "_cell_has_unit")
 	pz.build_drag_preview = Callable(self, "_build_swap_preview")
-	pz.can_drop_hand_card = Callable(self, "_can_drop_hand_card_to_cell")
+	pz.can_drop_hand_card = Callable(self, "_can_drop_hand_card")
 
-	_spawn_hero_info_popup()
-	_spawn_enemy_info_popup()
-	_spawn_card_info_popup()
-	_spawn_synergy_panel()
 	_build_bottom_bar()
 	_build_hand()
-	_build_item_slot()
 	_render_enemies_preview()
-	# EnemyZone 클릭 → 적 유닛 정보 팝업. PREP에서만 mouse_filter가 STOP으로 풀려 입력이 들어온다.
-	var ez: Control = shell.enemy_zone
-	if ez != null and not ez.gui_input.is_connected(_on_enemy_zone_gui_input):
-		ez.gui_input.connect(_on_enemy_zone_gui_input)
 	_render_placed()
-	_refresh_hand_state()
-	_update_summary_and_button()
+	_refresh_all()
 
 func _exit_tree() -> void:
-	# PlacementZone은 셸 소속이므로 남아있다. 시그널만 끊어둔다.
 	var pz: PlacementZone = shell.get("player_zone")
 	if pz != null and is_instance_valid(pz):
 		if pz.place_requested.is_connected(_on_place_requested):
 			pz.place_requested.disconnect(_on_place_requested)
 		if pz.swap_requested.is_connected(_on_swap_requested):
 			pz.swap_requested.disconnect(_on_swap_requested)
-		if pz.drag_started.is_connected(_on_drag_started):
-			pz.drag_started.disconnect(_on_drag_started)
 		if pz.drag_ended.is_connected(_on_drag_ended):
 			pz.drag_ended.disconnect(_on_drag_ended)
 		if pz.cell_clicked.is_connected(_on_cell_clicked):
@@ -115,53 +77,45 @@ func _exit_tree() -> void:
 		pz.get_cell_has_unit = Callable()
 		pz.build_drag_preview = Callable()
 		pz.can_drop_hand_card = Callable()
-	var ez: Control = shell.get("enemy_zone")
-	if ez != null and is_instance_valid(ez):
-		if ez.gui_input.is_connected(_on_enemy_zone_gui_input):
-			ez.gui_input.disconnect(_on_enemy_zone_gui_input)
-	# ModalLayer 자식은 phase가 명시적으로 정리 (셸은 _clear_shell_slots에서 일괄 비우지만,
-	# 우리가 띄운 노드의 수명은 우리가 책임진다.)
-	if _hero_info_popup != null and is_instance_valid(_hero_info_popup):
-		_hero_info_popup.queue_free()
-		_hero_info_popup = null
-	if _enemy_info_popup != null and is_instance_valid(_enemy_info_popup):
-		_enemy_info_popup.queue_free()
-		_enemy_info_popup = null
-	if _card_info_popup != null and is_instance_valid(_card_info_popup):
-		_card_info_popup.queue_free()
-		_card_info_popup = null
-	if _enemy_sel_box != null and is_instance_valid(_enemy_sel_box):
-		_enemy_sel_box.queue_free()
-	_enemy_sel_box = null
 
 # ─── BottomBar ────────────────────────────────────────────────────────────
 func _build_bottom_bar() -> void:
 	var bar: HBoxContainer = shell.bottom_bar
+	for c in bar.get_children():
+		c.queue_free()
 
 	_summary_lbl = Label.new()
-	_summary_lbl.custom_minimum_size = Vector2(480, 0)
-	_summary_lbl.text = "출전: 0명 / 비용 0 g"
-	_summary_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_summary_lbl.custom_minimum_size = Vector2(360, 0)
 	_summary_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_summary_lbl.add_theme_font_size_override("font_size", 24)
+	_summary_lbl.add_theme_font_size_override("font_size", 22)
 	_summary_lbl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.5))
 	bar.add_child(_summary_lbl)
 
-	_start_battle_btn = Button.new()
-	_start_battle_btn.text = "전투 시작"
-	_start_battle_btn.custom_minimum_size = Vector2(330, 60)
-	_start_battle_btn.add_theme_font_size_override("font_size", 30)
-	_start_battle_btn.pressed.connect(_on_start_battle)
-	# 화면 상단 가운데에 띄운다. PrepPhase 루트(PhaseContainer 자식)에 붙어 있어서
-	# phase 전환 시 함께 정리된다.
-	_start_battle_btn.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_start_battle_btn.offset_left = -165.0
-	_start_battle_btn.offset_right = 165.0
-	_start_battle_btn.offset_top = 24.0
-	_start_battle_btn.offset_bottom = 84.0
-	add_child(_start_battle_btn)
+	_discard_btn = Button.new()
+	_discard_btn.custom_minimum_size = Vector2(180, 52)
+	_discard_btn.add_theme_font_size_override("font_size", 20)
+	_discard_btn.pressed.connect(_on_discard_pressed)
+	bar.add_child(_discard_btn)
 
-# ─── Hand (HandSlot) ──────────────────────────────────────────────────────
+	_start_btn = Button.new()
+	_start_btn.text = "전투 시작"
+	_start_btn.custom_minimum_size = Vector2(240, 60)
+	_start_btn.add_theme_font_size_override("font_size", 28)
+	_start_btn.pressed.connect(_on_start_battle)
+	bar.add_child(_start_btn)
+
+	# 전력 지표 — 화면 상단 중앙에 띄운다 (즉사 규칙 공정성 전제, GAME_DESIGN §6).
+	_power_lbl = Label.new()
+	_power_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_power_lbl.add_theme_font_size_override("font_size", 18)
+	_power_lbl.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_power_lbl.offset_left = -320.0
+	_power_lbl.offset_right = 320.0
+	_power_lbl.offset_top = 8.0
+	_power_lbl.offset_bottom = 40.0
+	add_child(_power_lbl)
+
+# ─── Hand ─────────────────────────────────────────────────────────────────
 func _build_hand() -> void:
 	var slot: Control = shell.hand_slot
 	for c in slot.get_children():
@@ -177,116 +131,91 @@ func _build_hand() -> void:
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	panel.add_child(scroll)
 
-	var hand := HBoxContainer.new()
-	hand.add_theme_constant_override("separation", 12)
-	scroll.add_child(hand)
-
-	hand.add_child(_make_reroll_button())
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	scroll.add_child(row)
 
 	for i in RunState.hand.size():
 		var card := _make_hand_card(i)
-		hand.add_child(card)
+		row.add_child(card)
 		_hand_cards.append(card)
 
-func _reset_placement_state() -> void:
-	RunState._ensure_grid()
-	_resync_card_to_cell()
+func _make_hand_card(idx: int) -> Control:
+	var c: Card = RunState.hand[idx]
+	var accent := _accent_for(c.kind)
 
-# 셀은 유지하고 _card_to_cell 만 새 hand 길이에 맞춰 재초기화한다.
-# 라운드 진입/리롤 직후에 호출 — 둘 다 hand 갱신 시점이라 hand_idx 매핑이 무효해진 직후다.
-func _resync_card_to_cell() -> void:
-	_card_to_cell.clear()
-	for i in RunState.hand.size():
-		_card_to_cell.append(-1)
-
-func _make_reroll_button() -> Control:
-	var btn := Button.new()
-	btn.custom_minimum_size = Vector2(120, 200)
-	btn.focus_mode = Control.FOCUS_NONE
-	btn.tooltip_text = "핸드를 다시 뽑는다 (-%d g)" % RunState.REROLL_COST
-	btn.disabled = RunState.gold < RunState.REROLL_COST
-
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.16, 0.18, 0.26)
-	sb.border_color = Color(0.55, 0.45, 0.85)
-	sb.set_border_width_all(2)
-	sb.set_corner_radius_all(10)
-	sb.content_margin_top = 8
-	sb.content_margin_bottom = 8
-	btn.add_theme_stylebox_override("normal", sb)
-	var sb_hover: StyleBoxFlat = sb.duplicate()
-	sb_hover.bg_color = Color(0.22, 0.20, 0.34)
-	btn.add_theme_stylebox_override("hover", sb_hover)
-	var sb_pressed: StyleBoxFlat = sb.duplicate()
-	sb_pressed.bg_color = Color(0.10, 0.12, 0.18)
-	btn.add_theme_stylebox_override("pressed", sb_pressed)
-	var sb_disabled: StyleBoxFlat = sb.duplicate()
-	sb_disabled.bg_color = Color(0.12, 0.13, 0.18)
-	sb_disabled.border_color = Color(0.35, 0.30, 0.45)
-	btn.add_theme_stylebox_override("disabled", sb_disabled)
+	var card := HandCard.new()
+	card.slot_idx = idx
+	card.draggable = true
+	card.custom_minimum_size = Vector2(180, 200)
+	card.focus_mode = Control.FOCUS_NONE
+	var cname := _card_name(c)
+	card.preview_unit_name = cname
+	if c.is_soldier() and c.unit_data != null:
+		card.preview_unit_data = c.unit_data
+	_apply_card_styles(card, accent)
 
 	var vbox := VBoxContainer.new()
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(vbox)
+	vbox.add_theme_constant_override("separation", 2)
+	card.add_child(vbox)
 
-	var icon := Label.new()
-	icon.text = "↻"
-	icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon.add_theme_font_size_override("font_size", 56)
-	icon.add_theme_color_override("font_color", Color(0.85, 0.75, 1.0))
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(icon)
+	if c.is_soldier() and c.unit_data != null:
+		var portrait := _make_hand_portrait(c.unit_data)
+		portrait.custom_minimum_size = Vector2(0, 96)
+		portrait.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		portrait.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		vbox.add_child(portrait)
+	else:
+		var glyph := Label.new()
+		glyph.text = _glyph_for(c.kind)
+		glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		glyph.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		glyph.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		glyph.add_theme_font_size_override("font_size", 64)
+		glyph.add_theme_color_override("font_color", accent.lightened(0.15))
+		glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(glyph)
 
-	var lbl := Label.new()
-	lbl.text = "리롤"
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 20)
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(lbl)
+	var name_lbl := Label.new()
+	name_lbl.text = cname
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_lbl.add_theme_font_size_override("font_size", 16)
+	name_lbl.add_theme_color_override("font_color", accent.lightened(0.35))
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(name_lbl)
+
+	if c.is_soldier() and c.unit_data != null:
+		var stats_lbl := Label.new()
+		stats_lbl.text = "♥ %d  ⚔ %d" % [int(c.unit_data.max_hp), int(c.unit_data.attack)]
+		stats_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		stats_lbl.add_theme_font_size_override("font_size", 13)
+		stats_lbl.add_theme_color_override("font_color", Color(0.78, 0.82, 0.88))
+		stats_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(stats_lbl)
 
 	var cost_lbl := Label.new()
-	cost_lbl.text = "−%d g" % RunState.REROLL_COST
+	cost_lbl.text = "코스트 %d" % c.cost
 	cost_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	cost_lbl.add_theme_font_size_override("font_size", 16)
-	cost_lbl.theme_type_variation = &"LabelGold"
+	cost_lbl.add_theme_font_size_override("font_size", 17)
+	cost_lbl.add_theme_color_override("font_color", Color(0.95, 0.85, 0.45))
 	cost_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(cost_lbl)
 
-	btn.pressed.connect(_on_reroll_pressed)
-	return btn
+	card.pressed.connect(_on_hand_card_clicked.bind(idx))
+	_add_select_border(card)
+	return card
 
-func _on_reroll_pressed() -> void:
-	if not RunState.reroll_hand():
-		return
-	# 카드만 리롤 — 셀에 배치된 병사는 유지(RosterSlot 참조로 보관됨).
-	# 새 hand 풀이 갈아엎혀 unpaid entry의 hand_idx 의미 소실 → -1로 무효화.
-	# (회수 시 paid==false면 카드 핸드 복귀 없이 단순 폐기로 떨어진다.)
-	RunState.grid_invalidate_unpaid_hand_indices()
-	_resync_card_to_cell()
-	_selected_hand_idx = -1
-	_build_hand()
-	_render_placed()
+# 핸드 카드 클릭 = 버리기 선택 토글. (배치는 드래그로)
+func _on_hand_card_clicked(idx: int) -> void:
+	if _marked_for_discard.has(idx):
+		_marked_for_discard.erase(idx)
+	else:
+		_marked_for_discard.append(idx)
 	_refresh_hand_state()
-	_update_summary_and_button()
-	shell.top_bar.set_gold_preview(_total_cost())
-	shell.top_bar.refresh_gold()
-
-func _make_hand_card(slot_idx: int) -> Control:
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	match slot.kind:
-		GameEnums.CardKind.HERO:    return _make_hero_card(slot_idx, slot)
-		GameEnums.CardKind.UPGRADE: return _make_dummy_card(slot_idx, slot, "강화", PrepCardStyle.ACCENT_UPGRADE, "▲")
-		GameEnums.CardKind.SKILL:   return _make_dummy_card(slot_idx, slot, "스킬", PrepCardStyle.ACCENT_SKILL, "✦")
-		GameEnums.CardKind.ITEM:    return _make_dummy_card(slot_idx, slot, "아이템", PrepCardStyle.ACCENT_ITEM, "◆")
-	return _make_hero_card(slot_idx, slot)
-
-# 영웅 카드는 통일된 단일 컬러로(코스트별 차등 없음).
-const _HERO_ACCENT := Color(0.55, 0.72, 0.95)
-# 클릭으로 선택된 셀의 외곽선.
-const _SELECTED_BORDER := Color(1.0, 0.65, 0.2)
-# 카드 종류별 accent는 PrepCardStyle (src/ui/prep/prep_card_style.gd)에서 가져온다.
+	_refresh_bottom_bar()
 
 func _apply_card_styles(card: Button, accent: Color) -> void:
 	var sb := StyleBoxFlat.new()
@@ -301,11 +230,7 @@ func _apply_card_styles(card: Button, accent: Color) -> void:
 	card.add_theme_stylebox_override("normal", sb)
 	var sb_hover: StyleBoxFlat = sb.duplicate()
 	sb_hover.bg_color = Color(0.18, 0.20, 0.28)
-	sb_hover.border_color = accent.lightened(0.2)
 	card.add_theme_stylebox_override("hover", sb_hover)
-	var sb_pressed: StyleBoxFlat = sb.duplicate()
-	sb_pressed.bg_color = Color(0.09, 0.10, 0.14)
-	card.add_theme_stylebox_override("pressed", sb_pressed)
 	var sb_disabled: StyleBoxFlat = sb.duplicate()
 	sb_disabled.bg_color = Color(0.10, 0.11, 0.15)
 	sb_disabled.border_color = Color(accent.r, accent.g, accent.b, 0.35)
@@ -322,241 +247,87 @@ func _add_select_border(card: Control) -> void:
 	sel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(sel)
 
-func _make_hero_card(slot_idx: int, slot: RosterSlot) -> Control:
-	var ud: UnitData = slot.unit_data
-	var price: int = RunState.hire_price_for(ud)
-	var accent: Color = _HERO_ACCENT
-
-	var card := HandCard.new()
-	card.slot_idx = slot_idx
-	var ud_name := tr(ud.name_key)
-	card.preview_unit_name = ud_name
-	card.preview_unit_data = ud
-	card.draggable = true
-	card.custom_minimum_size = Vector2(200, 200)
-	card.focus_mode = Control.FOCUS_NONE
-	card.tooltip_text = "%s\n가격 %d g\nHP %d  ATK %d  DEF %d" % [
-		ud_name, price, int(ud.max_hp), int(ud.attack), int(ud.defense)
-	]
-	_apply_card_styles(card, accent)
-
-	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 2)
-	card.add_child(vbox)
-
-	var portrait := _make_hand_portrait(ud)
-	portrait.custom_minimum_size = Vector2(0, 100)
-	portrait.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	portrait.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_child(portrait)
-
-	var name_lbl := Label.new()
-	name_lbl.text = ud_name
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 18)
-	name_lbl.add_theme_color_override("font_color", accent.lightened(0.35))
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(name_lbl)
-
-	var stats_lbl := Label.new()
-	stats_lbl.text = "♥ %d  ⚔ %d" % [int(ud.max_hp), int(ud.attack)]
-	stats_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stats_lbl.add_theme_font_size_override("font_size", 14)
-	stats_lbl.add_theme_color_override("font_color", Color(0.78, 0.82, 0.88))
-	stats_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(stats_lbl)
-
-	var price_lbl := Label.new()
-	price_lbl.text = "%d g" % price
-	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_lbl.add_theme_font_size_override("font_size", 18)
-	price_lbl.theme_type_variation = &"LabelGold"
-	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(price_lbl)
-
-	if not slot.items.is_empty():
-		var parts: Array[String] = []
-		for it in slot.items:
-			parts.append(tr(it.name_key))
-		var item_lbl := Label.new()
-		item_lbl.text = "[" + ", ".join(parts) + "]"
-		item_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		item_lbl.add_theme_font_size_override("font_size", 13)
-		item_lbl.modulate = Color(0.85, 0.85, 0.5)
-		item_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(item_lbl)
-
-	card.pressed.connect(_on_hero_card_clicked.bind(slot_idx))
-	_add_select_border(card)
-	return card
-
-func _on_hero_card_clicked(slot_idx: int) -> void:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return
-	if _card_to_cell[slot_idx] != -1:
-		return  # 이미 배치된 카드는 핸드에 숨겨져 있어 클릭 안 됨.
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	if _card_info_popup != null and _card_info_popup.visible:
-		_card_info_popup.hide()
-	if _enemy_info_popup != null and _enemy_info_popup.visible:
-		_enemy_info_popup.hide()
-	_selected_hand_idx = slot_idx
-	_selected_cell = -1
-	_selected_enemy_idx = -1
-	_refresh_enemy_selection_ring()
-	_refresh_hand_state()
-	_render_placed()
-	if _hero_info_popup != null:
-		_hero_info_popup.show_for(slot, {}, RunState.inventory)
-
-func _make_dummy_card(slot_idx: int, slot: RosterSlot, kind_label: String, accent: Color, glyph: String) -> Control:
-	var card := HandCard.new()
-	card.slot_idx = slot_idx
-	card.preview_unit_name = slot.dummy_name
-	if slot.item_data != null:
-		card.preview_icon = slot.item_data.load_icon()
-	card.draggable = true
-	card.custom_minimum_size = Vector2(200, 200)
-	card.focus_mode = Control.FOCUS_NONE
-	var _drag_hint: String = "아이템 인벤토리에 드래그해 구매" if slot.kind == GameEnums.CardKind.ITEM else "영웅에게 드래그해 사용"
-	card.tooltip_text = "%s\n가격 %d g\n%s" % [slot.dummy_name, slot.dummy_price, _drag_hint]
-	_apply_card_styles(card, accent)
-
-	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 2)
-	card.add_child(vbox)
-
-	var icon_tex: Texture2D = slot.item_data.load_icon() if slot.item_data != null else null
-	if icon_tex != null:
-		var center := CenterContainer.new()
-		center.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var tex_rect := TextureRect.new()
-		tex_rect.texture = icon_tex
-		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.custom_minimum_size = Vector2(40, 40)
-		tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		center.add_child(tex_rect)
-		vbox.add_child(center)
-	else:
-		var glyph_lbl := Label.new()
-		glyph_lbl.text = glyph
-		glyph_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		glyph_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		glyph_lbl.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		glyph_lbl.add_theme_font_size_override("font_size", 76)
-		glyph_lbl.add_theme_color_override("font_color", accent.lightened(0.15))
-		glyph_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(glyph_lbl)
-
-	var kind_lbl := Label.new()
-	kind_lbl.text = kind_label
-	kind_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	kind_lbl.add_theme_font_size_override("font_size", 13)
-	kind_lbl.add_theme_color_override("font_color", accent.lightened(0.45))
-	kind_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(kind_lbl)
-
-	var name_lbl := Label.new()
-	name_lbl.text = slot.dummy_name
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.add_theme_font_size_override("font_size", 16)
-	name_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.95))
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(name_lbl)
-
-	var price_lbl := Label.new()
-	price_lbl.text = "%d g" % slot.dummy_price
-	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_lbl.add_theme_font_size_override("font_size", 18)
-	price_lbl.theme_type_variation = &"LabelGold"
-	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(price_lbl)
-
-	card.pressed.connect(_on_dummy_card_clicked.bind(slot_idx, kind_label, accent))
-	_add_select_border(card)
-	return card
-
-func _on_dummy_card_clicked(slot_idx: int, kind_label: String, accent: Color) -> void:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return
-	if _card_to_cell[slot_idx] != -1:
-		return
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	# 영웅 팝업을 닫고 선택 해제.
-	if _hero_info_popup != null and _hero_info_popup.visible:
-		_hero_info_popup.hide()
-		_selected_cell = -1
-	if _enemy_info_popup != null and _enemy_info_popup.visible:
-		_enemy_info_popup.hide()
-	_selected_enemy_idx = -1
-	_refresh_enemy_selection_ring()
-	_selected_hand_idx = slot_idx
-	_refresh_hand_state()
-	_render_placed()
-	if _card_info_popup != null:
-		_card_info_popup.show_for(slot, kind_label, accent)
-
-func _make_hand_portrait(unit_data: UnitData) -> Control:
+func _make_hand_portrait(ud: UnitData) -> Control:
 	var holder := Control.new()
 	holder.clip_contents = true
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var sprite := AnimatedSprite2D.new()
-	sprite.sprite_frames = SpriteFrameLoader.build(unit_data.sprite_dir)
-	sprite.scale = Vector2.ONE * unit_data.sprite_scale * 0.75
-	sprite.position = Vector2(90, 90)
+	sprite.sprite_frames = SpriteFrameLoader.build(ud.sprite_dir)
+	sprite.scale = Vector2.ONE * ud.sprite_scale * TOKEN_SCALE_SOLO
+	sprite.position = Vector2(80, 80)
 	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(&"idle"):
 		sprite.play(&"idle")
 	holder.add_child(sprite)
 	return holder
 
-func _spawn_synergy_panel() -> void:
-	_synergy_panel = SynergyPanel.new()
-	add_child(_synergy_panel)
-	# arena_root의 PlayerZone 좌측 위쪽 — TopBar 아래 마진.
-	_synergy_panel.position = Vector2(12, 96)
-	_synergy_panel.update_from_grid(RunState.grid_cells)
+# ─── Placement signals ────────────────────────────────────────────────────
+func _on_place_requested(hand_idx: int, cell_idx: int) -> void:
+	if hand_idx < 0 or hand_idx >= RunState.hand.size():
+		return
+	var c: Card = RunState.hand[hand_idx]
+	var ok := false
+	if c.is_soldier():
+		ok = RunState.place_soldier(cell_idx, hand_idx)
+	elif c.is_mod():
+		ok = RunState.attach_mod(cell_idx, hand_idx)
+	if not ok:
+		return
+	_marked_for_discard.clear()  # 핸드 인덱스가 바뀌므로 버리기 선택 초기화
+	_build_hand()
+	_render_placed()
+	_refresh_all()
 
-func _refresh_synergy_panel() -> void:
-	if _synergy_panel != null:
-		_synergy_panel.update_from_grid(RunState.grid_cells)
+func _on_cell_clicked(cell_idx: int) -> void:
+	# 배치된 칸 클릭 = 회수 (병사+강화 카드 핸드 복귀, 예산 환급).
+	if not _cell_has_unit(cell_idx):
+		return
+	RunState.remove_cell(cell_idx)
+	_marked_for_discard.clear()
+	_build_hand()
+	_render_placed()
+	_refresh_all()
 
-func _refresh_hand_state() -> void:
-	_refresh_synergy_panel()
-	var remaining: int = _gold_remaining()
-	for i in _hand_cards.size():
-		var card: Button = _hand_cards[i] as Button
-		# _card_to_cell: -1=핸드 대기, >=0=셀에 배치, -2=더미 사용 후 영구 소모.
-		# 한번 쓴 카드는 핸드에서 사라진다 (HERO는 셀에서 회수 시 다시 보임).
-		card.visible = (_card_to_cell[i] == -1)
-		var slot: RosterSlot = RunState.hand[i]
-		var slot_price: int
-		if slot.kind == GameEnums.CardKind.HERO:
-			slot_price = RunState.hire_price_for(slot.unit_data)
-		else:
-			slot_price = slot.dummy_price
-		# 더미 카드는 즉시 차감이라 _gold_remaining 비교가 정확하지 않을 수 있다 — 단순 잔액 기준.
-		var available: int = remaining if slot.kind == GameEnums.CardKind.HERO else RunState.gold
-		card.disabled = available < slot_price
-		var sel_border: ReferenceRect = card.get_node_or_null("SelectBorder") as ReferenceRect
-		if sel_border != null:
-			sel_border.visible = (i == _selected_hand_idx)
+func _on_swap_requested(from_idx: int, to_idx: int) -> void:
+	if from_idx == to_idx:
+		return
+	var cells: Array = RunState.board_cells()
+	if from_idx < 0 or from_idx >= cells.size() or to_idx < 0 or to_idx >= cells.size():
+		return
+	var tmp = cells[from_idx]
+	cells[from_idx] = cells[to_idx]
+	cells[to_idx] = tmp
+	_render_placed()
 
-# ─── Formation data ───────────────────────────────────────────────────────
-# 정규화된 (x, y) 위치 (0–1). 레퍼런스 1~10번 역사 전술 반영.
-# 슬롯 수 = 해당 웨이브 적 수 이상으로 정의; 초과분은 중앙 컬럼 폴백.
-# 진형 좌표/라벨은 FormationLibrary로 분리됨 (src/data/formations/formation_library.gd).
+func _on_drag_ended() -> void:
+	_render_placed()
 
-# "적 진영" 글씨 바로 아래 전술 라벨을 위해 상단에 예약하는 높이.
-const _TACTIC_LABEL_H: float = 44.0
+func _cell_has_unit(idx: int) -> bool:
+	var cells: Array = RunState.board_cells()
+	return idx >= 0 and idx < cells.size() and cells[idx] != null
 
-# ─── Enemy preview (EnemyZone) ────────────────────────────────────────────
+func _can_drop_hand_card(hand_idx: int, cell_idx: int) -> bool:
+	if hand_idx < 0 or hand_idx >= RunState.hand.size():
+		return false
+	var c: Card = RunState.hand[hand_idx]
+	if c.is_soldier():
+		return not _cell_has_unit(cell_idx) and RunState.budget_left() >= c.cost
+	if c.is_mod():
+		return _cell_has_unit(cell_idx) and RunState.budget_left() >= c.cost
+	return false
+
+func _build_swap_preview(idx: int, _anchor: Vector2) -> Control:
+	var cells: Array = RunState.board_cells()
+	if idx < 0 or idx >= cells.size() or cells[idx] == null:
+		return null
+	var ud: UnitData = (cells[idx]["card"] as Card).unit_data
+	if ud == null:
+		return null
+	var holder := Control.new()
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.add_child(_make_field_token(ud, Vector2.ZERO, false))
+	return holder
+
+# ─── Enemy preview ────────────────────────────────────────────────────────
 func _render_enemies_preview() -> void:
 	EnemyPreviewView.render(
 		shell.enemy_zone,
@@ -565,27 +336,21 @@ func _render_enemies_preview() -> void:
 		Callable(self.get_script(), "_make_field_token")
 	)
 
-# ─── Player placements (PlayerZone) ───────────────────────────────────────
+# ─── Placed tokens ────────────────────────────────────────────────────────
 func _render_placed() -> void:
 	var zone: Control = shell.player_zone
 	for c in zone.get_children():
 		c.queue_free()
 
-	# 셀 1개 = 2×2 서브셀 (셀당 4명 누적의 4개 슬롯). 체커보드 음영으로 가시화.
-	const SUB_DARK := Color(0.16, 0.18, 0.26, 0.6)
-	const SUB_LIGHT := Color(0.22, 0.24, 0.32, 0.6)
+	var cs: Vector2 = _coord_mapper.cell_size()
 	for i in GRID_CELLS:
 		var origin: Vector2 = _coord_mapper.cell_origin(i)
-		var cs: Vector2 = _coord_mapper.cell_size()
-		var sub_size: Vector2 = Vector2(cs.x / float(SUB_GRID_COLS), cs.y / float(SUB_GRID_ROWS))
-		for sx in SUB_GRID_COLS:
-			for sy in SUB_GRID_ROWS:
-				var sub_rect := ColorRect.new()
-				sub_rect.size = sub_size
-				sub_rect.position = origin + Vector2(float(sx) * sub_size.x, float(sy) * sub_size.y)
-				sub_rect.color = SUB_DARK if (sx + sy) % 2 == 0 else SUB_LIGHT
-				sub_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				zone.add_child(sub_rect)
+		var bg := ColorRect.new()
+		bg.size = cs
+		bg.position = origin
+		bg.color = Color(0.18, 0.20, 0.28, 0.5) if i % 2 == 0 else Color(0.22, 0.24, 0.32, 0.5)
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		zone.add_child(bg)
 		var border := ReferenceRect.new()
 		border.size = cs
 		border.position = origin
@@ -595,59 +360,31 @@ func _render_placed() -> void:
 		border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		zone.add_child(border)
 
+	var cells: Array = RunState.board_cells()
 	for i in GRID_CELLS:
-		var entries: Array = RunState.grid_cells[i]
-		if entries.is_empty():
+		var entry = cells[i]
+		if entry == null:
 			continue
-		var slot: RosterSlot = (entries[0] as Dictionary)["slot"] as RosterSlot
-		var count: int = entries.size()
+		var ud: UnitData = (entry["card"] as Card).unit_data
 		var center: Vector2 = _coord_mapper.cell_center(i)
-		var cs: Vector2 = _coord_mapper.cell_size()
-		var visible: int = min(count, SUB_GRID_CAPACITY)
-		# 사분면(2×2) 중심에 배치. count==1 이면 셀 중심.
-		# y_comp: 스프라이트 중심이 발 위쪽이라 시각적으로 발이 셀 바닥에 닿도록 보정.
-		# y_lift: 유닛을 반 칸(셀 높이/2) 위로 올려 셀 라인에 발이 닿게 한다.
-		var ud0: UnitData = slot.unit_data
-		var y_comp: float = ud0.sprite_scale * TOKEN_SCALE_SOLO * 18.0
+		var y_comp: float = ud.sprite_scale * TOKEN_SCALE_SOLO * 18.0
 		var y_lift: float = cs.y * 0.5
-		for k in visible:
-			var pos: Vector2 = center + _coord_mapper.sub_cell_offset(k, count, cs)
-			pos.y += y_comp - y_lift
-			var token: Node = _make_field_token(ud0, pos, false)
-			token.name = "token_%d_%d" % [i, k]
-			zone.add_child(token)
+		var pos: Vector2 = center + Vector2(0.0, y_comp - y_lift)
+		var token: Node = _make_field_token(ud, pos, false)
+		zone.add_child(token)
 
-		# 사분면 4개를 넘는 초과분은 우상단 ×N 뱃지로 표기.
-		if count > SUB_GRID_CAPACITY:
+		var mods: Array = entry["mods"]
+		if not mods.is_empty():
 			var badge := Label.new()
-			badge.text = "+%d" % (count - SUB_GRID_CAPACITY)
-			badge.add_theme_font_size_override("font_size", 18)
-			badge.add_theme_color_override("font_color", Color(1, 0.95, 0.5))
-			badge.size = Vector2(60, 26)
-			badge.position = _coord_mapper.cell_origin(i) + Vector2(cs.x - 64, 6)
-			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			badge.text = "+%d" % mods.size()
+			badge.add_theme_font_size_override("font_size", 16)
+			badge.add_theme_color_override("font_color", _MOD_ACCENT.lightened(0.3))
+			badge.position = origin_of(i) + Vector2(cs.x - 34, 4)
 			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			zone.add_child(badge)
 
-		var upgrade_level: int = RunState.grid_get_upgrade(i)
-		if upgrade_level > 0:
-			var star_lbl := Label.new()
-			star_lbl.text = "★".repeat(upgrade_level)
-			star_lbl.add_theme_font_size_override("font_size", 16)
-			star_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.0))
-			star_lbl.position = _coord_mapper.cell_origin(i) + Vector2(4, 4)
-			star_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			zone.add_child(star_lbl)
-
-		if i == _selected_cell:
-			var sel_box := ReferenceRect.new()
-			sel_box.size = cs
-			sel_box.position = _coord_mapper.cell_origin(i)
-			sel_box.border_color = _SELECTED_BORDER
-			sel_box.border_width = 3.0
-			sel_box.editor_only = false
-			sel_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			zone.add_child(sel_box)
+func origin_of(i: int) -> Vector2:
+	return _coord_mapper.cell_origin(i)
 
 static func _make_field_token(unit_data: UnitData, local_pos: Vector2, is_enemy: bool, scale_mult: float = TOKEN_SCALE_SOLO) -> Node:
 	var holder := Node2D.new()
@@ -662,374 +399,133 @@ static func _make_field_token(unit_data: UnitData, local_pos: Vector2, is_enemy:
 	holder.add_child(sprite)
 	return holder
 
-# ─── Placement signals ────────────────────────────────────────────────────
-func _on_place_requested(slot_idx: int, cell_idx: int) -> void:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return
-	if cell_idx < 0 or cell_idx >= GRID_CELLS:
-		return
-	# 이미 다른 셀에 배치되었거나 더미로 소모된 카드는 거부 — 카드는 1회용.
-	if _card_to_cell[slot_idx] != -1:
-		return
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	if slot.kind != GameEnums.CardKind.HERO:
-		_apply_dummy_card_to_cell(slot_idx, slot, cell_idx)
-		return
-	var entries: Array = RunState.grid_cells[cell_idx]
-	# 셀당 한 종류 규칙: 첫 카드의 유닛 ID와 일치해야 한다.
-	if not entries.is_empty():
-		var head: RosterSlot = (entries[0] as Dictionary)["slot"] as RosterSlot
-		if head.unit_data.id != slot.unit_data.id:
-			return
-	# 셀당 최대 SUB_GRID_CAPACITY(=4) 명. 5번째 배치는 거부 — 다른 셀로 분산해야 한다.
-	if entries.size() >= SUB_GRID_CAPACITY:
-		return
-	var price: int = RunState.hire_price_for(slot.unit_data)
-	if _gold_remaining() < price:
-		return
-	entries.append({"slot": slot, "paid": false, "hand_idx": slot_idx})
-	_card_to_cell[slot_idx] = cell_idx
-	_render_placed()
+# ─── Refresh ──────────────────────────────────────────────────────────────
+func _refresh_all() -> void:
 	_refresh_hand_state()
-	_update_summary_and_button()
-	shell.top_bar.set_gold_preview(_total_cost())
+	_refresh_bottom_bar()
+	_refresh_power()
 
-func _on_drag_started(from_idx: int) -> void:
-	var pz: Control = shell.player_zone
-	for k in SUB_GRID_CAPACITY:
-		var token := pz.get_node_or_null("token_%d_%d" % [from_idx, k])
-		if token != null:
-			token.visible = false
+func _refresh_hand_state() -> void:
+	for i in _hand_cards.size():
+		var card: Button = _hand_cards[i] as Button
+		var c: Card = RunState.hand[i]
+		# 예산 부족이면 배치 불가 표시 (버리기 선택은 여전히 가능하므로 disabled로 막지 않는다).
+		var sel: ReferenceRect = card.get_node_or_null("SelectBorder") as ReferenceRect
+		if sel != null:
+			sel.visible = _marked_for_discard.has(i)
+		card.modulate = Color(1, 1, 1, 1) if RunState.budget_left() >= c.cost else Color(1, 0.7, 0.7, 1)
 
-func _on_drag_ended() -> void:
-	# 드래그 성공/취소 무관하게 셀 상태 기준으로 다시 그려서 숨겨졌던 토큰 복구.
-	_render_placed()
+func _refresh_bottom_bar() -> void:
+	if _summary_lbl != null:
+		_summary_lbl.text = "예산 %d / %d   ·   출전 %d기" % [
+			RunState.budget_left(), RunState.budget_total, RunState.soldier_count()
+		]
+	if _discard_btn != null:
+		var n := _marked_for_discard.size()
+		_discard_btn.text = "버리기 (%d) [남은 %d회]" % [n, RunState.discard_left]
+		_discard_btn.disabled = RunState.discard_left <= 0 or n == 0
+	if _start_btn != null:
+		_start_btn.disabled = RunState.soldier_count() == 0
 
-func _on_swap_requested(from_idx: int, to_idx: int) -> void:
-	if from_idx < 0 or from_idx >= GRID_CELLS:
+func _refresh_power() -> void:
+	if _power_lbl == null:
 		return
-	if to_idx < 0 or to_idx >= GRID_CELLS:
-		return
-	if from_idx == to_idx:
-		return
-	var src: Array = RunState.grid_cells[from_idx]
-	if src.is_empty():
-		return
-	var dst: Array = RunState.grid_cells[to_idx]
-	RunState.grid_cells[to_idx] = src
-	RunState.grid_cells[from_idx] = dst
-	RunState.grid_swap_boosts(from_idx, to_idx)
-	# unpaid entry는 hand_idx로 _card_to_cell에 등록돼 있으므로 셀 인덱스를 다시 매핑.
-	# paid entry는 hand_idx=-1 이라 자동으로 무시된다. paid↔unpaid 혼합 스왑도 동일 로직.
-	_selected_cell = -1
-	_selected_hand_idx = -1
-	if _hero_info_popup != null:
-		_hero_info_popup.hide()
-	_recompute_card_to_cell_from_grid()
-	_render_placed()
-	_refresh_hand_state()
+	var ally := _totals_from_board()
+	var enemy := _totals_from_lineup(RunState.current_enemy_lineup())
+	var ttk_ally: float = enemy["hp"] / maxf(ally["dps"], 0.01)   # 우리가 적을 지우는 시간
+	var ttk_enemy: float = ally["hp"] / maxf(enemy["dps"], 0.01)  # 적이 우리를 지우는 시간
+	var ratio: float = ttk_enemy / maxf(ttk_ally, 0.01)
+	var verdict := "열세"
+	var col := Color(0.95, 0.5, 0.5)
+	if ally["dps"] <= 0.0:
+		verdict = "—"
+		col = Color(0.7, 0.7, 0.7)
+	elif ratio >= 1.35:
+		verdict = "여유"; col = Color(0.5, 0.9, 0.6)
+	elif ratio >= 1.05:
+		verdict = "우세"; col = Color(0.7, 0.9, 0.5)
+	elif ratio >= 0.85:
+		verdict = "박빙"; col = Color(0.95, 0.85, 0.45)
+	_power_lbl.add_theme_color_override("font_color", col)
+	_power_lbl.text = "전력  아군 HP %d·DPS %d  vs  적 HP %d·DPS %d   →  [%s]  (방어·조커 미반영 근사)" % [
+		int(ally["hp"]), int(ally["dps"]), int(enemy["hp"]), int(enemy["dps"]), verdict
+	]
 
-func _recompute_card_to_cell_from_grid() -> void:
-	var n: int = RunState.hand.size()
-	_card_to_cell.clear()
-	for i in n:
-		_card_to_cell.append(-1)
-	for cell_idx in GRID_CELLS:
-		var entries: Array = RunState.grid_cells[cell_idx]
-		for entry in entries:
-			var d: Dictionary = entry as Dictionary
-			if bool(d.get("paid", false)):
-				continue
-			var hand_idx: int = int(d.get("hand_idx", -1))
-			if hand_idx < 0 or hand_idx >= n:
-				continue
-			# hand 슬롯이 다른 RosterSlot으로 갈렸으면 더 이상 같은 카드가 아님.
-			if RunState.hand[hand_idx] != d["slot"]:
-				continue
-			_card_to_cell[hand_idx] = cell_idx
-
-func _cell_has_unit(idx: int) -> bool:
-	if idx < 0 or idx >= GRID_CELLS:
-		return false
-	return not (RunState.grid_cells[idx] as Array).is_empty()
-
-func _cell_has_unpaid(idx: int) -> bool:
-	if idx < 0 or idx >= GRID_CELLS:
-		return false
-	for entry in RunState.grid_cells[idx]:
-		if not bool((entry as Dictionary).get("paid", false)):
-			return true
-	return false
-
-func _build_swap_preview(idx: int, _anchor: Vector2) -> Control:
-	if idx < 0 or idx >= GRID_CELLS:
-		return null
-	var entries: Array = RunState.grid_cells[idx]
-	if entries.is_empty():
-		return null
-	var holder := Control.new()
-	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var count: int = min(entries.size(), SUB_GRID_CAPACITY)
-	var cs: Vector2 = _coord_mapper.cell_size()
-	for k in count:
-		var ud: UnitData = ((entries[k] as Dictionary)["slot"] as RosterSlot).unit_data
-		var offset: Vector2 = _coord_mapper.sub_cell_offset(k, count, cs)
-		var y_comp: float = ud.sprite_scale * TOKEN_SCALE_SOLO * 18.0
-		holder.add_child(_make_field_token(ud, Vector2(offset.x, offset.y + y_comp), false))
-	return holder
-
-func _can_drop_hand_card_to_cell(slot_idx: int, cell_idx: int) -> bool:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return false
-	if _card_to_cell[slot_idx] != -1:
-		return false
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	if slot.kind == GameEnums.CardKind.HERO:
-		return true  # 영웅은 어느 셀에나 드롭 가능 (동종 체크는 place_requested에서 처리)
-	if slot.kind == GameEnums.CardKind.ITEM:
-		return false  # 아이템은 ItemDropZone으로만 드롭
-	if slot.kind == GameEnums.CardKind.UPGRADE:
-		return _cell_has_unit(cell_idx) and RunState.grid_get_upgrade(cell_idx) < RunState.MAX_UPGRADE_LEVEL
-	return _cell_has_unit(cell_idx)  # 비-영웅은 유닛이 있는 셀에만
-
-func _apply_dummy_card_to_cell(slot_idx: int, slot: RosterSlot, cell_idx: int) -> void:
-	if not _cell_has_unit(cell_idx):
-		return
-	if slot.kind == GameEnums.CardKind.UPGRADE and RunState.grid_get_upgrade(cell_idx) >= RunState.MAX_UPGRADE_LEVEL:
-		return
-	var paid: bool
-	if slot.kind == GameEnums.CardKind.ITEM and slot.item_data != null:
-		paid = RunState.buy_item(slot.item_data)
-	else:
-		paid = RunState.spend(slot.dummy_price)
-	if not paid:
-		return
-	if slot.kind == GameEnums.CardKind.UPGRADE:
-		RunState.grid_add_boost(cell_idx, slot.upgrade_stat)
-		_render_placed()
-	_card_to_cell[slot_idx] = -2
-	if _card_info_popup != null:
-		_card_info_popup.hide()
-	_refresh_hand_state()
-	_update_summary_and_button()
-	shell.top_bar.set_gold_preview(_total_cost())
-	shell.top_bar.refresh_gold()
-
-func _spawn_hero_info_popup() -> void:
-	var ml: CanvasLayer = shell.modal_layer
-	_hero_info_popup = HERO_INFO_POPUP_SCENE.instantiate() as HeroInfoPopup
-	ml.add_child(_hero_info_popup)
-	_hero_info_popup.close_requested.connect(_on_hero_info_popup_close)
-
-func _spawn_enemy_info_popup() -> void:
-	var ml: CanvasLayer = shell.modal_layer
-	_enemy_info_popup = ENEMY_INFO_POPUP_SCENE.instantiate() as HeroInfoPopup
-	ml.add_child(_enemy_info_popup)
-	_enemy_info_popup.close_requested.connect(_on_enemy_info_popup_close)
-
-func _on_enemy_info_popup_close() -> void:
-	_selected_enemy_idx = -1
-	_refresh_enemy_selection_ring()
-	if _enemy_info_popup != null:
-		_enemy_info_popup.hide()
-
-func _refresh_enemy_selection_ring() -> void:
-	var ez: Control = shell.get("enemy_zone")
-	if ez == null or not is_instance_valid(ez):
-		return
-	if _enemy_sel_box != null and is_instance_valid(_enemy_sel_box):
-		if _enemy_sel_box.get_parent() != null:
-			_enemy_sel_box.get_parent().remove_child(_enemy_sel_box)
-		_enemy_sel_box.queue_free()
-	_enemy_sel_box = null
-	if _selected_enemy_idx < 0:
-		return
-	var lineup: Array = RunState.current_enemy_lineup()
-	if _selected_enemy_idx >= lineup.size():
-		return
-	var ud: UnitData = lineup[_selected_enemy_idx] as UnitData
-	if ud == null:
-		return
-	var zone_w: float = ez.size.x if ez.size.x > 0.0 else 360.0
-	var zone_h: float = ez.size.y if ez.size.y > 0.0 else 360.0
-	var tactic_key: StringName = RunState.current_tactic_key()
-	var field_h: float = zone_h - _TACTIC_LABEL_H
-	var positions: Array = FormationLibrary.positions_for(tactic_key, lineup.size(), zone_w, field_h)
-	var pos: Vector2 = (positions[_selected_enemy_idx] as Vector2) + Vector2(0.0, _TACTIC_LABEL_H)
-	var box_size: Vector2 = Vector2(64.0, 64.0)
-	var box := ReferenceRect.new()
-	box.size = box_size
-	box.position = pos - box_size * 0.5
-	box.border_color = _SELECTED_BORDER
-	box.border_width = 3.0
-	box.editor_only = false
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ez.add_child(box)
-	_enemy_sel_box = box
-
-func _on_enemy_zone_gui_input(event: InputEvent) -> void:
-	if not (event is InputEventMouseButton):
-		return
-	var mb: InputEventMouseButton = event
-	if mb.button_index != MOUSE_BUTTON_LEFT or not mb.pressed:
-		return
-	var idx: int = _enemy_index_at_local_pos(mb.position)
-	if idx < 0:
-		if _enemy_info_popup != null:
-			_enemy_info_popup.hide()
-		_selected_enemy_idx = -1
-		_refresh_enemy_selection_ring()
-		return
-	var lineup: Array = RunState.current_enemy_lineup()
-	var ud: UnitData = lineup[idx] as UnitData
-	if ud == null:
-		return
-	# 다른 팝업은 닫는다 — 한 번에 한 패널만.
-	if _hero_info_popup != null:
-		_hero_info_popup.hide()
-	if _card_info_popup != null:
-		_card_info_popup.hide()
-	_selected_cell = -1
-	_selected_hand_idx = -1
-	_refresh_hand_state()
-	_render_placed()
-	_selected_enemy_idx = idx
-	_refresh_enemy_selection_ring()
-	_enemy_info_popup.show_for_unit_data(ud)
-	# enemy popup의 _unhandled_input(좌클릭으로 닫힘)이 같은 클릭으로 즉시 닫지 않도록 흡수.
-	(shell.enemy_zone as Control).accept_event()
-
-func _enemy_index_at_local_pos(local_pos: Vector2) -> int:
-	var ez: Control = shell.enemy_zone
-	if ez == null:
-		return -1
-	var lineup: Array = RunState.current_enemy_lineup()
-	var n: int = lineup.size()
-	if n == 0:
-		return -1
-	var zone_w: float = ez.size.x if ez.size.x > 0.0 else 360.0
-	var zone_h: float = ez.size.y if ez.size.y > 0.0 else 360.0
-	var tactic_key: StringName = RunState.current_tactic_key()
-	var field_h: float = zone_h - _TACTIC_LABEL_H
-	var positions: Array = FormationLibrary.positions_for(tactic_key, n, zone_w, field_h)
-	var best_idx: int = -1
-	var best_dist: float = _ENEMY_CLICK_RADIUS_PX
-	for i in n:
-		var p: Vector2 = (positions[i] as Vector2) + Vector2(0.0, _TACTIC_LABEL_H)
-		var d: float = local_pos.distance_to(p)
-		if d < best_dist:
-			best_dist = d
-			best_idx = i
-	return best_idx
-
-func _spawn_card_info_popup() -> void:
-	var ml: CanvasLayer = shell.modal_layer
-	_card_info_popup = CardInfoPopupScript.new() as CardInfoPopup
-	ml.add_child(_card_info_popup)
-	_card_info_popup.close_requested.connect(_on_card_info_popup_close)
-
-func _on_cell_clicked(cell_idx: int) -> void:
-	if cell_idx < 0 or cell_idx >= GRID_CELLS:
-		return
-	var entries: Array = RunState.grid_cells[cell_idx]
-	if entries.is_empty():
-		_selected_cell = -1
-		_selected_hand_idx = -1
-		_refresh_hand_state()
-		_render_placed()
-		if _hero_info_popup != null:
-			_hero_info_popup.hide()
-		return
-	# 카드 팝업/적 팝업이 열려 있으면 닫는다.
-	if _card_info_popup != null:
-		_card_info_popup.hide()
-	if _enemy_info_popup != null:
-		_enemy_info_popup.hide()
-	_selected_enemy_idx = -1
-	_refresh_enemy_selection_ring()
-	_selected_cell = cell_idx
-	# 해당 셀의 unpaid entry 중 유효한 hand_idx를 찾아 카드에 주황 테두리를 준다.
-	_selected_hand_idx = -1
-	var n: int = RunState.hand.size()
-	for entry in entries:
-		var d: Dictionary = entry as Dictionary
-		if bool(d.get("paid", false)):
+func _totals_from_board() -> Dictionary:
+	var hp := 0.0
+	var dps := 0.0
+	for e in RunState.board_cells():
+		if e == null:
 			continue
-		var hidx: int = int(d.get("hand_idx", -1))
-		if hidx >= 0 and hidx < n and RunState.hand[hidx] == d["slot"]:
-			_selected_hand_idx = hidx
-			break
-	_refresh_hand_state()
-	_render_placed()
-	var slot: RosterSlot = (entries[0] as Dictionary)["slot"] as RosterSlot
-	if _hero_info_popup != null:
-		_hero_info_popup.show_for(slot, RunState.grid_get_boosts(cell_idx), RunState.inventory)
+		var ud: UnitData = (e["card"] as Card).unit_data
+		var s := _base_stats(ud)
+		for m in (e["mods"] as Array):
+			_apply_mod(s, m as Card)
+		hp += s["hp"] + s["defense"] * 3.0
+		dps += s["atk"] * s["aspd"]
+	return {"hp": hp, "dps": dps}
 
-func _on_hero_info_popup_close() -> void:
-	_selected_cell = -1
-	_selected_hand_idx = -1
-	_refresh_hand_state()
-	_render_placed()
-	if _hero_info_popup != null:
-		_hero_info_popup.hide()
+func _totals_from_lineup(lineup: Array) -> Dictionary:
+	var hp := 0.0
+	var dps := 0.0
+	for u in lineup:
+		var ud := u as UnitData
+		if ud == null:
+			continue
+		hp += ud.max_hp + ud.defense * 3.0
+		dps += ud.attack * ud.attack_speed
+	return {"hp": hp, "dps": dps}
 
-func _on_card_info_popup_close() -> void:
-	_selected_hand_idx = -1
-	_refresh_hand_state()
-	if _card_info_popup != null:
-		_card_info_popup.hide()
+func _base_stats(ud: UnitData) -> Dictionary:
+	return {"hp": ud.max_hp, "atk": ud.attack, "defense": ud.defense, "aspd": ud.attack_speed}
 
-func _update_summary_and_button() -> void:
-	var deployed: int = _total_count()
-	var spent: int = _total_cost()
-	var new_count: int = RunState.grid_unpaid_count()
-	if new_count > 0:
-		_summary_lbl.text = "출전: %d명 (신규 +%d) / 비용 %d g" % [deployed, new_count, spent]
-	else:
-		_summary_lbl.text = "출전: %d명 / 비용 %d g" % [deployed, spent]
-	_start_battle_btn.disabled = deployed == 0 or spent > RunState.gold
+func _apply_mod(s: Dictionary, m: Card) -> void:
+	match String(m.mod_stat):
+		"hp":      s["hp"] += m.mod_amount
+		"atk":     s["atk"] += m.mod_amount
+		"defense": s["defense"] += m.mod_amount
+		"attack_speed": s["aspd"] += m.mod_amount
+	# 키워드형 강화는 거친 근사에서 제외 (화면에 명시).
+
+# ─── Discard ──────────────────────────────────────────────────────────────
+func _on_discard_pressed() -> void:
+	if _marked_for_discard.is_empty():
+		return
+	if not RunState.discard_and_redraw(_marked_for_discard.duplicate()):
+		return
+	_marked_for_discard.clear()
+	_build_hand()
+	_refresh_all()
 
 # ─── PREP → BATTLE ────────────────────────────────────────────────────────
 func _on_start_battle() -> void:
-	var spent: int = _total_cost()
-	if spent > RunState.gold or _total_count() == 0:
+	if RunState.soldier_count() == 0:
 		return
-	RunState.spend(spent)
-	# 신규 배치분을 영구 자산으로 확정. 다음 라운드 PREP 진입 시 재차감 없이 보존된다.
-	RunState.grid_commit_paid()
-
-	# 셀당 같은 유닛 타입만 담기므로 첫 인덱스를 대표로 plan 한 entry 생성.
-	# 전투 시작 좌표는 prep PlayerZone 토큰의 글로벌 좌표를 그대로 사용한다.
 	var pz_origin: Vector2 = (shell.player_zone as Control).global_position
-	var plan: Array = []
+	var cells: Array = RunState.board_cells()
+	var plan_units: Array = []
 	for i in GRID_CELLS:
-		var entries: Array = RunState.grid_cells[i]
-		if entries.is_empty():
+		var entry = cells[i]
+		if entry == null:
 			continue
-		var count: int = entries.size()
 		var center: Vector2 = _coord_mapper.cell_center(i)
-		var cs: Vector2 = _coord_mapper.cell_size()
-		var positions: Array = []
-		# 전투 시작 좌표를 PREP의 사분면 위치와 일치시킨다 — 플레이어가 본 그대로 출전.
-		for k in count:
-			var offset: Vector2 = _coord_mapper.sub_cell_offset(k, count, cs)
-			positions.append(pz_origin + center + offset)
-		plan.append({
-			"slot": (entries[0] as Dictionary)["slot"],
-			"positions": positions,
-			"boosts": RunState.grid_get_boosts(i),
+		plan_units.append({
+			"card": entry["card"],
+			"mods": (entry["mods"] as Array).duplicate(),
+			"position": pz_origin + center,
 		})
-	# BattlePlan DTO를 만들어 단방향 전달. RunState 글로벌 mutate 없음.
-	var battle_plan := BattlePlan.new()
-	battle_plan.player_units = plan
-	battle_plan.enemy_lineup = RunState.current_enemy_lineup()
-	battle_plan.enemy_positions = _collect_enemy_positions()
-	battle_plan.round_index = RunState.current_round
-	battle_plan.tactic_key = RunState.current_tactic_key()
-	battle_plan.global_items = RunState.inventory.duplicate()
-	transition_requested.emit(ARENA_ROOT.PhaseId.BATTLE, battle_plan)
 
-# 진형 좌표를 그대로 전투 시작 좌표로 사용한다 (프리뷰와 일치).
+	var plan := BattlePlan.new()
+	plan.player_units = plan_units
+	plan.enemy_lineup = RunState.current_enemy_lineup()
+	plan.enemy_positions = _collect_enemy_positions()
+	plan.round_index = RunState.current_round
+	plan.tactic_key = RunState.current_tactic_key()
+	plan.jokers = RunState.jokers.duplicate()
+
+	RunState.commit_deployment(plan_units, plan.enemy_positions)
+	transition_requested.emit(ARENA_ROOT.PhaseId.BATTLE, plan)
+
 func _collect_enemy_positions() -> Array:
 	var ez: Control = shell.enemy_zone
 	var lineup: Array = RunState.current_enemy_lineup()
@@ -1039,75 +535,34 @@ func _collect_enemy_positions() -> Array:
 	var origin: Vector2 = ez.global_position
 	var zone_w: float = ez.size.x if ez.size.x > 0.0 else 360.0
 	var zone_h: float = ez.size.y if ez.size.y > 0.0 else 360.0
-	var tactic_key: StringName = RunState.current_tactic_key()
-	var field_h: float = zone_h - _TACTIC_LABEL_H
-	var positions: Array = FormationLibrary.positions_for(tactic_key, n, zone_w, field_h)
+	var field_h: float = zone_h - EnemyPreviewView.TACTIC_LABEL_H
+	var positions: Array = FormationLibrary.positions_for(RunState.current_tactic_key(), n, zone_w, field_h)
 	var out: Array = []
 	for pos in positions:
-		out.append(origin + pos + Vector2(0.0, _TACTIC_LABEL_H))
+		out.append(origin + pos + Vector2(0.0, EnemyPreviewView.TACTIC_LABEL_H))
 	return out
 
-func _prep_to_battle_pos(prep_pos: Vector2) -> Vector2:
-	var zone_size: Vector2 = (shell.player_zone as Control).size
-	if zone_size.x <= 0.0 or zone_size.y <= 0.0:
-		return Vector2(BATTLE_PLAYER_X_MIN, BATTLE_Y_MIN)
-	var tx: float = clampf(prep_pos.x / zone_size.x, 0.0, 1.0)
-	var ty: float = clampf(prep_pos.y / zone_size.y, 0.0, 1.0)
-	var bx: float = lerpf(BATTLE_PLAYER_X_MIN, BATTLE_PLAYER_X_MAX, tx)
-	var by: float = lerpf(BATTLE_Y_MIN, BATTLE_Y_MAX, ty)
-	return Vector2(bx, by)
+# ─── Card presentation helpers ────────────────────────────────────────────
+func _accent_for(kind: int) -> Color:
+	match kind:
+		GameEnums.CardType.SOLDIER: return _SOLDIER_ACCENT
+		GameEnums.CardType.MOD:     return _MOD_ACCENT
+		GameEnums.CardType.SPELL:   return _SPELL_ACCENT
+		GameEnums.CardType.AURA:    return _AURA_ACCENT
+		GameEnums.CardType.TRAP:    return _TRAP_ACCENT
+	return _SOLDIER_ACCENT
 
-# ─── Helpers ──────────────────────────────────────────────────────────────
-# 비용은 이번 라운드 미결제(unpaid) 병사 합. paid 영구 자산은 재차감 없음.
-func _total_cost() -> int:
-	return RunState.grid_unpaid_cost()
+func _glyph_for(kind: int) -> String:
+	match kind:
+		GameEnums.CardType.MOD:   return "▲"
+		GameEnums.CardType.SPELL: return "✦"
+		GameEnums.CardType.AURA:  return "◎"
+		GameEnums.CardType.TRAP:  return "⚑"
+	return "◆"
 
-# 출전 인원수는 paid + unpaid 전부 (영구 군대도 매 라운드 출전).
-func _total_count() -> int:
-	return RunState.grid_total_count()
-
-func _gold_remaining() -> int:
-	return RunState.gold - _total_cost()
-
-# ─── Item Slot ────────────────────────────────────────────────────────────
-func _build_item_slot() -> void:
-	if not shell.has("item_slot"):
-		return
-	_render_item_slot()
-
-func _render_item_slot() -> void:
-	var slot: Control = shell.item_slot
-	ItemInventoryView.render(slot, RunState.inventory)
-	_item_drop_zone = ItemDropZone.new()
-	_item_drop_zone.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_item_drop_zone.mouse_filter = Control.MOUSE_FILTER_PASS
-	_item_drop_zone.can_drop_item = Callable(self, "_can_drop_item_card")
-	_item_drop_zone.item_dropped.connect(_on_item_dropped)
-	slot.add_child(_item_drop_zone)
-
-func _can_drop_item_card(slot_idx: int) -> bool:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return false
-	if _card_to_cell[slot_idx] != -1:
-		return false
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	return slot.kind == GameEnums.CardKind.ITEM and slot.item_data != null
-
-func _on_item_dropped(slot_idx: int) -> void:
-	if slot_idx < 0 or slot_idx >= RunState.hand.size():
-		return
-	if _card_to_cell[slot_idx] != -1:
-		return
-	var slot: RosterSlot = RunState.hand[slot_idx]
-	if slot.kind != GameEnums.CardKind.ITEM or slot.item_data == null:
-		return
-	if not RunState.buy_item(slot.item_data):
-		return
-	_card_to_cell[slot_idx] = -2
-	if _card_info_popup != null:
-		_card_info_popup.hide()
-	_render_item_slot()
-	_refresh_hand_state()
-	_update_summary_and_button()
-	shell.top_bar.set_gold_preview(_total_cost())
-	shell.top_bar.refresh_gold()
+func _card_name(c: Card) -> String:
+	if c.is_soldier() and c.unit_data != null:
+		return tr(c.unit_data.name_key)
+	if c.name_key != "":
+		return tr(c.name_key)
+	return "?"

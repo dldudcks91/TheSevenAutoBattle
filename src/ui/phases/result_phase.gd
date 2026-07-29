@@ -100,16 +100,16 @@ func _build_modal() -> void:
 	menu_btn.pressed.connect(func(): main_menu_requested.emit())
 	btn_row.add_child(menu_btn)
 
-	# Run-ending state: no "다음 라운드".
+	# 패배 = 즉시 런 종료 (GAME_DESIGN §6). 승리 & 미종료 → 상점(편성)으로.
 	var run_ended: bool = (not won) or was_last
 	if not run_ended:
-		var next_btn := Button.new()
-		next_btn.text = "다음 라운드"
-		next_btn.custom_minimum_size = Vector2(280, 60)
-		next_btn.add_theme_font_size_override("font_size", 28)
-		next_btn.pressed.connect(func(): transition_requested.emit(ARENA_ROOT.PhaseId.PREP, null))
-		btn_row.add_child(next_btn)
-		next_btn.grab_focus()
+		var shop_btn := Button.new()
+		shop_btn.text = "상점으로"
+		shop_btn.custom_minimum_size = Vector2(280, 60)
+		shop_btn.add_theme_font_size_override("font_size", 28)
+		shop_btn.pressed.connect(func(): transition_requested.emit(ARENA_ROOT.PhaseId.SHOP, null))
+		btn_row.add_child(shop_btn)
+		shop_btn.grab_focus()
 	else:
 		menu_btn.grab_focus()
 

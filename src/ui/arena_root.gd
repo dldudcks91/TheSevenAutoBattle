@@ -10,8 +10,10 @@ const MENU_SCENE := "res://src/ui/main_menu.tscn"
 const PREP_PHASE := preload("res://src/ui/phases/prep_phase.tscn")
 const BATTLE_PHASE := preload("res://src/ui/phases/battle_phase.tscn")
 const RESULT_PHASE := preload("res://src/ui/phases/result_phase.tscn")
+const SHOP_PHASE := preload("res://src/ui/phases/shop_phase.tscn")
 
-enum PhaseId { PREP, BATTLE, RESULT }
+# 덱빌딩 4-phase (SCENES.md §A). PREP=배치, SHOP=골드 상점 — 서로 다른 시점.
+enum PhaseId { PREP, BATTLE, RESULT, SHOP }
 
 # ─── Shell node refs (Scene Unique Names — owner-relative) ────────────────
 @onready var _round_lbl: Label = %RoundLabel
@@ -89,6 +91,7 @@ func _scene_for_phase(p: int) -> PackedScene:
 		PhaseId.PREP:   return PREP_PHASE
 		PhaseId.BATTLE: return BATTLE_PHASE
 		PhaseId.RESULT: return RESULT_PHASE
+		PhaseId.SHOP:   return SHOP_PHASE
 	return null
 
 func _shell_dict() -> Dictionary:
@@ -136,6 +139,7 @@ func _refresh_top_bar() -> void:
 		PhaseId.PREP:   _phase_hint.text = ""
 		PhaseId.BATTLE: _phase_hint.text = ""
 		PhaseId.RESULT: _phase_hint.text = ""
+		PhaseId.SHOP:   _phase_hint.text = ""
 	_render_gold()
 
 func _render_gold() -> void:

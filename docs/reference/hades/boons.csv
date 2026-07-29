@@ -1,0 +1,166 @@
+name,god,rarity,effect
+Aphrodite's Aid,Aphrodite,Core,Your Call fires a seeking projectile that inflicts Charm.
+Blown Kiss,Aphrodite,Core,Your Cast shoots farther and is stronger against undamaged foes.
+Broken Resolve,Aphrodite,Core,Your Weak effects are more potent.
+Crush Shot,Aphrodite,Core,"Your Cast is a wide, short-range blast that inflicts Weak."
+Different League,Aphrodite,Core,Resist some damage from nearby foes' attacks.
+Dying Lament,Aphrodite,Core,"When foes are slain, they damage nearby foes and inflict Weak."
+Empty Inside,Aphrodite,Core,Your Weak effects have a longer duration.
+Heartbreak Flourish,Aphrodite,Core,Your Special deals more damage and inflicts Weak.
+Heartbreak Strike,Aphrodite,Core,Your Attack deals more damage and inflicts Weak.
+Life Affirmation,Aphrodite,Core,Any {!Icons.HealthUp_Small} chamber rewards are worth more.
+Passion Dash,Aphrodite,Core,"Your Dash deals damage where you end up, inflicting Weak."
+Passion Flare,Aphrodite,Core,Your Cast damages foes around you and inflicts Weak.
+Sweet Surrender,Aphrodite,Core,Weak-afflicted foes are also more susceptible to damage.
+Wave of Despair,Aphrodite,Core,"After you take damage, damage foes around you and inflict Weak."
+Ares' Aid,Ares,Core,Your Call turns you into an Impervious Blade Rift for # Sec.
+Battle Rage,Ares,Core,"After slaying a foe, your next Attack or Special deals more damage."
+Black Metal,Ares,Core,Your Blade Rift effects deal damage in a wider area.
+Blade Dash,Ares,Core,Your Dash creates a Blade Rift where you started.
+Blood Frenzy,Ares,Core,"After using Death Defiance, deal more damage that Encounter(s)."
+Curse of Agony,Ares,Core,Your Attack inflicts Doom.
+Curse of Pain,Ares,Core,Your Special inflicts Doom.
+Curse of Vengeance,Ares,Core,"After you take damage, inflict Doom on foes around you."
+Dire Misfortune,Ares,Core,Your Doom effects deal more damage when applied multiple times.
+Engulfing Vortex,Ares,Core,Your Blade Rift effects last longer and pull foes in.
+Impending Doom,Ares,Core,"Your Doom effects deal more damage, but take +# Sec. to activate."
+Slicing Flare,Ares,Core,Your Cast sends a large Blade Rift hurtling ahead for a brief time.
+Slicing Shot,Ares,Core,Your Cast sends a Blade Rift hurtling ahead.
+Urge to Kill,Ares,Core,"Your Attack, Special, and Cast deal more damage."
+Artemis' Aid,Artemis,Core,Your Call fires a seeking arrow with #  Critical chance.
+Clean Kill,Artemis,Core,Your Critical effects deal even more damage.
+Deadly Flourish,Artemis,Core,"Your Special is stronger, with #  chance to deal Critical damage."
+Deadly Strike,Artemis,Core,"Your Attack is stronger, with #  chance to deal Critical damage."
+Exit Wounds,Artemis,Core,Your foes take damage when your Bloodstones stuck in them is dislodged.
+Hide Breaker,Artemis,Core,Your Critical effects deal even more damage to Armor.
+Hunter Dash,Artemis,Core,Your Dash-Strike deals more damage.
+Hunter Instinct,Artemis,Core,Your God Gauge charges up faster when you deal Critical damage.
+Hunter's Flare,Artemis,Core,"Your Cast damages foes around you, with a # Critical chance."
+Hunter's Mark,Artemis,Core,"After you deal Critical damage to a foe, a foe near it is Marked."
+Pressure Points,Artemis,Core,Any damage you deal has a chance to be Critical.
+Support Fire,Artemis,Core,"After you Cast, or hit with an Attack or Special, fire a seeking arrow."
+True Shot,Artemis,Core,"Your Cast seeks foes, with #  chance to deal Critical damage."
+Athena's Aid,Athena,Core,Your Call briefly makes you Impervious and Deflect all attacks.
+Blinding Flash,Athena,Core,Your abilities that can Deflect also make foes Exposed.
+Brilliant Riposte,Athena,Core,"When you Deflect attacks, it deals more damage."
+Bronze Skin,Athena,Core,Resist damage from foes' attacks.
+Divine Dash,Athena,Core,Your Dash deals damage and can Deflect.
+Divine Flourish,Athena,Core,"Your Special is stronger, and can Deflect."
+Divine Strike,Athena,Core,"Your Attack is stronger, and can Deflect."
+Holy Shield,Athena,Core,"After you take damage, damage foes around you and briefly Deflect."
+Phalanx Flare,Athena,Core,"Your Cast damages foes around you, and can Deflect."
+Phalanx Shot,Athena,Core,"Your Cast damages foes in a small area, and can Deflect."
+Proud Bearing,Athena,Core,You begin each Encounter(s) with your God Gauge partly full.
+Sure Footing,Athena,Core,Resist damage from Traps.
+Arctic Blast,Demeter,Core,"Applying # stacks of Chill causes a blast, clearing the effect."
+Crystal Beam,Demeter,Core,Your Cast drops a crystal that fires a beam at foes for # Sec.
+Demeter's Aid,Demeter,Core,"Your Call creates a winter vortex that grows over # Sec., inflicting Chill."
+Frost Flourish,Demeter,Core,Your Special is stronger and inflicts Chill.
+Frost Strike,Demeter,Core,Your Attack is stronger and inflicts Chill.
+Frozen Touch,Demeter,Core,"After you take damage, damage and completely Chill your foe."
+Glacial Glare,Demeter,Core,Your Cast fires longer and inflicts Chill.
+Icy Flare,Demeter,Core,Your Cast damages foes around you and inflicts Chill.
+Killing Freeze,Demeter,Core,"When all foes are Chill-afflicted, they are # slower and decay."
+Mistral Dash,Demeter,Core,Your Dash shoots a gust ahead that inflicts Chill.
+Ravenous Will,Demeter,Core,"When you have no Bloodstones, take #% less damage and deal more."
+Snow Burst,Demeter,Core,"Whenever you Cast, damage foes around you and inflict Chill."
+After Party,Dionysus,Core,"If your Health is low after Encounter(s), restore to the threshold."
+Bad Influence,Dionysus,Core,Deal more damage while # or more foes are Hangover-afflicted.
+Dionysus' Aid,Dionysus,Core,Your Call inflicts Hangover on foes all around you for # Sec.
+Drunken Dash,Dionysus,Core,Your Dash causes Hangover several times near where you started.
+Drunken Flourish,Dionysus,Core,Your Special inflicts Hangover.
+Drunken Strike,Dionysus,Core,Your Attack inflicts Hangover.
+High Tolerance,Dionysus,Core,You take less damage while standing in Festive Fog.
+Numbing Sensation,Dionysus,Core,Your Hangover effects also make foes move slower.
+Peer Pressure,Dionysus,Core,Hangover-afflicted foes inflict it on other foes near them every # Sec.
+Positive Outlook,Dionysus,Core,You take less damage while at #%Health or below.
+Strong Drink,Dionysus,Core,Using a Fountain restores all {!Icons.Health_Small} and gives you bonus damage.
+Trippy Flare,Dionysus,Core,"Your Cast damages foes around you, leaving behind Festive Fog."
+Trippy Shot,Dionysus,Core,Your Cast lobs a large explosive that bursts into Festive Fog.
+Auto Reload,Hermes,Core,You regenerate Bloodstones faster.
+Flurry Cast,Hermes,Core,Hold Cast to fire in rapid succession.
+Greater Evasion,Hermes,Core,"Whenever you are hit, you have a chance to Dodge automatically."
+Greater Haste,Hermes,Core,You move faster.
+Greatest Reflex,Hermes,Core,You can Dash more times in a row.
+Hyper Sprint,Hermes,Core,"After you Dash, briefly become Sturdy and move #  faster."
+Lambent Plume,Hermes,Core,Gain greater Dodge chance and move speed each time you quickly clear an Encounter(s). Dodge Chance & Move Speed: #
+Quick Favor,Hermes,Core,Your God Gauge charges up automatically.
+Quick Recovery,Hermes,Core,"After taking damage, quickly Dash to recover some Health you just lost."
+Quick Reload,Hermes,Core,Foes drop Bloodstones stuck in them faster.
+Rush Delivery,Hermes,Core,You deal bonus damage based on any bonus move speed.
+Second Wind,Hermes,Core,"After using Call, gain Dodge chance and move speed for # Sec."
+Side Hustle,Hermes,Core,"Each time you enter a Chamber(s), gain a bit of wealth."
+Swift Flourish,Hermes,Core,Your Special is faster.
+Swift Strike,Hermes,Core,Your Attack is faster.
+Boiling Point,Poseidon,Core,Your God Gauge charges up faster when you take damage.
+Breaking Wave,Poseidon,Core,Slamming foes into barriers creates a watery blast in the area.
+Conch Shell,Poseidon,Core,The next Boons you find will be from Poseidon. His blessings have #  chance to be Rare or better.
+Flood Flare,Poseidon,Core,Your Cast damages foes around you and knocks them away.
+Flood Shot,Poseidon,Core,Your Cast damages foes in an area and knocks them away.
+Hydraulic Might,Poseidon,Core,Your Attack and Special are stronger the first # Sec. in Encounter(s).
+Ocean's Bounty,Poseidon,Core,"Any Gemstones, Darkness and Obol chamber rewards are worth more."
+Poseidon's Aid,Poseidon,Core,Your Call makes you surge into foes while Impervious for # Sec.
+Razor Shoals,Poseidon,Core,Your Boons with knock-away effects also Rupture foes.
+Rip Current,Poseidon,Core,Your Call pulls in foes and the effect lasts longer.
+Tempest Flourish,Poseidon,Core,Your Special deals more damage and knocks foes away.
+Tempest Strike,Poseidon,Core,Your Attack deals more damage and knocks foes away.
+Tidal Dash,Poseidon,Core,Your Dash damages foes in an area and knocks them away.
+Typhoon's Fury,Poseidon,Core,You deal more damage when slamming foes into barriers.
+Wave Pounding,Poseidon,Core,Your Boons with knock-away effects deal bonus damage to Bosses.
+Billowing Strength,Zeus,Core,"After using Call, you deal more damage for # Sec."
+Clouded Judgment,Zeus,Core,Your God Gauge charges up faster when you deal or take damage.
+Double Strike,Zeus,Core,Your lightning bolt effects have a chance to strike twice.
+Electric Shot,Zeus,Core,Your Cast is a burst of chain-lightning that bounces between foes.
+Heaven's Vengeance,Zeus,Core,"After you take damage, your foe is struck by lightning."
+High Voltage,Zeus,Core,Your lightning bolt effects deal damage in a larger area.
+Lightning Reflexes,Zeus,Core,"After you Dash just before getting hit, a bolt strikes a nearby foe."
+Lightning Strike,Zeus,Core,Your Attack emits chain-lightning when you damage a foe.
+Static Discharge,Zeus,Core,Your lightning effects also make foes Jolted.
+Storm Lightning,Zeus,Core,Your chain-lightning effects bounce more times before expiring.
+Thunder Dash,Zeus,Core,Your Dash causes a lightning bolt to strike nearby foes.
+Thunder Flare,Zeus,Core,Your Cast causes a lightning bolt to strike nearby foes.
+Thunder Flourish,Zeus,Core,Your Special causes a lightning bolt to strike nearby foes.
+Zeus' Aid,Zeus,Core,Your Call makes lightning rapidly strike nearby foes for # Sec.
+Unhealthy Fixation,Aphrodite,Legendary,Your Weak effects also have a # chance to Charm foes.
+Vicious Cycle,Ares,Legendary,Your Blade Rift effects deal more damage for each consecutive hit.
+Fully Loaded,Artemis,Legendary,Gain extra Bloodstones for your Cast.
+Divine Protection,Athena,Legendary,You have a barrier that negates an instance of damage.
+Winter Harvest,Demeter,Legendary,"Chill-afflicted foes shatter at #%Health, inflicting Chill nearby."
+Black Out,Dionysus,Legendary,Hangover-afflicted foes take bonus damage in Festive Fog.
+Bad News,Hermes,Legendary,Your Cast deals bonus damage to foes without Bloodstones in them.
+Greater Recall,Hermes,Legendary,Your Bloodstones return to you automatically.
+Huge Catch,Poseidon,Legendary,You have a greater chance to find a Fishing Point in each Chamber(s).
+Second Wave,Poseidon,Legendary,Your Boons with knock-away effects shove foes multiple times.
+Splitting Bolt,Zeus,Legendary,"Whenever you strike foes with lightning Boons, fire an electric bolt."
+Curse of Longing,Duo:Aphrodite+Ares,Duo,Your Doom effects continuously strike Weak foes.
+Heart Rend,Duo:Aphrodite+Artemis,Duo,Your Critical effects deal even more damage to Weak foes.
+Parting Shot,Duo:Aphrodite+Athena,Duo,Your Cast gains any bonuses you have for striking foes from behind.
+Cold Embrace,Duo:Aphrodite+Demeter,Duo,Your Cast crystal fires its beam directly at you for +# Sec.
+Low Tolerance,Duo:Aphrodite+Dionysus,Duo,Your Hangover effects can stack more times against Weak foes.
+Sweet Nectar,Duo:Aphrodite+Poseidon,Duo,Any Poms of Power you find are more potent.
+Smoldering Air,Duo:Aphrodite+Zeus,Duo,"Your God Gauge charges up automatically, but is capped at 25%."
+Hunting Blades,Duo:Ares+Artemis,Duo,Your Cast creates a faster Blade Rift that seeks the nearest foe.
+Merciful End,Duo:Ares+Athena,Duo,Your abilities that can Deflect immediately activate Doom effects.
+Freezing Vortex,Duo:Ares+Demeter,Duo,"Your Cast inflicts Chill, but is smaller and moves slower."
+Curse of Nausea,Duo:Ares+Dionysus,Duo,Your Hangover effects deal damage faster.
+Curse of Drowning,Duo:Ares+Poseidon,Duo,Your Flood Shot becomes a pulse that damages foes around you.
+Vengeful Mood,Duo:Ares+Zeus,Duo,Your Revenge effects sometimes occur without taking damage.
+Deadly Reversal,Duo:Artemis+Athena,Duo,"After you Deflect, briefly gain #  chance to deal Critical damage."
+Crystal Clarity,Duo:Artemis+Demeter,Duo,Your Cast is stronger and tracks foes more effectively.
+Splitting Headache,Duo:Artemis+Dionysus,Duo,Hangover-afflicted foes are more likely to take Critical damage.
+Mirage Shot,Duo:Artemis+Poseidon,Duo,"Your Cast fires a second projectile, which deals reduced base damage."
+Lightning Rod,Duo:Artemis+Zeus,Duo,Your collectible Bloodstones strike nearby foes with lightning every # Sec.
+Stubborn Roots,Duo:Athena+Demeter,Duo,"If you have no Death Defiance, your Health slowly recovers."
+Calculated Risk,Duo:Athena+Dionysus,Duo,Your foes' ranged-attack projectiles are slower.
+Unshakable Mettle,Duo:Athena+Poseidon,Duo,"You cannot be stunned, and resist some damage from Bosses."
+Lightning Phalanx,Duo:Athena+Zeus,Duo,Your Phalanx Shot Cast bounces between nearby foes.
+Ice Wine,Duo:Demeter+Dionysus,Duo,Your Cast blasts an area with freezing Festive Fog that inflicts Chill.
+Blizzard Shot,Duo:Demeter+Poseidon,Duo,"Your Cast moves slowly, piercing foes and firing shards around it."
+Cold Fusion,Duo:Demeter+Zeus,Duo,Your Jolted effects do not expire when foes attack.
+Exclusive Access,Duo:Dionysus+Poseidon,Duo,Any Boons you find are more potent.
+Scintillating Feast,Duo:Dionysus+Zeus,Duo,Your Festive Fog effects also deal lightning damage periodically.
+Sea Storm,Duo:Poseidon+Zeus,Duo,"When you knock foes away, they are struck by lightning."
+Aspect of Beowulf,Misc,Misc,"You have Naegling's Board, but take # damage."
+Aspect of Hera,Misc,Misc,"Your Cast loads Bloodstones into your next Attack, firing on impact."
+Aspect of Lucifer,Misc,Misc,"You have Igneus Eden, which launches volatile Hellfire."
+Hades' Aid,Misc,Misc,Your Call briefly makes you turn Invisible.

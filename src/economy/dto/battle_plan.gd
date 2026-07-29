@@ -1,10 +1,10 @@
 class_name BattlePlan
 extends RefCounted
 
-# PREP → BATTLE 단방향 페이로드.
-# RunState mutable 필드 경유 대신 명시적 객체로 데이터 흐름을 표현한다.
+# PREP → BATTLE 단방향 페이로드 (덱빌딩 모델).
+# 배치판은 임시이므로 카드 인스턴스를 그대로 넘긴다 — 전투 후 RunState.recall_after_battle()가 회수한다.
 
-# Each entry: { "slot": RosterSlot, "positions": Array[Vector2] }
+# 각 entry: { "card": Card, "mods": Array[Card], "position": Vector2 }  (1칸 1유닛, 단일 좌표)
 var player_units: Array = []
 
 var enemy_lineup: Array = []     # Array[UnitData]
@@ -12,4 +12,6 @@ var enemy_positions: Array = []  # Array[Vector2] — battle world coords
 
 var round_index: int = 0
 var tactic_key: StringName = &""
-var global_items: Array = []  # Array[ItemData] — 인벤토리 복사본. ALL_ALLIES/UNIT 스코프 적용용.
+
+# 상시 조커 (전투 이벤트 엔진에서 구독).
+var jokers: Array = []           # Array[Joker]
