@@ -1,5 +1,7 @@
 # 프로토타입 v2 스펙 — 코스트 예산 + 3×3 배치 + 조커 엔진
 
+> ⚠️ **폐기 문서 (2026-07-29).** 이 스펙은 폐기된 **덱빌딩(드로우) 모델** 기준이다. 현행은 **오토체스 육성 + 전술카드 엔진** 모델이다 → [GAME_DESIGN.md](../../docs/game_design/GAME_DESIGN.md) §12. 아래 내용은 의사결정 히스토리로만 보존한다.
+
 > 최종 업데이트: 2026-07-29
 > 대상: `prototypes/deck_draft_battle/` (v1을 교체)
 > 상위 기획: [GAME_DESIGN_DECKBUILD_DRAFT.md](../../docs/game_design/GAME_DESIGN_DECKBUILD_DRAFT.md) · 논의 로그: [DESIGN_NOTES.md](DESIGN_NOTES.md)

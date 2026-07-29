@@ -1,355 +1,256 @@
-# 씬 구조와 전환 계약 (개발 문서)
+# 씬 구조와 전환 계약 (구현 설계 단일 출처)
 
-> 이 문서는 **엔지니어링 레퍼런스**다. 어떤 씬이 어떤 상태를 읽고/쓰며 어떻게 전환되는지 정의한다.
-> 게임 디자인 의도는 `GAME_DESIGN.md` 참고.
+> 이 문서는 **구현 설계(HOW)의 단일 출처**다. 기획서가 "무엇을 만드나(WHAT)"를 정하면,
+> 여기서 "어떤 화면으로 그리고, 어떤 상태를 읽고/쓰며, 어느 씬 계약으로 도는가"를 정한다.
+> 게임 디자인 의도(WHAT)·수치·게임규칙은 [GAME_DESIGN.md](GAME_DESIGN.md) 참고 — 본 문서는 **씬/RunState 계약만** 다룬다.
 > **수치(밸런스 값)는 본 문서에 적지 않는다** — 데이터 파일/`RunState` 상수에서만 관리.
 >
-> ---
-> **⚠ 상태 (2026-07-29): 부분 무효.**
-> 2026-07-29 덱빌딩 개편으로 **데이터 모델과 ShopPhase 계약이 무효**가 되었다.
-> - **여전히 유효:** 영구 셸 + Phase 서브씬 아키텍처, 셸 노드 트리, `bind_shell` 주입 계약, 좌표 일치 규칙.
-> - **무효:** 영구 그리드(`grid_cells`, paid/unpaid), 골드 고용가, 리롤, HERO/UPGRADE/SKILL/ITEM 카드 종류.
-> - 아래 §데이터 모델·§Phase별 계약은 **현재 코드의 기술이지 목표 설계가 아니다.** 재설계 범위는 §재설계 요구사항 참고.
-> 현행 기획 → [GAME_DESIGN.md](GAME_DESIGN.md)
+> **최종 개정: 2026-07-29 — 오토체스 육성 + 전술카드 엔진** 모델 기준으로 재서술.
+> 이전의 **덱빌딩(드로우) 모델**·**페이즈 씬 전환** 구조는 폐기됐다 → 아래 §현재 코드와의 격차.
 
 ---
 
-## 핵심 모델 — 영구 셸 + Phase 서브씬
+## 구현 설계 규칙 — 코드보다 먼저 여기에 적는다
 
-인게임은 **단 하나의 루트 씬** `src/ui/arena_root.tscn` 위에서 진행된다. 사용자 시점에서는 한 화면이 계속 유지되고, 내부 컨텐츠만 SHOP → BATTLE → RESULT 로 갈린다.
+기획(WHAT) → **구현 설계(HOW, 이 문서)** → 코드. 기능을 구현하기 전에, 아래 3가지를 이 문서에 **짧게** 먼저 적고 시작한다.
+설계 산출물이 코드 안으로 사라지지 않게 하는 것이 목적이다.
+
+- **화면 구성** — 어떤 셸 슬롯/팝업에 무엇이 들어가나 / 새로 만드는 노드
+- **상태 읽기·쓰기** — `RunState`의 어떤 상태를 읽고(read) 어떤 상태를 쓰나(write)
+- **씬 계약** — 어떤 화면 상태에서 도나 / 전환 트리거 / 주고받는 시그널
+
+규칙:
+- **한 결정은 한 곳에만.** 같은 내용을 기획서에도 적지 않는다. 여기가 구현 설계의 단일 출처다.
+- **짧게.** 구현 방법을 장황히 적는 문서가 아니다 — 위 3가지 골격만. 코드가 답할 수 있는 세부는 코드에 맡긴다.
+- **낡으면 그 자리에서 고친다.** 구현이 설계와 달라지면 코드가 아니라 이 문서를 진실로 맞춘다.
+
+### 템플릿 (복붙용)
+
+```markdown
+### <기능/슬라이스 이름>  (YYYY-MM-DD)
+- **화면 구성:** <셸 슬롯/팝업 → 컨텐츠 / 새 노드>
+- **읽기(read):** RunState.<상태>, ...
+- **쓰기(write):** RunState.<상태> ← <언제>
+- **씬 계약:** <화면 상태> · 전환 <트리거> → <다음 상태> · 시그널 <...>
+- **미결:** <없음 | 목록>
+```
+
+---
+
+## 핵심 모델 — 영구 전투 화면 + 팝업
+
+**로비 화면은 없다.** 인게임은 **단 하나의 루트 씬** `src/ui/arena_root.tscn` 위에서 진행된다.
+그 위에 **전투 필드(3×3 지속 부대 + 적 진영)가 항상 떠 있고**, 편성과 결과는 그 위에 뜨는 **팝업(ModalLayer)** 으로 처리한다.
+페이즈별로 씬을 갈아끼우지 않는다 — 필드는 한 번 만들어지면 런이 끝날 때까지 그대로 유지된다.
 
 ```
 MainMenu (src/ui/main_menu.tscn)
    │  "게임 시작" → RunState.reset_run() → change_scene_to_file(arena_root)
    ▼
-ArenaRoot (src/ui/arena_root.tscn)
-   ├─ 영구 셸 — 게임 종료까지 한 번도 destroy 되지 않음
-   │   (Backdrop / TopBar / FieldFrame / Divider / 진영 라벨 /
-   │    PlayerZone / EnemyZone / BattleLayer / HandSlot / BottomBar /
-   │    ModalLayer / HudLayer + UnitInfoHud)
+ArenaRoot (src/ui/arena_root.tscn) — 인게임 내내 단 하나. 필드가 계속 보인다.
    │
-   └─ PhaseContainer
-         └─ 현재 phase 씬 1개만 살아있음 (instantiate ↔ queue_free 로 갈림)
-              ├─ ShopPhase   (src/ui/phases/shop_phase.tscn)
-              ├─ BattlePhase (src/ui/phases/battle_phase.tscn)
-              └─ ResultPhase (src/ui/phases/result_phase.tscn)
-
-   ※ "메인 메뉴로" 또는 RUN CLEAR/DEFEAT → change_scene_to_file(main_menu)
+   │  라운드 루프 (씬 전환 없이 화면 상태 + 팝업으로만 돈다):
+   │    편성 팝업 → (전투 시작) → 오토배틀 → 결과 팝업 ─┬─(승리)→ 편성 팝업
+   │                                                    └─(패배)→ 즉시 런 종료
+   │
+   └─ 패배 · RUN CLEAR · "메인 메뉴로" → change_scene_to_file(main_menu)
 ```
 
-`change_scene_to_file`은 **메인 메뉴 ↔ ArenaRoot** 사이에서만 호출한다. SHOP/BATTLE/RESULT 사이에서는 절대 호출하지 않는다 (`PhaseContainer` 자식 갈아끼움 + 셸 슬롯 자식 갈아끼움으로 처리).
+- **`change_scene_to_file`은 오직 MainMenu ↔ ArenaRoot 사이에서만** 호출한다.
+  편성/전투/결과 사이 전환에서는 **절대 호출하지 않는다** — 팝업 표시/숨김 + 오토배틀 시작/종료로만 처리한다.
+- 지속 부대·부활·즉사 같은 게임 규칙은 [GAME_DESIGN.md](GAME_DESIGN.md) §2·§5·§10 참고. 여기서는 화면/상태 계약만 다룬다.
 
 ---
 
 ## 영구 셸이 절대 깨지지 않는 규칙
 
-1. **셸 노드는 phase 진입/탈출 시점에 destroy/free 되지 않는다.** 자식만 add/clear 된다.
-2. **셸 노드의 위치·크기는 phase가 바꾸지 않는다.** 좌표/스타일은 `arena_root.tscn`에서만 정의.
-3. **phase가 추가하는 자식은 자기가 만든 것뿐.** 셸의 영구 자식(ColorRect / Divider / Label 등)은 건드리지 않는다.
-4. **phase 전환 직후 한 프레임이라도 "빈 화면"이 보이면 안 된다.** 셸이 그대로 남으므로 자연스러운 페이드/슬라이드 추가도 가능.
+1. **셸 노드는 화면 상태가 바뀌어도 destroy/free 되지 않는다.** 필드·부대 토큰은 라운드 간 그대로 살아있다(지속 부대).
+2. **셸 노드의 위치·크기는 팝업이 바꾸지 않는다.** 좌표/스타일은 `arena_root.tscn`에서만 정의.
+3. **팝업이 추가하는 자식은 자기가 만든 것뿐.** 셸의 영구 자식(ColorRect / Divider / Label / 필드 토큰 등)은 건드리지 않는다.
+4. **팝업 여닫는 순간 한 프레임이라도 "빈 화면"이 보이면 안 된다.** 필드가 뒤에 그대로 남으므로 자연스러운 페이드/슬라이드도 가능.
 
-이 규칙을 따르면 사용자 시점에서 화면 골격은 절대 깜박이지 않는다.
+이 규칙을 따르면 사용자 시점에서 화면 골격(필드)은 절대 깜박이지 않고, 편성에서 보던 그 필드 위에서 곧바로 전투가 시작된다.
 
 ---
 
-## 셸 노드 트리 — `arena_root.tscn`
+## 셸 노드 트리 — `arena_root.tscn` (목표)
 
 ```
-ArenaRoot (Control, script: arena_root.gd)
-├─ Backdrop (ColorRect)                       [SHELL · 항상 표시]
-├─ TopBar (HBoxContainer)                     [SHELL · 항상 표시]
+ArenaRoot (Control, script: arena_root.gd)     [상태 머신 + 팝업 라우터]
+├─ Backdrop (ColorRect)                         [SHELL · 항상 표시]
+├─ TopBar (HBoxContainer)                        [SHELL · 항상 표시]
 │  ├─ RoundLabel
 │  ├─ GoldLabel
 │  └─ PhaseHintLabel
+├─ SpeedControls (HBoxContainer)                 [SHELL · 전투 중에만 visible]
 │
-├─ ArenaCanvas (Control)                      [SHELL · 항상 표시]
-│  ├─ FieldBackground (ColorRect)             [SHELL]
-│  ├─ FieldBorder (ReferenceRect)             [SHELL]
-│  ├─ Divider (ColorRect)                     [SHELL]
-│  ├─ PlayerLabel / EnemyLabel (Label)        [SHELL]
-│  ├─ PlayerZone (PlacementZone)              [SHELL · 컨테이너만, phase가 자식 채움]
-│  ├─ EnemyZone (Control)                     [SHELL · 컨테이너만, phase가 자식 채움]
-│  └─ BattleLayer (Node2D)                    [SHELL · 컨테이너만, BATTLE에서 시뮬레이터 add_child]
+├─ ArenaCanvas (Control)                         [SHELL · 항상 표시 — 지속 전투 필드]
+│  ├─ FieldBackground (ColorRect)                [SHELL]
+│  ├─ FieldBorder (ReferenceRect)                [SHELL]
+│  ├─ Divider (ColorRect)                        [SHELL]
+│  ├─ PlayerLabel / EnemyLabel (Label)           [SHELL]
+│  ├─ PlayerZone (PlacementZone)                 [SHELL · 3×3 지속 부대. 편성에서만 배치 입력]
+│  ├─ EnemyZone (Control)                        [SHELL · 적 프리뷰/전투 유닛]
+│  └─ BattleLayer (Node2D)                       [SHELL · 전투 중 시뮬레이터가 여기서 돈다]
 │
-├─ HandSlot (Control)                         [SHELL · 항상 위치 고정]
-│  └─ <SHOP 진입 시에만 핸드 컨텐츠 채움>
+├─ BottomBar (HBoxContainer)                     [SHELL · 컨텍스트 버튼, 상태에 따라 내용 갱신]
 │
-├─ BottomBar (HBoxContainer)                  [SHELL · 항상 위치 고정]
-│  └─ <phase가 자기 버튼들 채움>
-│
-├─ PhaseContainer (Control)                   [phase 인스턴스 부모]
-│  └─ <현재 phase의 .tscn 인스턴스 1개>
-│
-├─ ModalLayer (CanvasLayer, layer=8)
-│  └─ <phase가 띄우는 모달 (상점 오퍼 / 결과 모달)>
+├─ ModalLayer (CanvasLayer, layer=8)             [편성 팝업 / 결과 팝업이 뜨는 곳]
 │
 └─ HudLayer (CanvasLayer, layer=10)
-   └─ UnitInfoHud (instance, visible=false → BATTLE에서만 true)
+   ├─ UnitInfoHud (visible=false → 전투 중에만 true)
+   └─ UnitDetailCard (유닛 상세, 필요 시 표시)
 ```
+
+**신 모델에서 달라지는 점 (덱빌딩 잔재 정리):**
+- `PlayerZone`(3×3)는 **지속 부대**를 담는다. 라운드 간 토큰이 유지되고, 편성 때만 배치/이동 입력을 받는다(전투/결과 중엔 `MOUSE_FILTER_IGNORE`).
+- `EnemyZone`은 편성 때 적 편성을 완전 공개(프리뷰)하고, 전투 때 그 자리에서 적 유닛이 스폰된다.
+- **`ModalLayer`가 중심**이다 — 편성/상점/결과 UI가 전부 여기에 팝업으로 뜬다.
+- **삭제 대상(덱빌딩 잔재):** `HandSlot`·`ItemSlot`(드로우 핸드/임시 인벤토리) → 신 모델엔 드로우가 없다. 상점은 편성 팝업이 대체한다. `PhaseContainer`(페이즈 씬 인스턴스 부모) → 씬 전환이 없어졌으므로 불필요.
+  이 노드들은 현재 `.tscn`에 남아 있다(§현재 코드와의 격차) — 마이그레이션에서 제거한다.
 
 ---
 
-## Phase 통신 + 슬롯 주입 계약
+## 팝업 주입 계약
 
-루트는 phase 인스턴스를 만들 때 셸 슬롯들의 참조를 `bind_shell()`로 주입한다.
+ArenaRoot가 팝업을 만들 때, 팝업이 필요로 하는 셸 참조와 콜백을 주입하고 팝업의 시그널을 connect 한다.
+페이즈 씬을 갈아끼우던 `bind_shell` 계약의 정신을 팝업에 맞게 이어받은 것이다.
 
 ```gdscript
-# arena_root.gd
-enum PhaseId { SHOP, BATTLE, RESULT }
-
-func _set_phase(next: int) -> void:
-    _clear_shell_slots()  # PlayerZone/EnemyZone/BattleLayer/HandSlot/BottomBar/ModalLayer 자식 비움
-    for c in _phase_container.get_children():
-        c.queue_free()
-    var inst := _scene_for_phase(next).instantiate()
-    inst.bind_shell({
-        "player_zone": _player_zone, "enemy_zone": _enemy_zone, "battle_layer": _battle_layer,
-        "hand_slot": _hand_slot, "bottom_bar": _bottom_bar, "modal_layer": _modal_layer,
-        "info_hud": _info_hud, "top_bar": self,
+# arena_root.gd (목표 개형)
+func _open_prep_popup() -> void:
+    var popup := PREP_POPUP.instantiate()
+    popup.bind({
+        "player_zone": _player_zone,   # 배치 대상(지속 그리드)
+        "enemy_zone": _enemy_zone,     # 적 프리뷰
+        "top_bar": self,               # 골드/예정 표시 갱신
     })
-    inst.transition_requested.connect(_set_phase)
-    inst.main_menu_requested.connect(_to_main_menu)
-    _phase_container.add_child(inst)
+    popup.battle_requested.connect(_start_battle)   # "전투 시작"
+    popup.main_menu_requested.connect(_to_main_menu)
+    _modal_layer.add_child(popup)
 ```
 
-phase 공통 인터페이스:
-
-```gdscript
-# phases/*.gd 가 모두 따르는 형태
-signal transition_requested(next: int)   # PhaseId
-signal main_menu_requested
-
-var shell: Dictionary
-func bind_shell(s: Dictionary) -> void:
-    shell = s
-```
-
-phase는 자기 노드 트리에 거의 아무것도 안 가지고, 셸 슬롯을 **빌려서** 채운다. phase 종료 시 셸 슬롯 자식은 루트의 `_clear_shell_slots()`가 일괄 정리한다.
+- **편성 팝업은 비차단(non-blocking)** — 상점/레벨업/리롤/전투시작 컨트롤을 담되, 뒤의 필드(`PlayerZone` 그리드·`EnemyZone` 프리뷰)가 계속 보이고 배치 입력을 받는다. 정확한 레이아웃(팝업이 화면 어느 부분을 덮는지, 드래그가 팝업↔필드를 어떻게 넘나드는지)은 미결.
+- **결과 팝업은 차단형이어도 된다** — 전투가 끝난 뒤 결과만 보여주면 되므로.
+- 상태 전달은 **`RunState` 오토로드 한 곳을 통해서만.** 팝업끼리 직접 참조하지 않는다.
 
 ---
 
-## 데이터 모델 (현행 코드 — 무효, 재설계 대상)
+## RunState 재설계 방향
 
-> ⚠ 아래는 **폐기된 누적 모델의 구현 기술**이다. 목표 설계가 아니다.
-> 새 모델의 영구 자산은 **덱 · 조커 · 골드**이며, 그리드는 매 전투 초기화되는 임시 배치판이다.
-> 재설계 시 어떤 필드를 버리고 무엇으로 대체할지는 §재설계 요구사항 참고.
+> 신 모델의 영구 자산은 **부대(지속 필드 유닛) · 골드 · 전술카드** 다 → [GAME_DESIGN.md](GAME_DESIGN.md) §2·§8.
+> 아래는 **어떤 상태를 보유하고 누가 읽고/쓰나**의 방향만 잡는다. **구체 필드명·타입·모듈 분해는 미결**(구현 슬라이스에서 확정).
 
-플레이어는 **3×3 그리드에 배치된 병사를 런 전체에 걸쳐 소유한다.** 영구 자산은 골드, 아이템 인벤토리, **그리드(배치된 병사 + 레벨)**다.
+**지속 상태 (라운드 간 보존 — 이것이 신 모델의 핵심):**
 
-`RosterSlot`은 **"이 종류의 병사가 게임에 등장 가능하다 + 이 아이템들이 부착돼 있다"** 의 의미.
+| 상태 축 | 내용 | write | read |
+|---|---|---|---|
+| **부대(필드)** | 3×3 = 9칸의 유닛 배치. 한 칸 한 유닛. 전투에서 죽어도 다음 라운드에 풀로 부활 | 편성(구매·배치·이동·판매) | 편성·전투 |
+| **유닛 업그레이드** | 각 필드 유닛의 강화 상태 (**한 유닛당 +5 상한**, §8). 부대와 함께 영구 유지 | 편성(업그레이드 카드 사용) | 편성·전투 |
+| **칸 업그레이드** | 3×3 각 칸의 영구 효과 상태 (§8) | 편성(칸 업그레이드 카드 사용) | 편성·전투 |
+| **보유 전술카드** | 상시 발동하는 전술카드 목록. 총 코스트를 소모 (§7) | 편성(구매) | 편성·전투 |
+| **골드** | 클리어 정액 + 이자로 획득. 구매/레벨업/리롤에 소모 (§6) | 결과(정액+이자), 편성(구매·레벨업·리롤) | 모든 상태 |
+| **레벨 / 총 코스트 상한** | 레벨업(골드)으로 총 코스트 상한↑ + 고티어 등장 확률↑ (§4) | 편성(레벨업) | 편성 |
 
-### `RosterSlot` (`src/cards/roster_slot.gd`)
-| 필드 | 의미 |
-|------|------|
-| `unit_data: UnitData` | 종류 정의 (HERO 카드만 의미 있음) |
-| `items: Array[ItemData]` | 종류에 부착된 아이템 (max `MAX_ITEMS = 3`). 그 종류로 고용된 모든 인스턴스에 일괄 적용 |
-| `kind: int` (`GameEnums.CardKind`) | 핸드 슬롯의 카드 종류 — `HERO` / `UPGRADE` / `SKILL` / `ITEM`. HERO 만 그리드 배치 가능, 나머지는 클릭 1회 소모 (현재 더미). |
-| `dummy_price: int` | HERO 외 카드의 가격. HERO는 `RunState.hire_price_for()` 사용. |
-| `dummy_name: String` | HERO 외 카드의 표시명. UPGRADE는 `tr(unit_data.name_key)` 로 현재 로케일에 맞춰 조립. SKILL/ITEM 더미는 현재 한글 풀 직삽 — 실효 도입 시 i18n 키로 교체 예정. |
+- **총 코스트 소모**은 지속 상태에서 파생된다 — 필드에 올린 유닛 + 보유 전술카드의 코스트 합이 **총 코스트 상한** 이내여야 한다. 업그레이드류(유닛·칸)는 코스트를 먹지 않는다(골드만).
 
-### `RunState` 핵심 필드
-| 필드 | 타입 | 책임 phase (write) | 소비 phase (read) |
-|------|------|----------------|---------------|
-| `gold` | `int` | SHOP(고용 결제·리롤·더미 카드 사용), BATTLE(보상) | 모든 phase |
-| `roster` | `Array[RosterSlot]` | (예약 — 평면 인덱스가 필요해질 때 사용. 현재는 `grid_cells` 가 영구 군대를 보관) | 모든 phase |
-| `grid_cells` | `Array[Array[{slot, paid, hand_idx}]]` (길이 9) | SHOP(배치/스왑/회수/`grid_commit_paid`), `reset_run` | SHOP, BATTLE(간접: `deployed` 경유) |
-| `hand` | `Array[RosterSlot]` | `roll_hand()`(런 시작·라운드 전환·리롤) | SHOP |
-| `inventory` | `Array[ItemData]` | SHOP | SHOP |
-| `deployed` | `Array[{slot, positions}]` | SHOP | BATTLE |
-| `enemy_positions` | `Array[Vector2]` | SHOP | BATTLE |
-| `last_battle_stats` | `Dictionary` | BATTLE | RESULT |
+**전투마다 파생되는(임시) 상태:**
 
-### 핸드 시스템
+| 상태 | 내용 | write | read |
+|---|---|---|---|
+| 현재 적 라인업 | 이번 라운드 적 편성 (완전 공개) | 라운드 진입 | 편성·전투 |
+| 커밋 좌표 | 전투에 넘길 적 스폰 좌표. 아군은 지속 필드 토큰을 그대로 사용하므로 별도 커밋이 거의 없다 | 편성("전투 시작") | 전투 |
+| `last_battle_stats` | 전투 결과 통계 | 전투 종료 | 결과 |
 
-매 라운드 진입 시 `RunState.roll_hand()` 가 `HAND_OFFER_COUNT` 장(기본 5)을 추첨해 `RunState.hand` 에 채운다.
+**폐기 (덱빌딩/누적 모델 잔재 — 신 모델에 없음):**
+- 드로우 관련 전부: `hand`(드로우 핸드)·`deck`·`discard`·`roll_hand`/`reroll_hand` 의 "핸드 추첨" 의미.
+- 임시 배치판 개념(`grid_cells`의 paid/unpaid, 매 전투 리셋 `board`/`budget`) → 신 모델의 필드는 **지속**이라 paid/unpaid 구분이 사라진다.
+- `hire_price_for`/`HIRE_PRICE_PER_COST`(고용가), 임시 인벤토리(`inventory`), 임계 시너지 누적 API.
+- 상점의 **리롤**은 남는다(§6 골드 용도) — 단 "핸드 재추첨"이 아니라 "상점 라인업 갱신"이다.
 
-**카드 종류 (랜덤 가중치):**
-| Kind | 비율 | 동작 |
-|------|------|------|
-| HERO | 60% | `UnitDB.all_player_units()` 에서 1종 추첨. SHOP에서 그리드 셀에 드래그 → 전투 시작 시 일괄 결제. |
-| UPGRADE | 14% | 더미 — 랜덤 영웅 강화 표시. 클릭 1회 소모(즉시 결제). |
-| SKILL | 13% | 더미 — 스킬명 풀에서 1개. 클릭 1회 소모. |
-| ITEM | 13% | 더미 — 아이템명 풀에서 1개. 클릭 1회 소모. |
-
-**리롤:** SHOP 의 핸드 좌측 리롤 버튼 → `RunState.reroll_hand()` (REROLL_COST 차감 후 `roll_hand()`).
-- 리롤은 **카드만 갱신**한다 — 그리드에 이미 배치된 병사는 유지된다 (셀이 RosterSlot 참조를 캡처).
-- 리롤 직후 shop_phase는 `RunState.grid_invalidate_unpaid_hand_indices()` 를 호출해 unpaid entry의 `hand_idx`를 모두 -1로 무효화한다.
-- 리롤 후 그리드에서 우클릭으로 빼낸 unpaid 카드는 핸드로 복귀하지 않고 폐기된다.
-
-**1회용 규칙:** 한 번 셀에 올리거나 클릭으로 사용한 카드는 핸드에서 사라진다.
-HERO는 셀 우클릭 시 같은 라운드 내(리롤 전)라면 핸드로 복귀, 그 외엔 폐기.
-
-`last_battle_stats` 키: `won, kills, losses, gold_earned, round_index, was_last_round`
-
-### 고용 가격
-- `RunState.hire_price_for(unit_data) = unit_data.cost × HIRE_PRICE_PER_COST` — 종류별 차등.
-- `unit_data.cost` 는 [src/data/units/units.csv](../src/data/units/units.csv) 의 `cost` 컬럼.
-- `HIRE_PRICE_PER_COST` 값은 [src/data/balance.csv](../src/data/balance.csv) 에서 관리.
-
-phase 간 데이터 전달은 **`RunState` 오토로드 한 곳을 통해서만** 이뤄진다. phase끼리 직접 참조하지 않는다.
+> **주의(CLAUDE.md 전역 규칙):** 위 폐기/신설은 **public API 리네임·스키마 변경·다운스트림 연쇄 수정**을 동반한다.
+> 실제 구현 슬라이스에서 착수 전 사용자 확인을 받는다. 이 문서는 방향만 확정한다.
 
 ---
 
-## Phase별 계약 (현행 코드 — ShopPhase는 무효)
+## 화면 상태별 계약
 
-### 1. ShopPhase (`src/ui/phases/shop_phase.tscn`) ⚠ 전면 재설계 대상
+씬을 갈아끼우는 대신, ArenaRoot가 **편성 / 전투 / 결과** 세 상태를 오간다. 각 상태는 팝업 표시 여부 + 오토배틀 구동 여부로 구분된다.
 
-> 이 계약은 **폐기된 누적 모델 기준**이다. 새 모델에서는 이 phase가 하던 두 가지 일
-> (**① 전투 준비 배치**와 **② 골드로 카드 구매**)이 **서로 다른 라운드 시점에 일어나므로 분리되어야 한다** → §재설계 요구사항.
+### 1. 편성 (상점 + 배치, 한 팝업)
 
-**목적:** 적 편성을 보고 핸드(랜덤 5장)에서 카드를 골라 그리드를 채우고 전투를 시작.
+덱빌딩 모델이 나눴던 "배치"와 "구매"를 신 모델은 **한 편성 단계**로 합친다 (GAME_DESIGN §2 편성 루프).
 
-**셸 슬롯 사용:**
-| 슬롯 | 컨텐츠 |
-|------|--------|
-| `player_zone` | 3×3 셀 배경 + 배치된 토큰. PlacementZone 시그널(`place_requested`/`remove_requested`/`swap_requested`/`drag_started`/`drag_ended`)을 phase가 connect |
-| `enemy_zone` | 적 프리뷰 토큰 (이번 라운드 적군) |
-| `hand_slot` | 좌측 리롤 버튼 + 핸드카드 5장 (HERO 드래그 / UPGRADE·SKILL·ITEM 클릭 소모) |
-| `bottom_bar` | [요약 라벨] [전투 시작] |
-| `modal_layer` | 비움 |
+- **화면:** `ModalLayer`=편성 팝업(상점 라인업 · 레벨업 · 리롤 · "전투 시작"). 뒤로 `PlayerZone`=3×3 지속 부대(배치 대상) · `EnemyZone`=적 편성 완전 공개 · `TopBar`=라운드/골드(예정 차감 미리보기) · `BottomBar`=요약/전력 지표.
+- **read:** 부대·유닛/칸 업그레이드·보유 전술카드·골드·레벨/총코스트 상한·현재 적 라인업.
+- **write:** 골드(구매·레벨업·리롤) · 부대(구매·배치·이동·판매) · 업그레이드(유닛/칸) · 보유 전술카드 · 레벨.
+- **씬 계약:** "전투 시작" → 적 스폰 좌표 커밋 → 편성 팝업 닫고 **전투 상태로**. `battle_requested` 시그널.
+- **전력 지표(신규 위젯, 미결):** 아군/적 대략 전력 비교(즉사 공정성 전제, GAME_DESIGN §10·§11). 산출식·표기는 미결 → [BATTLE_DESIGN.md](BATTLE_DESIGN.md).
 
-**읽음:** `RunState.gold`, `RunState.hand`, `RunState.current_enemy_lineup()`
-**씀(즉시):** `gold` (리롤 비용, 더미 카드 사용 비용), `hand` (리롤로 재추첨)
-**TopBar 연동:** 배치 변경마다 `shell.top_bar.set_gold_preview(spent)` 호출 → "Gold: G  (예정 −S → 잔여 R)" 표시. 리롤·더미 사용 후 `refresh_gold()`.
+### 2. 전투 (오토배틀)
 
-**셀 상태 모델 (영구 그리드 — 라운드 간 보존):**
-- `RunState.grid_cells[i]: Array[Dictionary]` — `{slot: RosterSlot, paid: bool, hand_idx: int}` 엔트리 리스트.
-- `slot` 은 배치 시점의 RosterSlot 참조. `hand` 갱신·라운드 전환과 무관하게 유지.
-- `paid==true` 는 이전 라운드들에서 비용 차감 완료된 영구 자산. 라운드 사이 보존되며 우클릭 회수 불가.
-- `paid==false` 는 이번 SHOP에 갓 추가된 미결제 — 우클릭 회수 가능, "전투 시작" 시 일괄 spend 후 paid로 확정.
-- `hand_idx` 는 unpaid entry 의 hand 슬롯 인덱스 (paid는 -1). 회수 시 hand의 같은 RosterSlot을 가리킬 때만 카드 핸드 복귀.
-- 시각: 셀에 unpaid entry가 1개 이상 있으면 외곽선 골드, 모두 paid면 회색.
-- `_card_to_cell[hand_idx]`: -1=대기, ≥0=배치된 셀, -2=더미 사용 후 영구 소모. unpaid entry만 등록됨 (paid는 hand_idx=-1 이라 자동 제외).
+- **화면:** 편성 팝업 닫힘(ModalLayer 비움). `BattleLayer`=`BattleSimulator`가 지속 필드 위에서 구동. `SpeedControls` visible · `UnitInfoHud` on. 전술카드 발동은 **눈에 보여야 한다**(최소 로그/플래시, GAME_DESIGN §5·§7).
+- **read:** 부대(지속 필드 토큰)·유닛/칸 업그레이드·보유 전술카드·적 스폰 좌표·현재 적 라인업.
+- **write:** `last_battle_stats`.
+- **씬 계약:** 개입 없음(결정론). 시뮬레이터 `battle_ended` → 결과 상태로.
+- **전투 백본:** 시뮬레이터가 전투 이벤트(처치/아군사망/피격/상태이상/소환 등)를 발행하고, **전술카드 엔진**이 이를 구독해 상시 발동한다 (개념·매개는 GAME_DESIGN §7 / [ITEM_DESIGN.md](ITEM_DESIGN.md), 전투 규칙은 [BATTLE_DESIGN.md](BATTLE_DESIGN.md)). 발행부→엔진 순으로 구현.
 
-**커밋 시점에만 (전투 시작 누르는 순간):**
-1. `RunState.spend(unpaid_total)` — 이번 라운드 신규(unpaid) 배치 비용만 차감. paid 영구 자산은 재차감 없음.
-2. `RunState.grid_commit_paid()` — 모든 unpaid entry를 `paid=true`로 마킹, `hand_idx=-1`로 초기화.
-3. `RunState.deployed = [{slot, positions}, ...]` — 셀별 RosterSlot + 배틀 좌표 (paid/unpaid 무관 모든 entry 출전).
-4. `RunState.enemy_positions = [Vector2, ...]` — 적 프리뷰 토큰의 글로벌 좌표 (BATTLE에서 그대로 스폰)
-5. `transition_requested.emit(PhaseId.BATTLE)`
+### 3. 결과
 
-**좌표 매핑 규칙 (SHOP ↔ Battle 일치):**
-- 플레이어 시작 좌표 = `shell.player_zone.global_position + cell_center + stack_offset` (PlayerZone 안의 토큰 글로벌 좌표 그대로).
-- 적 시작 좌표 = EnemyZone 프리뷰 토큰의 글로벌 좌표 그대로 (`_collect_enemy_positions()`).
-- **SHOP 화면에서 보이던 위치에서 곧바로 전투가 시작된다** — 별도의 BATTLE 좌표계로 리매핑하지 않는다.
-- 토큰/유닛 sprite 스케일은 모두 `unit_data.sprite_scale * 0.75` 로 통일 (핸드 초상화 / 드래그 프리뷰 / 필드 토큰 / 전투 유닛 동일).
-
-**되돌아가기 안전성:** HERO 배치/제거는 SHOP 안에서만 카운터 조작 — `gold` 차감 없음. 단 리롤·더미 카드 사용은 즉시 차감.
+- **화면:** `ModalLayer`=결과 팝업(승/패 헤드라인 · 통계 · 골드/이자 · 버튼).
+- **read:** `last_battle_stats` · 골드 · 현재 라운드.
+- **write:** **승리 시** 골드(정액+이자), 라운드 진행. **부대는 그대로 보존·부활**(RunState 지속 상태라 별도 조작 불필요).
+- **씬 계약:**
+  - **승리 & 미종료** → "다음 라운드" → 결과 팝업 닫고 **편성 상태로**.
+  - **최종보스 클리어(RUN CLEAR)** → "메인 메뉴" → `change_scene_to_file(main_menu)`.
+  - **패배** → **즉시 런 종료.** "다음 라운드" 버튼 없음 → "메인 메뉴"만 (GAME_DESIGN §10 즉사).
 
 ---
 
-### 2. BattlePhase (`src/ui/phases/battle_phase.tscn`)
-
-**목적:** 전투 시뮬레이션만. UI는 거의 없음.
-
-**셸 슬롯 사용:**
-| 슬롯 | 컨텐츠 |
-|------|--------|
-| `battle_layer` | `BattleSimulator` 인스턴스 (시뮬레이터가 자기 유닛/투사체를 자식으로 스폰) |
-| `info_hud` | `visible = true` 로 켜고 시뮬레이터에 ref 주입 |
-| 그 외 슬롯 | 비움 |
-
-**읽음:** `RunState.deployed`, `RunState.enemy_positions`, `RunState.current_enemy_lineup()`
-**씀:** 전투 종료 시 시뮬레이터가 `RunState.last_battle_stats` 기록, 승리 시 `grant_round_reward()` 후 `advance_round()` (마지막 라운드면 advance 안 함)
-
-**Unit Info HUD:** 전투 중 유닛 클릭 → `shell.info_hud.set_unit(u)` 로 표시. 사망 후 1초 자동 닫힘.
-
-**전환:** 시뮬레이터의 `battle_ended` → 1.2초 딜레이 → `transition_requested.emit(PhaseId.RESULT)`
-
-핵심: **필드 프레임은 셸 소속이라 그대로 보이고, 그 위에서 시뮬레이터가 돈다.** 사용자 눈에는 SHOP에서 본 그 필드 위에서 전투가 자연스럽게 시작되는 모습.
-
----
-
-### 3. ResultPhase (`src/ui/phases/result_phase.tscn`)
-
-**목적:** 한 라운드의 결과·통계를 보여주고 다음 단계로 보낸다.
-
-**셸 슬롯 사용:**
-| 슬롯 | 컨텐츠 |
-|------|--------|
-| `modal_layer` | 결과 모달 (헤드라인 / 처치·손실 / 골드 / 버튼) |
-| 그 외 슬롯 | 비움 |
-
-**읽음:** `RunState.last_battle_stats`, `RunState.gold`, `RunState.current_round`
-**씀:** 없음
-
-**표시:**
-- 헤드라인: "VICTORY" / "DEFEAT" / "RUN CLEAR"
-- 라운드 N 통계: 처치 수, 손실 수, 획득 재화
-- 현재 골드 합계
-- 버튼: 승리 & 미종료 → [메인 메뉴] [다음 라운드] / 그 외 → [메인 메뉴]만
-
-**전환:**
-- "다음 라운드" → `transition_requested.emit(PhaseId.SHOP)` (승리 & 미종료)
-- "메인 메뉴" → `main_menu_requested.emit()` (RUN CLEAR / DEFEAT 또는 도중 탈출)
-
----
-
-## Phase 전환 매트릭스
+## 상태 전환 매트릭스
 
 | From → To | 트리거 | RunState 변경 |
 |-----------|--------|---------------|
-| MainMenu → ArenaRoot(SHOP) | "게임 시작" | `reset_run()` (안에서 `roll_hand()` + `grid_cells` 빈 9-length 초기화) |
-| SHOP → BATTLE | "전투 시작" | `spend(unpaid_total)` + `grid_commit_paid()` + `deployed = [...]` + `enemy_positions = [...]` |
-| BATTLE → RESULT | 전투 종료 + 1.2초 | 시뮬레이터가 `last_battle_stats=`, 승리 시 `grant_round_reward()`+`advance_round()` (안에서 `roll_hand()`) |
-| RESULT → SHOP | "다음 라운드" (승리 & 미종료) | 없음 |
-| RESULT → MainMenu | "메인 메뉴" (RUN CLEAR / DEFEAT) | 없음 (다음 진입 시 reset_run) |
-| (모든 phase) → MainMenu | "메인 메뉴" | 없음 |
+| MainMenu → ArenaRoot(편성) | "게임 시작" | `reset_run()` (시작 부대 시드 + 초기 골드/레벨 세팅) |
+| 편성 → 전투 | "전투 시작" | 적 스폰 좌표 커밋 (아군은 지속 필드 그대로). **골드 차감 없음** — 구매는 편성 중 즉시 반영 |
+| 전투 → 결과 | 시뮬레이터 `battle_ended` | `last_battle_stats=`, **승리 시** 골드(정액+이자) 지급 + 라운드 진행 |
+| 결과 → 편성 | "다음 라운드" (승리 & 미종료) | 없음 (부대 지속) |
+| 결과 → MainMenu | "메인 메뉴" (RUN CLEAR / 패배 즉시 종료) | 없음 (다음 진입 시 `reset_run`) |
+| (모든 상태) → MainMenu | "메인 메뉴" | 없음 |
 
 ---
 
-## 재설계 요구사항 (2026-07-29 덱빌딩 개편)
+## 좌표 일치 규칙 (편성 ↔ 전투)
 
-프로덕션 코드는 아직 손대지 않았다. 프로토 판정 후 착수할 때 아래를 만족해야 한다.
+- 아군 필드는 **지속**이므로, 편성에서 배치한 유닛 토큰이 **이미 제자리에 있다.** 전투는 그 토큰들이 서 있던 그 자리에서 시작한다 — 별도 좌표계로 **리매핑하지 않는다.**
+- 적 시작 좌표 = `EnemyZone` 프리뷰 토큰의 글로벌 좌표 그대로 (편성에서 보이던 위치에서 스폰).
+- **편성 화면에서 보이던 위치에서 곧바로 전투가 시작된다** — 필드가 안 갈리므로 이 일치는 구조적으로 보장된다.
 
-### Phase 구성 — 하나가 늘어난다
+---
 
-기존 SHOP은 **"적 보고 배치"와 "골드로 구매"를 한 화면에서** 처리했다. 새 루프에서는 이 둘이 라운드의 다른 시점에 있다.
+## 현재 코드와의 격차 (마이그레이션 대상)
 
-```
-PREP (전투 준비)  →  BATTLE  →  RESULT  →  SHOP (덱/조커 편성)  →  다시 PREP
-  덱에서 드로우                   골드 지급     골드로 카드 구매
-  예산 안에서 배치                (정액+이자+조커)  카드 제거 / 조커 획득·교체
-  버리기 (횟수 제한)
-```
+> **이 문서는 목표(신 모델)를 기술한다. 현재 코드는 아직 폐기된 구조 위에 있다.**
 
-- **PREP** — 예산·핸드·3×3 배치·버리기·전력 지표. 골드를 쓰지 않는다.
-- **SHOP** — 골드 상점. 배치를 하지 않는다.
-- 셸 아키텍처(영구 셸 + `bind_shell`)는 그대로 쓰되 phase 열거형이 4개가 된다.
+현재 `src/ui/arena_root.gd`·`arena_root.tscn` 과 `src/ui/phases/*` 는 **덱빌딩 4-페이즈 씬 전환** 모델을 구현하고 있다:
+- `enum PhaseId { PREP, BATTLE, RESULT, SHOP }` + `PhaseContainer`에 페이즈 씬을 instantiate/queue_free 로 갈아끼움.
+- 셸에 `HandSlot`·`ItemSlot`(드로우 핸드/임시 인벤토리) 노드 존재.
+- `RunState`에 드로우·임시 배치판·고용가 계열 API 존재.
 
-### RunState 필드 — 버릴 것과 새로 필요한 것
+신 모델로 옮기며 정리할 것:
+1. **페이즈 씬 전환 제거** — `PhaseContainer` + 4개 phase 씬 → 지속 필드 + `ModalLayer` 팝업(편성/결과).
+2. **드로우 UI 제거** — `HandSlot`·`ItemSlot` → 편성 팝업(상점)으로 대체.
+3. **RunState 재설계** — §RunState 재설계 방향의 지속 상태로 교체, 드로우/임시배치판/고용가 폐기.
 
-| 현행 필드 | 처리 |
-|---|---|
-| `grid_cells` (paid/unpaid, 영구 보존) | **폐기** — 매 전투 초기화되는 임시 배치판으로 교체. paid 개념 자체가 사라짐 |
-| `roster` | **폐기** — 덱으로 대체 |
-| `hand` (전체 풀 랜덤 추첨) | **의미 변경** — 내 덱에서 드로우 |
-| `hire_price_for()` / `HIRE_PRICE_PER_COST` | **폐기** — 골드 고용이 없어짐. 카드 코스트는 배치 예산에서 차감 |
-| `reroll_hand()` / `REROLL_COST` | **폐기** — 골드 리롤 대신 **버리기**(횟수 제한, 골드 무관) |
-| `inventory` (유물) | **폐기** — 조커 슬롯으로 통합 → [ITEM_DESIGN.md](ITEM_DESIGN.md) |
-| `gold` | **유지, 용도 변경** — 전투 밖 카드 구매 전용. 이자 지급 로직 신규 |
-
-**신규로 필요한 것**
-- `deck` / `discard_pile` — 덱·버림 더미. 소진 시 셔플
-- `budget` — 이번 전투 배치 예산 (매 전투 리셋, 남으면 소멸)
-- `jokers` — 조커 슬롯 배열
-- `discard_left` — 버리기 잔여 횟수
-- 시한부 강화 부착 상태 (전투 후 소멸)
-- 전투 이벤트 버스 → [BATTLE_DESIGN.md §9](BATTLE_DESIGN.md)
-
-### 흐름 규칙 변경
-
-- **커밋 시 골드 차감 없음.** 배치는 예산만 소모하며 골드와 무관하다.
-- **전투 종료 시 낸 카드 전량 덱 회수** (전사 여부 무관).
-- **패배 시 즉시 런 종료** — RESULT에서 다음 라운드 버튼이 없다. 재도전·생명 없음.
-- **승패 예측 지표**를 PREP에서 확정 전에 보여줘야 한다 (즉사 규칙의 공정성 전제).
+각 항목은 **public API 리네임·스키마 변경·다운스트림 연쇄 수정을 착수 전 사용자 확인**(CLAUDE.md 전역 규칙) 후 슬라이스로 진행한다.
 
 ---
 
 ## 미결·다음 슬라이스로 미루는 것
 
-- **전투 결과 디테일**: 유닛별 데미지·MVP 표시 등은 다음 슬라이스
-- **phase 전환 트랜지션 효과**: 영구 셸이 그대로 남으므로 페이드/슬라이드 인 가능. 지금은 즉시 교체
-- **SHOP 상점 UI 구조**: 라인업 갱신 규칙·리롤 유무가 기획 미결 → [GAME_DESIGN.md §12](GAME_DESIGN.md)
-- **조커 UI**: 보유 조커 표시·교체 모달 동선 미정
-- **전력 지표 UI**: 산출식과 표기 방식 미정 → [BATTLE_DESIGN.md §10](BATTLE_DESIGN.md)
+- **편성 팝업 레이아웃** — 팝업이 화면 어느 부분을 덮는지, 배치 드래그가 팝업↔필드를 넘나드는 방식.
+- **RunState 구체 스키마** — 지속 상태의 필드명·타입·모듈 분해.
+- **전력 지표 UI** — 산출식·표기 방식 → [BATTLE_DESIGN.md](BATTLE_DESIGN.md).
+- **전술카드 발동 연출** — 최소 로그/플래시 이상의 연출 수위.
+- **상점 구조** — 라인업 크기·갱신·리롤 규칙·카드 판매/제거 경로 (GAME_DESIGN §14 미결에 의존).
+- **화면 상태 전환 트랜지션** — 필드가 지속이라 페이드/슬라이드 가능. 지금은 즉시 팝업 여닫음.

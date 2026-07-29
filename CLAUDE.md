@@ -41,10 +41,10 @@
 > **이 절은 방향 감각용 요약이다. 기획의 단일 출처는 [docs/game_design/GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) 다.**
 > 세부 규칙·수치·미결 항목을 여기에 옮겨 적지 않는다 (아래 "문서 단일 출처" 규칙 참고).
 
-- 장르: 덱빌딩 로그라이크 + 오토배틀 + 조커 엔진 (PvE, 스팀 단일 구매)
-- 한 라운드: **전투 준비(덱에서 드로우 → 배치 예산 안에서 3×3 배치) → 오토배틀 → 결과 → 덱/조커 편성(골드 상점)**
-- 영구 자산은 **덱 · 조커 · 골드**. 전장은 매 전투 초기화된다.
-- 정체성: **"매 판 완벽하게 풀어내라. 한 번 틀리면 끝이다."** (패배 = 즉시 런 종료)
+- 장르: 오토체스(오토배틀) 로그라이크 + 전술카드 엔진 (PvE, 스팀 단일 구매)
+- 한 라운드: **편성(전투화면 위 팝업 — 상점에서 골드로 카드 구매·유닛 배치·레벨업·리롤) → 오토배틀 → 결과 → 다음 편성**
+- 영구 자산은 **부대(지속 3×3 필드) · 전술카드 · 골드**. 부대는 라운드 간 보존·육성된다 (유닛 업그레이드 +5 상한).
+- 정체성: **"완전 정보 앞에서 부대를 육성한다. 한 번 지면 끝이다."** (패배 = 즉시 런 종료)
 
 **문서 지도**
 
@@ -54,11 +54,11 @@
 | 전투 규칙·AI·이벤트 | [BATTLE_DESIGN.md](docs/game_design/BATTLE_DESIGN.md) |
 | 종족·직업 태그 카탈로그 | [SYNERGY_DESIGN.md](docs/game_design/SYNERGY_DESIGN.md) |
 | 유닛 / 스킬 / 웨이브 | [UNIT_DESIGN.md](docs/game_design/UNIT_DESIGN.md) · [SKILL_DESIGN.md](docs/game_design/SKILL_DESIGN.md) · [WAVE_DESIGN.md](docs/game_design/WAVE_DESIGN.md) |
-| 씬 구조·전환 계약 | [SCENES.md](docs/game_design/SCENES.md) |
+| 씬 구조·전환 계약 + **구현 설계 단일 출처**(화면 구성·상태 read/write·씬 계약) | [SCENES.md](docs/game_design/SCENES.md) |
 | 의사결정 로그 (왜 그렇게 정했나) | [prototypes/deck_draft_battle/DESIGN_NOTES.md](prototypes/deck_draft_battle/DESIGN_NOTES.md) |
 
-> **주의:** `src/` 프로덕션 코드는 아직 **폐기된 누적 모델**(영구 그리드·골드 고용·임계 시너지) 기준이다.
-> 덱빌딩 모델은 `prototypes/deck_draft_battle/` 에서만 구현되어 있다. 재설계 범위 → [SCENES.md](docs/game_design/SCENES.md)
+> **주의:** `src/` 프로덕션 코드와 `prototypes/` 는 모두 **폐기된 옛 모델**(누적 그리드 / 덱빌딩 드로우) 기준이다.
+> 현행 오토체스 육성 모델은 아직 문서에만 있다. 재설계 범위 → [SCENES.md](docs/game_design/SCENES.md) · 폐기 내역 → [GAME_DESIGN.md §12](docs/game_design/GAME_DESIGN.md)
 
 ---
 
@@ -97,7 +97,7 @@ ModalLayer / HudLayer 를 소유하고, phase는 셸 슬롯에 컨텐츠를 add_
 
 바뀌지 않는 전제만 둔다. 시스템 규칙은 기획서가 단일 출처다.
 
-- 병사는 "교체 가능한 카드"로 취급 (개별 서사 없음)
+- 병사는 교체 가능한 부품으로 취급 — 라운드 간 육성되지만 개별 서사는 없다
 - 적 유닛 정보는 라운드 시작 시 완전 공개 (완전 정보 기반 의사결정)
 - 전투 중 플레이어 개입 없음 — 결정은 전부 준비 단계로 front-load
 - 모든 유닛은 고정 1스킬. 카드로 스킬을 추가 부여하지 않는다

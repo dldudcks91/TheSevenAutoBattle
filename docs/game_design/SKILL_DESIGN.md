@@ -5,8 +5,8 @@
 > 종족·직업 태그 → [SYNERGY_DESIGN.md](SYNERGY_DESIGN.md)
 >
 > **2026-07-29 개편 영향:** 이 문서의 설계 원칙과 스킬 구조는 그대로 유효하다.
-> 다만 스킬이 발행하는 이벤트(처치·상태이상 부여 등)가 이제 **조커 엔진의 생산처**를 겸한다 → [BATTLE_DESIGN.md §9](BATTLE_DESIGN.md).
-> 스킬 어휘를 늘릴 때는 "이 스킬이 어떤 조커와 맞물리는가"를 함께 본다.
+> 다만 스킬이 발행하는 이벤트(처치·상태이상 부여 등)가 이제 **전술카드 엔진의 생산처**를 겸한다 → [BATTLE_DESIGN.md §9](BATTLE_DESIGN.md).
+> 스킬 어휘를 늘릴 때는 "이 스킬이 어떤 전술카드와 맞물리는가"를 함께 본다.
 
 ---
 
@@ -14,7 +14,7 @@
 
 1. **유닛당 고정 1스킬** — 모든 유닛은 정확히 하나의 고유 스킬을 가진다. 카드로 추가 부여하지 않으며, 카드로 교체하지도 않는다.
 2. **Trigger = 정체성의 행동** — "이 유닛이라면 이 순간에 무언가를 한다"가 자연스럽게 느껴지는 트리거를 고른다. 메커닉에서 트리거를 역산하지 않는다.
-3. **조커 계층과 분리** — 유닛 스킬은 그 유닛 단독의 행동만 정의한다. 빌드 정체성을 만드는 상시 효과는 조커가 담당한다 → [GAME_DESIGN.md §7](GAME_DESIGN.md). (직업·종족 태그에는 자체 효과가 없다)
+3. **전술카드 계층과 분리** — 유닛 스킬은 그 유닛 단독의 행동만 정의한다. 빌드 정체성을 만드는 상시 효과는 전술카드가 담당한다 → [GAME_DESIGN.md §7](GAME_DESIGN.md). (직업·종족 태그에는 자체 효과가 없다)
 4. **PvE 카운터 픽 가시화** — 적 스킬은 "어떤 아군을 쓰면 쉬워지는가"가 플레이어 눈에 보여야 한다.
 
 ---
@@ -76,6 +76,10 @@
 
 > 키워드의 구체 수치(피해량·회복량·지속·간격)는 모두 데이터 파일에서 관리. 본 문서는 의도만 다룬다.
 
+> **결정론 주의:** Stun·Freeze 등 상태이상은 **확률로 발동시키지 않는다.**
+> 전투는 결정론([GAME_DESIGN.md §5](GAME_DESIGN.md))이므로 "확률 스턴" 같은 확률 키워드는 금지다 —
+> "N타마다"·"첫 타격 시" 같은 **확정 트리거**(§3)로만 상태이상을 부여한다.
+
 ---
 
 ## 5. 아군 유닛별 스킬 (35종)
@@ -86,61 +90,61 @@
 
 | 유닛 | 직업 | 스킬 정체성 (TBD) |
 |---|---|---|
-| ShieldMan | Knight | 방패 막기 — 피격 시 일부 피해 흡수 |
-| SwordMan | Warrior | TBD |
-| SpearMan | Spearman | TBD |
-| CavalierMan | Rider | TBD |
-| ArcherMan | Archer | TBD |
-| Mage | Mage | TBD |
-| ArchMage | Priest | 신성+학술 마법 — 회복 또는 보호 |
-| KingMan | General | 왕의 명령 — 주변 아군 전체 강화 |
+| ShieldMan | 전사 | 방패 막기 — 피격 시 일부 피해 흡수 |
+| SwordMan | 전사 | TBD |
+| SpearMan | 전사 | TBD |
+| CavalierMan | 기사 | TBD |
+| ArcherMan | 궁수 | TBD |
+| Mage | 메이지 | TBD |
+| ArchMage | 프리스트 | 신성+학술 마법 — 회복 또는 보호 |
+| KingMan | 영웅 | 왕의 명령 — 주변 아군 전체 강화 |
 
 ### 5.2 Vikings
 
 | 유닛 | 직업 | 스킬 정체성 (TBD) |
 |---|---|---|
-| VikingSwordman | Knight | TBD |
-| VikingBerserker | Warrior | 광폭화 — 체력 임계 이하에서 공격 폭증 |
-| VikingSpearman | Spearman | TBD |
-| VikingHorseman | Rider | TBD |
-| VikingArcher | Archer | TBD |
-| VikingJarl | General | 함성 — 주변 아군 광폭화 |
+| VikingSwordman | 전사 | TBD |
+| VikingBerserker | 전사 | 광폭화 — 체력 임계 이하에서 공격 폭증 |
+| VikingSpearman | 전사 | TBD |
+| VikingHorseman | 기사 | TBD |
+| VikingArcher | 궁수 | TBD |
+| VikingJarl | 영웅 | 함성 — 주변 아군 광폭화 |
 
 ### 5.3 Beastmen
 
 | 유닛 | 직업 | 스킬 정체성 (TBD) |
 |---|---|---|
-| BearWarrior | Knight | 곰 가죽 — 받는 피해 감소 |
-| FoxSwordsman | Warrior | TBD |
-| PandaWarrior | Spearman | TBD |
-| WolfPathfinder | Archer | TBD |
-| CatRobber | Assassin | 그림자 침투 — 후방 타겟팅 또는 처치 시 강화 |
-| RabbitWizard | Mage | TBD |
-| DeerDruid | Priest | 자연의 가호 — 아군 회복 |
-| LionKnight | General | 사자의 기백 — 주변 아군 공격력 강화 |
+| BearWarrior | 전사 | 곰 가죽 — 받는 피해 감소 |
+| FoxSwordsman | 전사 | TBD |
+| PandaWarrior | 전사 | TBD |
+| WolfPathfinder | 궁수 | TBD |
+| CatRobber | 암살자 | 그림자 침투 — 후방 타겟팅 또는 처치 시 강화 |
+| RabbitWizard | 메이지 | TBD |
+| DeerDruid | 프리스트 | 자연의 가호 — 아군 회복 |
+| LionKnight | 영웅 | 사자의 기백 — 주변 아군 공격력 강화 |
 
 ### 5.4 OrderOfTheFire
 
 | 유닛 | 직업 | 스킬 정체성 (TBD) |
 |---|---|---|
-| FirePrince | Knight | 불의 갑주 — Taunt + 화상 반사 |
-| FireWarrior | Warrior | TBD |
-| FireMage | Mage | 화염구 — 주기적 마법 피해 |
-| FirePriestess | Priest | 신성한 화염 — 아군 회복 + 적 화상 |
-| FirePrincess | General | 불의 명령 — 주변 아군 공격에 화상 부여 |
+| FirePrince | 전사 | 불의 갑주 — Taunt + 화상 반사 |
+| FireWarrior | 전사 | TBD |
+| FireMage | 메이지 | 화염구 — 주기적 마법 피해 |
+| FirePriestess | 프리스트 | 신성한 화염 — 아군 회복 + 적 화상 |
+| FirePrincess | 영웅 | 불의 명령 — 주변 아군 공격에 화상 부여 |
 
 ### 5.5 DarkElves
 
 | 유닛 | 직업 | 스킬 정체성 (TBD) |
 |---|---|---|
-| DarkElfGuard | Knight | TBD |
-| DarkElfSwordsman | Warrior | TBD |
-| DarkElfRider | Rider | TBD |
-| DarkElfArcher | Archer | TBD |
-| DarkElfAssassin | Assassin | 단검·독 — 후방 침투, 지속 피해 |
-| DarkElfWizard | Mage | TBD |
-| DarkElfSorceress | Priest | 어둠 의식 — 아군 회복·강화 |
-| DarkElfSpellstealer | General | 마법 강탈 — 적 마법을 빼앗아 아군 부여 |
+| DarkElfGuard | 전사 | TBD |
+| DarkElfSwordsman | 전사 | TBD |
+| DarkElfRider | 기사 | TBD |
+| DarkElfArcher | 궁수 | TBD |
+| DarkElfAssassin | 암살자 | 단검·독 — 후방 침투, 지속 피해 |
+| DarkElfWizard | 메이지 | TBD |
+| DarkElfSorceress | 프리스트 | 어둠 의식 — 아군 회복·강화 |
+| DarkElfSpellstealer | 영웅 | 마법 강탈 — 적 마법을 빼앗아 아군 부여 |
 
 > 위 표의 "TBD" 표기 유닛은 정체성 한 줄과 트리거·효과의 구체 명세가 미결이다. §6 미결 항목 참조.
 
