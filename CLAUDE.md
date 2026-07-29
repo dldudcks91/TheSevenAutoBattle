@@ -14,6 +14,19 @@
 - **유닛·몬스터 스탯 데이터는 반드시 `src/data/` 폴더의 CSV 파일로 저장한다. MD 파일에 스탯 표를 작성하지 않는다.**
 - **표시 텍스트(이름·설명 등)는 `src/data/i18n/text.csv`에 모은다.** 데이터 CSV의 텍스트 컬럼은 `*_key` 형식의 번역 키(`UNIT_SOLDIER`, `ITEM_BOOTS_BASIC` 등)만 담고, 코드에서 `tr(key)`로 꺼내 쓴다. 데이터 CSV의 `.import`는 `importer="keep"`으로 두어 Godot의 csv_translation 임포터를 거치지 않게 한다(컬럼명이 로케일로 오인됨).
 
+### 문서 단일 출처 (Single Source of Truth)
+
+- **하나의 결정은 한 곳에만 적는다.** 같은 내용이 두 파일에 있으면, 한쪽만 고쳐졌을 때 어느 쪽이 진실인지 알 수 없게 된다.
+- 책임 분리:
+  | 무엇 | 어디 |
+  |---|---|
+  | 수치 (스탯·가격·코스트·확률) | `src/data/**.csv` 또는 코드 상수 |
+  | 게임 시스템 규칙·의도·미결 항목 | `docs/game_design/*.md` |
+  | 작업 규칙·컨벤션 | `.claude/skills/<skill-name>/SKILL.md` |
+  | 협업 규칙 + 문서 지도 | `CLAUDE.md` (이 파일) |
+- **CLAUDE.md에 기획 세부를 옮겨 적지 않는다.** 여기에는 방향 감각과 "어디를 봐야 하는지"만 둔다.
+- 설계가 바뀌면 **단일 출처 문서를 고치고, 다른 문서의 상충 서술은 그 자리에서 지운다.** 낡은 서술을 남겨두지 않는다.
+
 ### 규칙 저장 위치
 
 - **프로젝트 규칙·컨벤션은 항상 `.claude/skills/<skill-name>/SKILL.md` 에 작성한다.**
@@ -25,20 +38,27 @@
 
 ## 게임 개요
 
-- 장르: 오토배틀 + 덱빌딩 + 시너지 (PvE, 스팀 출시 목표)
-- 핵심 루프:
-  1. 라운드 시작 → 재화 지급, 핸드 5장 추첨 (영웅 / 강화 / 아이템 — 3종)
-  2. 적 유닛 공개
-  3. 영웅 카드를 그리드 셀에 드래그로 배치(같은 종류는 셀당 최대 4명 누적 또는 다른 셀로 분산), 비-영웅 카드는 셀 적용 또는 즉시 사용
-  4. 시너지 패널이 직업·종족 발동 단계를 실시간 표시
-  5. 필요시 리롤(재화 소모) — 카드만 갈리고 그리드 병사는 보존
-  6. 오토배틀 → 클리어
-  7. 남은 재화 → 다음 라운드의 핸드에서 활용
-- 그리드 병사는 라운드 간 영구 보존 — 사망자 포함 모두 풀 HP로 부활, 비용은 신규 배치분(unpaid)만 차감 (`RunState.grid_cells` + `grid_commit_paid()`)
-- 모든 아군 유닛은 직업 1 + 종족 1을 가지며, 그리드 위 종류 수에 따라 단계제 시너지가 발동한다 → [docs/game_design/SYNERGY_DESIGN.md](docs/game_design/SYNERGY_DESIGN.md)
-- 모든 유닛은 고정 1스킬을 가진다. 카드로 스킬을 추가 부여하지 않는다.
-- 핵심 긴장감: 최소 재화로 클리어할수록 덱 강화 속도가 빨라짐
-- 수익모델: 스팀 단일 구매 (인앱결제 없음)
+> **이 절은 방향 감각용 요약이다. 기획의 단일 출처는 [docs/game_design/GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) 다.**
+> 세부 규칙·수치·미결 항목을 여기에 옮겨 적지 않는다 (아래 "문서 단일 출처" 규칙 참고).
+
+- 장르: 덱빌딩 로그라이크 + 오토배틀 + 조커 엔진 (PvE, 스팀 단일 구매)
+- 한 라운드: **전투 준비(덱에서 드로우 → 배치 예산 안에서 3×3 배치) → 오토배틀 → 결과 → 덱/조커 편성(골드 상점)**
+- 영구 자산은 **덱 · 조커 · 골드**. 전장은 매 전투 초기화된다.
+- 정체성: **"매 판 완벽하게 풀어내라. 한 번 틀리면 끝이다."** (패배 = 즉시 런 종료)
+
+**문서 지도**
+
+| 주제 | 문서 |
+|---|---|
+| 게임 전체 설계 (루프·덱·예산·골드·조커) | [GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) |
+| 전투 규칙·AI·이벤트 | [BATTLE_DESIGN.md](docs/game_design/BATTLE_DESIGN.md) |
+| 종족·직업 태그 카탈로그 | [SYNERGY_DESIGN.md](docs/game_design/SYNERGY_DESIGN.md) |
+| 유닛 / 스킬 / 웨이브 | [UNIT_DESIGN.md](docs/game_design/UNIT_DESIGN.md) · [SKILL_DESIGN.md](docs/game_design/SKILL_DESIGN.md) · [WAVE_DESIGN.md](docs/game_design/WAVE_DESIGN.md) |
+| 씬 구조·전환 계약 | [SCENES.md](docs/game_design/SCENES.md) |
+| 의사결정 로그 (왜 그렇게 정했나) | [prototypes/deck_draft_battle/DESIGN_NOTES.md](prototypes/deck_draft_battle/DESIGN_NOTES.md) |
+
+> **주의:** `src/` 프로덕션 코드는 아직 **폐기된 누적 모델**(영구 그리드·골드 고용·임계 시너지) 기준이다.
+> 덱빌딩 모델은 `prototypes/deck_draft_battle/` 에서만 구현되어 있다. 재설계 범위 → [SCENES.md](docs/game_design/SCENES.md)
 
 ---
 
@@ -75,8 +95,9 @@ ModalLayer / HudLayer 를 소유하고, phase는 셸 슬롯에 컨텐츠를 add_
 
 ## 게임 디자인 핵심 방향
 
+바뀌지 않는 전제만 둔다. 시스템 규칙은 기획서가 단일 출처다.
+
 - 병사는 "교체 가능한 카드"로 취급 (개별 서사 없음)
-- 재화 밸런싱이 게임 전체 난이도를 결정하는 핵심 변수
 - 적 유닛 정보는 라운드 시작 시 완전 공개 (완전 정보 기반 의사결정)
-- 이자 시스템 없음 — 재화는 단순 이월
-- 시너지는 두 축(직업 9 + 종족 5)에서 단계제로 발동. 시너지 카운트는 종류 단위로 1 — 같은 종류를 한 셀에 4명 누적하거나 여러 셀에 두어도 시너지는 1만 잡힌다(화력·맷집은 늘어남).
+- 전투 중 플레이어 개입 없음 — 결정은 전부 준비 단계로 front-load
+- 모든 유닛은 고정 1스킬. 카드로 스킬을 추가 부여하지 않는다
