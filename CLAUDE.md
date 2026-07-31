@@ -2,7 +2,8 @@
 
 ## 프로젝트 개요
 
-> 이 파일은 Claude와의 협업 규칙 및 프로젝트 컨텍스트를 담습니다.
+> 이 파일은 Claude와의 **협업 규칙 + 문서 지도("어디를 봐야 하는지")**만 담는다.
+> **게임 디자인·시스템 규칙·수치는 여기에 적지 않는다** — 단일 출처는 [docs/game_design/GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) 다.
 
 ---
 
@@ -36,29 +37,22 @@
 
 ---
 
-## 게임 개요
+## 문서 지도 (어디를 봐야 하는지)
 
-> **이 절은 방향 감각용 요약이다. 기획의 단일 출처는 [docs/game_design/GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) 다.**
-> 세부 규칙·수치·미결 항목을 여기에 옮겨 적지 않는다 (아래 "문서 단일 출처" 규칙 참고).
-
-- 장르: 오토체스(오토배틀) 로그라이크 + 전술카드 엔진 (PvE, 스팀 단일 구매)
-- 한 라운드: **편성(전투화면 위 팝업 — 상점에서 골드로 카드 구매·유닛 배치·레벨업·리롤) → 오토배틀 → 결과 → 다음 편성**
-- 영구 자산은 **부대(지속 3×3 필드) · 전술카드 · 골드**. 부대는 라운드 간 보존·육성된다 (유닛 업그레이드 +5 상한).
-- 정체성: **"완전 정보 앞에서 부대를 육성한다. 한 번 지면 끝이다."** (패배 = 즉시 런 종료)
-
-**문서 지도**
+> 게임 디자인의 단일 출처는 [GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) 다. 아래는 주제별 진입점만 둔다.
 
 | 주제 | 문서 |
 |---|---|
-| 게임 전체 설계 (루프·덱·예산·골드·조커) | [GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) |
+| **게임 전체 설계** (루프·코스트 경제·전술카드·즉사) — 기획 단일 출처 | [GAME_DESIGN.md](docs/game_design/GAME_DESIGN.md) |
 | 전투 규칙·AI·이벤트 | [BATTLE_DESIGN.md](docs/game_design/BATTLE_DESIGN.md) |
 | 종족·직업 태그 카탈로그 | [SYNERGY_DESIGN.md](docs/game_design/SYNERGY_DESIGN.md) |
 | 유닛 / 스킬 / 웨이브 | [UNIT_DESIGN.md](docs/game_design/UNIT_DESIGN.md) · [SKILL_DESIGN.md](docs/game_design/SKILL_DESIGN.md) · [WAVE_DESIGN.md](docs/game_design/WAVE_DESIGN.md) |
-| 씬 구조·전환 계약 + **구현 설계 단일 출처**(화면 구성·상태 read/write·씬 계약) | [SCENES.md](docs/game_design/SCENES.md) |
+| 아이템/유물 → 전술카드 통합 내역 | [ITEM_DESIGN.md](docs/game_design/ITEM_DESIGN.md) |
+| **씬 구조·전환 계약 + 구현 설계 단일 출처**(화면 구성·상태 read/write·씬 계약) | [SCENES.md](docs/game_design/SCENES.md) |
 | 의사결정 로그 (왜 그렇게 정했나) | [prototypes/deck_draft_battle/DESIGN_NOTES.md](prototypes/deck_draft_battle/DESIGN_NOTES.md) |
 
-> **주의:** `src/` 프로덕션 코드와 `prototypes/` 는 모두 **폐기된 옛 모델**(누적 그리드 / 덱빌딩 드로우) 기준이다.
-> 현행 오토체스 육성 모델은 아직 문서에만 있다. 재설계 범위 → [SCENES.md](docs/game_design/SCENES.md) · 폐기 내역 → [GAME_DESIGN.md §12](docs/game_design/GAME_DESIGN.md)
+> **주의:** `src/` 프로덕션 코드와 `prototypes/` 는 모두 **폐기된 옛 모델**(누적 그리드 / 덱빌딩 드로우 / 골드 이코노미) 기준이다.
+> 현행 **무통화 코스트제 오토체스 육성 모델**은 아직 문서에만 있다. 재설계 범위 → [SCENES.md](docs/game_design/SCENES.md) · 폐기 내역 → [GAME_DESIGN.md §12](docs/game_design/GAME_DESIGN.md)
 
 ---
 
@@ -75,29 +69,15 @@
 src/
   battle/       # 오토배틀 로직
   cards/        # 카드/병사 데이터 및 시스템
-  economy/      # 재화 및 업그레이드 시스템
+  economy/      # 코스트·업그레이드 시스템
   ui/           # 메인 메뉴 + 영구 셸 (arena_root) + 공용 위젯
-    phases/     # SHOP / BATTLE / RESULT phase 서브씬 — 셸 슬롯에 컨텐츠를 채움
+    phases/     # (구모델 잔재) phase 서브씬 — 신 모델은 팝업 구조로 대체 예정
   data/         # 밸런스 데이터 (CSV) + i18n 텍스트
     i18n/       # 번역 CSV (keys,ko,en) — Godot이 .translation 파일로 자동 임포트
 prototypes/     # 검증용 프로토타입 (프로덕션과 분리)
 docs/
-  game_design/  # 게임 디자인 문서
+  game_design/  # 게임 디자인 문서 (기획 단일 출처)
   reference/    # 레퍼런스 자료
 ```
 
-씬 구조: 인게임은 `src/ui/arena_root.tscn`(영구 셸) 1개 + `src/ui/phases/*_phase.tscn` 3개로 분리.
-셸이 TopBar / FieldFrame / Divider / 진영 라벨 / PlayerZone / EnemyZone / BattleLayer / HandSlot / BottomBar /
-ModalLayer / HudLayer 를 소유하고, phase는 셸 슬롯에 컨텐츠를 add_child 해서 채운다.
-`change_scene_to_file`은 메인 메뉴 ↔ ArenaRoot 전환에만 쓴다. 자세한 계약은 `docs/game_design/SCENES.md` 참고.
-
----
-
-## 게임 디자인 핵심 방향
-
-바뀌지 않는 전제만 둔다. 시스템 규칙은 기획서가 단일 출처다.
-
-- 병사는 교체 가능한 부품으로 취급 — 라운드 간 육성되지만 개별 서사는 없다
-- 적 유닛 정보는 라운드 시작 시 완전 공개 (완전 정보 기반 의사결정)
-- 전투 중 플레이어 개입 없음 — 결정은 전부 준비 단계로 front-load
-- 모든 유닛은 고정 1스킬. 카드로 스킬을 추가 부여하지 않는다
+> **씬 구조·구현 설계의 단일 출처는 [SCENES.md](docs/game_design/SCENES.md) 다.** 여기에 중복 기술하지 않는다.
